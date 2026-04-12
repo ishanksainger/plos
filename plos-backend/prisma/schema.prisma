@@ -30,4 +30,15 @@ model Responsibility {
 
   userId Int
   user   User @relation(fields: [userId], references: [id])
+
+  events Event[]
+}
+model Event {
+  id               Int      @id @default(autoincrement())
+  responsibilityId Int
+  fromState        String
+  toState          String
+  occurredAt       DateTime @default(now())
+
+  responsibility Responsibility @relation(fields: [responsibilityId], references: [id])
 }

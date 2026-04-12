@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ResponsibilityController } from './responsibility.controller';
+import { ResponsibilityService } from './responsibility.service';
 
 describe('ResponsibilityController', () => {
   let controller: ResponsibilityController;
@@ -7,6 +8,20 @@ describe('ResponsibilityController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ResponsibilityController],
+      providers: [
+        {
+          provide: ResponsibilityService,
+          useValue: {
+            create: jest.fn(),
+            markComplete: jest.fn(),
+            getByUser: jest.fn(),
+            getById: jest.fn(),
+            delete: jest.fn(),
+            getStateSummaryByUser: jest.fn(),
+            getTimeline: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
     controller = module.get<ResponsibilityController>(ResponsibilityController);
