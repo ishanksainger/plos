@@ -1,0 +1,11 @@
+{
+  "name": "plos",
+  "private": true,
+  "scripts": {
+    "dev": "kill-port 3001 5173 && concurrently -k -n backend,frontend -c blue,magenta \"npm run start:dev --prefix plos-backend\" \"npm run dev --prefix plos-frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "kill-port": "^2.0.1"
+  }
+}

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { EventService } from 'src/event/event.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { computeState } from 'src/responsibility/compute-state';
@@ -11,7 +11,7 @@ export class SchedulerService {
     private eventService: EventService,
   ) {}
 
-  @Cron('0 0 * * *') // 👈 every minute (testing)
+  @Cron(CronExpression.EVERY_MINUTE) // testing; switch to EVERY_DAY at midnight for prod
   async checkResponsibilityStateTransitions() {
     const now = new Date();
     const yesterday = new Date(now);
