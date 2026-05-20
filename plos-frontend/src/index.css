@@ -1,1 +1,509 @@
+@import "./styles/tokens.css";
 @import "tailwindcss";
+
+*, *::before, *::after {
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--shell-bg);
+  color: var(--text-primary);
+  margin: 0;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+html, body, #root {
+  min-height: 100%;
+  background: var(--shell-bg);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+::selection { background: rgba(149, 117, 205, 0.25); }
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c9b8e8; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #8b73c9; }
+
+/* Module / list typography — readable ink everywhere */
+.plos-breadcrumb {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.plos-page-title {
+  font-size: clamp(1.45rem, 2.8vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  color: var(--text-primary);
+}
+
+.plos-stat-card-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.plos-section-header {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.plos-empty-panel {
+  padding: 44px 22px;
+  text-align: center;
+  background: var(--elev);
+}
+
+.plos-empty-panel-title {
+  color: var(--text-primary);
+}
+
+.plos-empty-panel-sub {
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.plos-interactive-card {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.plos-btn-accent {
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--brand) 0%, #6f52ed 100%);
+  box-shadow: 0 10px 28px rgba(111, 82, 237, 0.42);
+}
+
+.plos-btn-accent:hover {
+  filter: brightness(1.06);
+}
+
+.plos-btn-accent:active {
+  filter: brightness(0.96);
+}
+
+/** Primary actions on purple header rail — reads clearly on sidebar-gradient */
+.plos-btn-header-cta {
+  border: none;
+  color: #3d1698 !important;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.plos-btn-header-cta:hover {
+  filter: brightness(1.04);
+}
+
+.plos-btn-header-cta:active {
+  filter: brightness(0.98);
+}
+
+/* Google Data Studio–style report cards + depth */
+.plos-studio-card {
+  border-radius: var(--pl-card-radius);
+  border: 1px solid #dadce0;
+  background: #ffffff;
+  box-shadow:
+    0 1px 2px rgba(60, 64, 67, 0.28),
+    0 1px 3px 1px rgba(60, 64, 67, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.plos-studio-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 2px 6px rgba(60, 64, 67, 0.22),
+    0 4px 12px rgba(60, 64, 67, 0.12);
+}
+
+.plos-studio-metric {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.plos-studio-metric:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow:
+    0 6px 20px rgba(57, 73, 171, 0.12),
+    0 2px 6px rgba(60, 64, 67, 0.08);
+}
+
+.plos-dash-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* Executive overlay — mosaic grid of fanned cards (full-bleed layout) */
+.plos-exec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+@media (min-width: 1000px) {
+  .plos-exec-span-2 {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 999px) {
+  .plos-exec-span-2 {
+    grid-column: span 1;
+  }
+}
+
+.plos-exec-tile-hover {
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.plos-exec-tile-hover:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.06);
+}
+
+/* Dashboard shell — full width, no centering cap */
+.plos-dash-shell {
+  width: 100%;
+  padding-inline: clamp(10px, 2vw, 20px);
+  box-sizing: border-box;
+}
+
+/* Dashboard scroll canvas (route /): lilac tint complements sidebar & cards */
+.plos-workspace-dashboard {
+  background:
+    radial-gradient(110% 72% at 10% -6%, rgba(124, 79, 255, 0.11) 0%, transparent 50%),
+    linear-gradient(180deg, #e6e4ff 0%, #eeebff 24%, #f5f4ff 52%, #faf9ff 100%);
+}
+
+[data-page='dashboard'] .plos-studio-card {
+  border-color: rgba(124, 79, 255, 0.14);
+  box-shadow:
+    0 1px 0 rgba(58, 31, 110, 0.05),
+    0 14px 36px rgba(76, 29, 149, 0.08);
+}
+
+.plos-dash-chart-title {
+  font-size: clamp(1.06rem, 0.82rem + 0.72vw, 1.38rem);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  color: #3a1f6e;
+  line-height: 1.22;
+}
+
+.plos-dash-chart-sub {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  line-height: 1.42;
+  color: #584a84;
+}
+
+.plos-dash-tile-title {
+  font-size: 0.9375rem;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  color: #3a1f6e;
+  line-height: 1.28;
+}
+
+.plos-dash-chart-legend-label {
+  font-size: 0.6875rem;
+  font-weight: 750;
+  color: #574a82;
+}
+
+/* Gradient stat-card strip — 4 columns, full width */
+.plos-stat-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media (max-width: 900px) {
+  .plos-stat-strip { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 420px) {
+  .plos-stat-strip { grid-template-columns: 1fr; }
+}
+
+/* Sidebar KPI rail — vertical in the capped right panel; 2×2 when that column stretches full-width */
+.plos-stat-strip-side {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  width: 100%;
+}
+@media (max-width: 1199px) and (min-width: 560px) {
+  .plos-stat-strip-side {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 420px) {
+  .plos-stat-strip-side {
+    grid-template-columns: 1fr;
+  }
+}
+.plos-grad-stat-dense {
+  padding: 13px 16px 12px !important;
+  min-height: 0 !important;
+}
+
+/* Mini charts — two rows so each pair aligns to the same height */
+.plos-mini-chart-strip-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.plos-mini-chart-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(14px, 2vw, 22px);
+  align-items: stretch;
+}
+@media (max-width: 680px) {
+  .plos-mini-chart-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mini chart tiles — flex column fills grid cell; chart slot shares one min-height */
+.plos-mini-chart-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100%;
+  align-self: stretch;
+  height: auto;
+}
+.plos-mini-chart-chart {
+  flex: 0 0 auto;
+  width: 100%;
+  height: clamp(136px, 16vh, 192px);
+  min-height: clamp(136px, 16vh, 192px);
+}
+.plos-mini-chart-empty {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: clamp(136px, 16vh, 192px);
+  min-height: clamp(136px, 16vh, 192px);
+}
+
+.plos-mini-chart-svg {
+  width: 100%;
+  flex: 0 0 auto;
+  height: clamp(148px, min(22vh, 26vw), 220px);
+  min-height: clamp(148px, min(22vh, 26vw), 220px);
+}
+@media (min-width: 1280px) {
+  .plos-mini-chart-svg {
+    height: clamp(160px, min(24vh, 22vw), 260px);
+    min-height: clamp(160px, min(24vh, 22vw), 260px);
+  }
+}
+@media (min-width: 1600px) {
+  .plos-mini-chart-svg {
+    height: clamp(172px, min(26vh, 20vw), 280px);
+    min-height: clamp(172px, min(26vh, 20vw), 280px);
+  }
+}
+@media (min-width: 1920px) {
+  .plos-mini-chart-svg {
+    height: clamp(184px, min(27vh, 18vw), 300px);
+    min-height: clamp(184px, min(27vh, 18vw), 300px);
+  }
+}
+@media (max-width: 599px) {
+  .plos-mini-chart-chart {
+    height: clamp(124px, 36vw, 168px);
+    min-height: clamp(124px, 36vw, 168px);
+  }
+  .plos-mini-chart-empty {
+    height: clamp(124px, 36vw, 168px);
+    min-height: clamp(124px, 36vw, 168px);
+  }
+}
+
+/* Individual gradient stat card */
+.plos-grad-stat {
+  position: relative;
+  border-radius: 18px;
+  padding: 18px 20px 16px;
+  color: #fff;
+  overflow: hidden;
+  min-height: 96px;
+  box-shadow: 0 16px 40px rgba(100, 60, 220, 0.28), inset 0 1px 0 rgba(255,255,255,0.22);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.plos-grad-stat:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 48px rgba(100, 60, 220, 0.38), inset 0 1px 0 rgba(255,255,255,0.22);
+}
+
+/* ── Dashboard main 2-col layout ──────────────────────────────── */
+/* Right panel is capped so it never stretches on ultra-wide monitors */
+.plos-dash-main-grid {
+  display: grid;
+  grid-template-columns: 1fr clamp(272px, 23vw, 368px);
+  gap: clamp(20px, 2.8vw, 32px);
+  align-items: start;
+  margin-bottom: 0;
+}
+@media (max-width: 1199px) {
+  .plos-dash-main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Right dashboard rail — clip horizontal bleed (stack shadows) away from scrollbar */
+.plos-dash-right-col {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  padding-inline-end: min(14px, 2.5vw);
+  box-sizing: border-box;
+}
+
+/* Check-ins hero + Category pulse: side-by-side when right panel is full-width (medium screens) */
+.plos-right-checkins-pulse {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (max-width: 1199px) and (min-width: 600px) {
+  .plos-right-checkins-pulse {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Legacy KPI wall — kept for other pages if referenced */
+.plos-dash-kpi-wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+@media (max-width: 520px) {
+  .plos-dash-kpi-wall { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Stacked hero — hover pop */
+.plos-stack-card-wrap {
+  transition: transform 0.22s ease;
+}
+.plos-stack-card-wrap:hover,
+.plos-stack-card-wrap:focus-within {
+  transform: translateY(-1px);
+}
+.plos-stack-card-wrap:hover .plos-stack-card-front,
+.plos-stack-card-wrap:focus-within .plos-stack-card-front {
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.05),
+    0 20px 42px rgba(40, 20, 80, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.plos-stack-card-wrap button:focus-visible {
+  outline: 2px solid var(--brand-light);
+  outline-offset: 4px;
+  border-radius: var(--pl-card-radius);
+}
+
+.plos-habit-module-count {
+  font-weight: 500;
+}
+
+/* Mantine shells — crisp text */
+[class*="mantine-Modal-title"] {
+  color: var(--text-primary);
+}
+
+[class*="mantine-Select-option"][data-combobox-selected],
+[class*="mantine-Select-option"]:hover {
+  background: var(--elev) !important;
+}
+
+[data-mantine-select-option] {
+  color: var(--text-primary) !important;
+}
+
+.recharts-default-tooltip {
+  background: #ffffff !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+.recharts-tooltip-item { color: var(--text-primary) !important; }
+
+.recharts-line-curve,
+.recharts-area-curve {
+  stroke: var(--accent) !important;
+  stroke-width: 2px !important;
+}
+
+.chartjs-tooltip {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  pointer-events: none;
+  position: absolute;
+  min-width: 120px;
+}
+.chartjs-tooltip-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+}
+.chartjs-tooltip-body {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+[class*="mantine-Input-input"],
+[class*="mantine-Select-input"],
+[class*="mantine-Textarea-input"],
+[class*="mantine-PasswordInput-input"] {
+  background: #ffffff !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+[class*="mantine-Input-input"]::placeholder,
+[class*="mantine-Textarea-input"]::placeholder {
+  color: var(--text-muted) !important;
+}
+
+[class*="mantine-InputWrapper-label"],
+[class*="mantine-InputWrapper-description"] {
+  color: var(--text-secondary) !important;
+}
+
+[class*="mantine-InputWrapper-error"] {
+  color: #dc2626 !important;
+}
+
+[data-page-transition] { will-change: opacity, transform; }

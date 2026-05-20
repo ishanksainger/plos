@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EventService } from 'src/event/event.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SchedulerService } from './scheduler.service';
+import { NotificationService } from 'src/notification/notification.service';
 
 describe('SchedulerService', () => {
   let service: SchedulerService;
@@ -20,6 +21,10 @@ describe('SchedulerService', () => {
         {
           provide: EventService,
           useValue: { recordStateTransition: jest.fn() },
+        },
+        {
+          provide: NotificationService,
+          useValue: { notifyResponsibilityScheduleTransition: jest.fn() },
         },
       ],
     }).compile();

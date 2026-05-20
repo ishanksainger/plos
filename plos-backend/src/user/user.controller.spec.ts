@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
@@ -17,7 +18,10 @@ describe('UserController', () => {
           },
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<UserController>(UserController);
   });

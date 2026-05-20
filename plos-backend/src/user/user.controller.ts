@@ -1,18 +1,16 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { CurrentUser } from 'src/auth/current-user.decorator';
+import type { JwtPayload } from 'src/auth/current-user.decorator';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
-  create(@Body() dto: CreateUserDto) {
-    return this.userService.create(dto);
-  }
-
-  @Get(':id/dashboard')
-  getDashboard(@Param('id') id: string) {
-    return this.userService.getDashboard(Number(id));
+  @Get('dashboard')
+  @UseGuards(JwtAuthGuard)
+  getDashboard(@CurrentUser() user: JwtPayload) {
+    return this.userService.getDashboard(user.sub);
   }
 }

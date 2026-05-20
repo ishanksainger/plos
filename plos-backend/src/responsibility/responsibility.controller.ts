@@ -7,50 +7,73 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ResponsibilityService } from './responsibility.service';
 import { CreateResponsibilityDto } from './dto/create-responsibility.dto';
+import { UpdateResponsibilityDto } from './dto/update-responsibility.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { CurrentUser } from 'src/auth/current-user.decorator';
+import type { JwtPayload } from 'src/auth/current-user.decorator';
 
 @Controller('responsibility')
+@UseGuards(JwtAuthGuard)
 export class ResponsibilityController {
   constructor(private readonly responsibilityService: ResponsibilityService) {}
 
   @Post()
-  create(@Body() dto: CreateResponsibilityDto) {
-    return this.responsibilityService.create(dto);
+  create(@CurrentUser() user: JwtPayload, @Body() dto: CreateResponsibilityDto) {
+    return this.responsibilityService.create({ ...dto, userId: user.sub });
   }
 
   @Patch(':id/complete')
-  markComplete(@Param('id') id: string) {
-    return this.responsibilityService.markComplete(Number(id));
+  markComplete(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
+    return this.responsibilityService.markComplete(Number(id), user.sub);
+  }
+
+  @Patch(':id')
+  update(
+    @CurrentUser() user: JwtPayload,
+    @Param('id') id: string,
+    @Body() dto: UpdateResponsibilityDto,
+  ) {
+    return this.responsibilityService.update(Number(id), user.sub, dto);
   }
 
   @Get('summary')
-  getSummary(@Query('userId') userId: string) {
-    return this.responsibilityService.getStateSummaryByUser(Number(userId));
+  getSummary(@CurrentUser() user: JwtPayload) {
+    return this.responsibilityService.getStateSummaryByUser(user.sub);
+  }
+
+  /** Declared before `:id` so `habits` is not captured as an id. */
+  @Get('habits/streaks')
+  getHabitStreaks(@CurrentUser() user: JwtPayload) {
+    return this.responsibilityService.getHabitStreaks(user.sub);
   }
 
   @Get()
   getByUser(
-    @Query('userId') userId: string,
+    @CurrentUser() user: JwtPayload,
     @Query('state') state?: string,
     @Query('category') category?: string,
+    @Query('personId') personId?: string,
   ) {
     return this.responsibilityService.getByUser(
-      Number(userId),
+      user.sub,
       state,
       category,
+      personId ? Number(personId) : undefined,
     );
   }
 
   @Get(':id')
-  getById(@Param('id') id: string) {
-    return this.responsibilityService.getById(Number(id));
+  getById(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
+    return this.responsibilityService.getById(Number(id), user.sub);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.responsibilityService.delete(Number(id));
+  delete(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
+    return this.responsibilityService.delete(Number(id), user.sub);
   }
 
   @Get(':id/timeline')

@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ResponsibilityController } from './responsibility.controller';
 import { ResponsibilityService } from './responsibility.service';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { EventModule } from 'src/event/event.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [EventModule],
+  imports: [EventModule, AuthModule],
   controllers: [ResponsibilityController],
-  providers: [ResponsibilityService, PrismaService],
+  providers: [ResponsibilityService],
 })
 export class ResponsibilityModule {}

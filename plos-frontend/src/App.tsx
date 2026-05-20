@@ -1,10 +1,44 @@
-import AppLayout from "./layout/AppLayout";
-import DashboardPage from "./pages/DashboardPage";
+import { Routes, Route, Navigate } from 'react-router-dom';
+import AppLayout from './layout/AppLayout';
+import ProtectedRoute from './components/ProtectedRoute';
+import DashboardPage from './pages/DashboardPage';
+import ResponsibilitiesPage from './pages/ResponsibilitiesPage';
+import FinancePage from './pages/FinancePage';
+import HealthPage from './pages/HealthPage';
+import HabitsPage from './pages/HabitsPage';
+import TimelinePage from './pages/TimelinePage';
+import PeoplePage from './pages/PeoplePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import SettingsPage from './pages/SettingsPage';
+import NotificationsPage from './pages/NotificationsPage';
 
 export default function App() {
   return (
-    <AppLayout>
-      <DashboardPage/>
-    </AppLayout>
+    <Routes>
+      <Route path="/login"    element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route
+        path="/*"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Routes>
+                <Route path="/"                 element={<DashboardPage />} />
+                <Route path="/responsibilities" element={<ResponsibilitiesPage />} />
+                <Route path="/people"           element={<PeoplePage />} />
+                <Route path="/finance"          element={<FinancePage />} />
+                <Route path="/health"           element={<HealthPage />} />
+                <Route path="/habits"           element={<HabitsPage />} />
+                <Route path="/timeline"         element={<TimelinePage />} />
+                <Route path="/notifications"   element={<NotificationsPage />} />
+                <Route path="/settings"         element={<SettingsPage />} />
+                <Route path="*"                 element={<Navigate to="/" replace />} />
+              </Routes>
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   );
 }

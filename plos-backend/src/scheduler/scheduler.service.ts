@@ -3,12 +3,15 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { EventService } from 'src/event/event.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { computeState } from 'src/responsibility/compute-state';
+import { NotificationService } from 'src/notification/notification.service';
+import { ResponsibilityState } from 'src/responsibility/responsibility.state';
 
 @Injectable()
 export class SchedulerService {
   constructor(
     private prisma: PrismaService,
     private eventService: EventService,
+    private notificationService: NotificationService,
   ) {}
 
   @Cron(CronExpression.EVERY_MINUTE) // testing; switch to EVERY_DAY at midnight for prod
@@ -25,6 +28,8 @@ export class SchedulerService {
       },
       select: {
         id: true,
+        userId: true,
+        title: true,
         dueDate: true,
         completedAt: true,
       },
@@ -48,11 +53,19 @@ export class SchedulerService {
         });
 
         if (!alreadyRecorded) {
-          await this.eventService.recordStateTransition(
+          const created = await this.eventService.recordStateTransition(
             r.id,
             yesterdayState,
             todayState,
           );
+          if (created) {
+            await this.notificationService.notifyResponsibilityScheduleTransition({
+              userId: r.userId,
+              responsibilityId: r.id,
+              taskTitle: r.title,
+              toState: todayState as ResponsibilityState,
+            });
+          }
         }
       }
     }

@@ -1,104 +1,108 @@
-import { Container, Grid, Stack, Title } from "@mantine/core";
-import ResponsibilityCard from "../components/dashboard/ResponsibilityCard";
-import SummaryCard from "../components/dashboard/SummaryCard";
-import useDashboard from "../hooks/useDashboard";
+import { Box, Loader, Stack, Text } from '@mantine/core';
+import { useQuery } from '@tanstack/react-query';
+import { DashboardPlosAnalytics } from '../components/dashboard/DashboardPlosAnalytics';
+import { getDashboard } from '../services/dashboard.service';
+import { useAppSelector } from '../store/hooks';
+import { useDS } from '../theme/palette';
 
-const DashboardPage = () => {
-  const { data, loading, error } = useDashboard(2);
+/**
+ * Dashboard from `GET /users/dashboard` (backend may auto-seed `[PLOS seed]` rows for empty accounts).
+ */
+export default function DashboardPage() {
+  const DS = useDS();
+  const user = useAppSelector((s) => s.auth.user);
+  const displayName = user?.name ?? 'there';
 
-  if (loading) {
-    return <div>Loading dashboard...</div>;
-  }
-  if (error) {
-    return <div>{error}</div>;
-  }
-  return (
-    <Container size="xl" py="md">
-      <h1>Dashboard</h1>
-      <h2>Summary</h2>
-      <Grid>
-        <Grid.Col span={2}>
-          <SummaryCard title="Total" value={data?.summary.total ?? 0} />
-        </Grid.Col>
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['dashboard', user?.id ?? 'anon'],
+    queryFn: getDashboard,
+    enabled: Boolean(user?.id),
+    staleTime: 30_000,
+  });
 
-        <Grid.Col span={2}>
-          <SummaryCard title="Completed" value={data?.summary.completed ?? 0} />
-        </Grid.Col>
+  const formatInrCompact = (n: number) => {
+    if (n >= 10000000) return `₹${(n / 10000000).toFixed(1)}Cr`;
+    if (n >= 100000) return `₹${(n / 100000).toFixed(1)}L`;
+    if (n >= 1000) return `₹${(n / 1000).toFixed(1)}k`;
+    return `₹${Math.round(n)}`;
+  };
 
-        <Grid.Col span={2}>
-          <SummaryCard title="Due" value={data?.summary.due ?? 0} />
-        </Grid.Col>
-
-        <Grid.Col span={2}>
-          <SummaryCard title="Overdue" value={data?.summary.overdue ?? 0} />
-        </Grid.Col>
-
-        <Grid.Col span={2}>
-          <SummaryCard title="Upcoming" value={data?.summary.upcoming ?? 0} />
-        </Grid.Col>
-      </Grid>
-      <Grid mt="lg">
-        <Grid.Col span={6}>
-          <Title order={3}>Overdue</Title>
-
-          <Stack mt="sm">
-            {data?.overdue.map((item) => (
-              <ResponsibilityCard
-                key={item.id}
-                title={item.title}
-                category={item.category}
-                dueDate={item.dueDate}
-              />
-            ))}
-          </Stack>
-        </Grid.Col>
-
-        <Grid.Col span={6}>
-          <Title order={3}>Due Today</Title>
-
-          <Stack mt="sm">
-            {data?.dueToday.map((item) => (
-              <ResponsibilityCard
-                key={item.id}
-                title={item.title}
-                category={item.category}
-                dueDate={item.dueDate}
-              />
-            ))}
-          </Stack>
-        </Grid.Col>
-      </Grid>
-
-      <Title order={3} mt="lg">
-        Upcoming
-      </Title>
-
-      <Stack mt="sm">
-        {data?.upcoming.map((item) => (
-          <ResponsibilityCard
-            key={item.id}
-            title={item.title}
-            category={item.category}
-            dueDate={item.dueDate}
-          />
-        ))}
+  if (!user?.id) {
+    return (
+      <Stack gap="sm" p="md" maw={520}>
+        <Text size="sm" style={{ color: DS.text2 }}>
+          Sign in to load your dashboard.
+        </Text>
       </Stack>
-      <Title order={3} mt="lg">
-        Recently Completed
-      </Title>
+    );
+  }
 
-      <Stack mt="sm">
-        {data?.recentlyCompleted.map((item) => (
-          <ResponsibilityCard
-            key={item.id}
-            title={item.title}
-            category={item.category}
-            dueDate={item.dueDate}
-          />
-        ))}
+  if (isLoading) {
+    return (
+      <Box data-page="dashboard" py={48} style={{ display: 'flex', justifyContent: 'center' }}>
+        <Stack align="center" gap={8}>
+          <Loader color="violet" size="sm" type="dots" />
+          <Text fz={13} fw={600} tt="uppercase" style={{ color: DS.text3, letterSpacing: '0.12em' }}>
+            Loading dashboard
+          </Text>
+        </Stack>
+      </Box>
+    );
+  }
+
+  if (isError || !data) {
+    const msg = error instanceof Error ? error.message : '';
+    const isNetwork =
+      /failed to fetch|networkerror|load failed|fetch.*aborted|^typeerror$/i.test(msg.trim()) ||
+      (error instanceof Error && error.name === 'TypeError');
+    return (
+      <Stack gap="sm" p="md" maw={520}>
+        <Text size="sm" style={{ color: DS.red }}>
+          Failed to load dashboard.{msg ? ` ${msg}` : ''}
+        </Text>
+        <Text size="sm" style={{ color: DS.text2, lineHeight: 1.55 }}>
+          {isNetwork ? (
+            <>
+              Ensure the API runs on <Text span ff="monospace" fw={700}>http://127.0.0.1:3001</Text> from{' '}
+              <Text span ff="monospace">plos-backend</Text>.
+            </>
+          ) : (
+            <>
+              Set <Text span ff="monospace">VITE_API_BASE_URL</Text> per <Text span ff="monospace">.env.example</Text>.
+            </>
+          )}
+        </Text>
       </Stack>
-    </Container>
+    );
+  }
+
+  const displayData = data;
+
+  const summary = displayData.summary;
+  const momentumScore = Math.round(
+    Math.min(
+      100,
+      Math.max(
+        0,
+        summary.completionRate -
+          summary.overdue * 8 +
+          (summary.total > 0 ? (summary.completed / summary.total) * 12 : 0),
+      ),
+    ),
   );
-};
 
-export default DashboardPage;
+  const act = displayData.activitySeries ?? [];
+  const weekActivity = Math.round(act.slice(-7).reduce((s, pt) => s + pt.count, 0) || summary.completed);
+
+  return (
+    <Box data-page="dashboard">
+      <DashboardPlosAnalytics
+        data={displayData}
+        displayName={displayName}
+        formatInrCompact={formatInrCompact}
+        momentumScore={momentumScore}
+        weekActivity={weekActivity}
+      />
+    </Box>
+  );
+}

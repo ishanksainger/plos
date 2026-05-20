@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EventService } from 'src/event/event.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ResponsibilityService } from './responsibility.service';
+import { NotificationService } from 'src/notification/notification.service';
 
 describe('ResponsibilityService', () => {
   let service: ResponsibilityService;
@@ -27,6 +28,13 @@ describe('ResponsibilityService', () => {
           useValue: {
             recordStateTransition: jest.fn(),
             getTimelineByResponsibility: jest.fn(),
+          },
+        },
+        {
+          provide: NotificationService,
+          useValue: {
+            notifyTaskCompleted: jest.fn(),
+            notifyResponsibilityScheduleTransition: jest.fn(),
           },
         },
       ],

@@ -1,0 +1,70 @@
+/**
+ * PLOS UI — cohesive deep purple stack (#5e35b1 family), indigo/lilac layers, peach progress ring.
+ */
+:root {
+  --shell-bg: #ebebf2;
+  /** Primary brand — vivid violet (#7c4fff richer/deeper than old #8e70ff) */
+  --brand: #7c4fff;
+  --accent: #7c4fff;
+  --brand-light: #9b6bff;
+  --brand-muted: #b39ddb;
+  /** Stacked hero cards — back → mid → front */
+  --pl-stack-indigo: #3949ab;
+  --pl-stack-lilac: #9575cd;
+  --pl-stack-deep: #5e35b1;
+  /** Donut · category pulse */
+  --pl-donut-track: #eae4ff;
+  --pl-donut-fill: #d1c4fc;
+  --pl-donut-outline: #b39ddb;
+  /** Earnings-style progress ring around white disc */
+  --pl-progress-peach: #ffcdd2;
+  /** Charts */
+  --accent-navy: #3949ab;
+  --accent-pink: #be185d;
+  --accent-pink-soft: #ffcdd2;
+  --chart-lilac: #d1c4fc;
+  /** Sidebar rail — deeper saturated purple (less pastel than prior #a47bff wash) */
+  --sidebar-solid: #6f3aed;
+  --sidebar-gradient: linear-gradient(168deg, #9248ee 0%, #6828dc 42%, #3d1698 94%);
+
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #64748b;
+
+  --border: #eae6f4;
+  --border-strong: #e5e1ef;
+  --surface: #ffffff;
+  --canvas: #ffffff;
+  --elev: #f7f5fc;
+
+  --accent-dim: rgba(94, 53, 177, 0.09);
+  --border-accent: rgba(94, 53, 177, 0.28);
+
+  --success: #15803d;
+  --danger: #dc2626;
+  --secondary: #3949ab;
+  --warning: #b45309;
+
+  --accent-blue: #5c6bc0;
+  --accent-cyan: #7e57c2;
+
+  --plos-accent-from: #5e35b1;
+  --plos-accent-to: #9575cd;
+
+  --dual-ring-track-outer: #e5e3de;
+  --dual-ring-track-inner: #ebe8e3;
+  --dual-ring-pill-border: #e4e0d8;
+
+  --glass-bg: rgba(255, 255, 255, 0.82);
+  --glass-border: rgba(255, 255, 255, 0.95);
+
+  --pl-card-radius: 22px;
+  --pl-sidebar-width: 236px;
+
+  --pl-shadow-card:
+    0 1px 0 rgba(17, 24, 39, 0.04),
+    0 16px 40px rgba(57, 73, 171, 0.09);
+  --pl-shadow-shell:
+    0 24px 56px rgba(57, 73, 171, 0.1),
+    0 1px 0 rgba(255, 255, 255, 0.92) inset;
+}
