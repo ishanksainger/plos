@@ -1,0 +1,13 @@
+{
+  "name": "@nis/brand-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Single source of truth for NIS brand design tokens. Consumed by apps/web (Next.js+Tailwind) and plos-frontend (Vite+Mantine).",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens.css": "./src/tokens.css"
+  },
+  "files": ["src"]
+}

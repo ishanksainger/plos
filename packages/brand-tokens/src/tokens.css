@@ -1,0 +1,74 @@
+/**
+ * NIS Brand Tokens — CSS variables.
+ *
+ * Mirror of tokens.ts for use in Tailwind config and any plain CSS.
+ * Import this file once at app entry (e.g. apps/web/app/layout.tsx).
+ *
+ * Rule: do not edit values here directly. Edit tokens.ts and regenerate.
+ * (For now both files are hand-maintained — keep them in sync.)
+ */
+
+:root {
+  /* backgrounds */
+  --nis-bg-primary: #0a0a0a;
+  --nis-bg-secondary: #141414;
+  --nis-bg-card: #1c1c1c;
+  --nis-bg-card-hover: #242424;
+
+  /* foregrounds */
+  --nis-fg-primary: #fafafa;
+  --nis-fg-secondary: #a3a3a3;
+  --nis-fg-muted: #525252;
+  --nis-fg-on-accent: #ffffff;
+
+  /* accents */
+  --nis-accent-electric: #7c3aed;
+  --nis-accent-blue: #3b82f6;
+  --nis-accent-success: #10b981;
+  --nis-accent-danger: #ef4444;
+  --nis-accent-warning: #f59e0b;
+
+  /* pillars */
+  --nis-pillar-tracker: #3b82f6;
+  --nis-pillar-canvas:  #ec4899;
+  --nis-pillar-shop:    #10b981;
+  --nis-pillar-plos:    #7c3aed;
+
+  /* borders */
+  --nis-border-subtle:  rgba(255, 255, 255, 0.06);
+  --nis-border-default: rgba(255, 255, 255, 0.12);
+  --nis-border-strong:  rgba(255, 255, 255, 0.24);
+
+  /* fonts */
+  --nis-font-display: Sora, system-ui, -apple-system, sans-serif;
+  --nis-font-body:    Inter, system-ui, -apple-system, sans-serif;
+  --nis-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  /* radii */
+  --nis-radius-sm: 6px;
+  --nis-radius-md: 12px;
+  --nis-radius-lg: 20px;
+  --nis-radius-xl: 28px;
+  --nis-radius-full: 9999px;
+
+  /* spacing */
+  --nis-space-xs: 4px;
+  --nis-space-sm: 8px;
+  --nis-space-md: 16px;
+  --nis-space-lg: 24px;
+  --nis-space-xl: 40px;
+  --nis-space-2xl: 64px;
+  --nis-space-3xl: 96px;
+
+  /* shadows */
+  --nis-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --nis-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --nis-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.6);
+  --nis-shadow-glow: 0 0 32px rgba(124, 58, 237, 0.4);
+
+  /* motion */
+  --nis-motion-fast: 120ms;
+  --nis-motion-normal: 200ms;
+  --nis-motion-slow: 320ms;
+  --nis-easing-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+}

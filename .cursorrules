@@ -1,0 +1,57 @@
+# Cursor rules — NIS / PLOS Monorepo
+
+Cursor reads this file at the start of every chat. These are the same rules as `CLAUDE.md` — keep them in sync if you edit either.
+
+## What's in this repo
+
+Monorepo holding two products under one brand (NIS):
+- `apps/web/` → NIS brand site (Next.js, thenispace.com) — **Claude Code owns this. Cursor: hands off.**
+- `plos-backend/` → PLOS API (NestJS) — **Cursor owns**
+- `plos-frontend/` → PLOS web app (Vite + Mantine) — **Cursor owns**
+- `packages/brand-tokens/` → shared design tokens — **Nikita owns. Don't change values without explicit approval.**
+- `packages/ui/` → shared UI primitives — either AI may add components with PR review
+- `packages/razorpay-sdk/` → shared Razorpay client — either AI may extend with PR review
+- `docs/` → product context and roadmaps
+
+## Read before substantial work
+
+Plans live in `/Volumes/DevSSD/dev/claude/`:
+- `plos_code_plan_v1.md` — your engineering plan (sprints I → P)
+- `plos_plan_review_v1.md` — strategy decisions and the revised roadmap
+- `nis_code_plan_v1.md` — context on what Claude Code is doing in `apps/web/`
+
+## Cross-app rules
+
+1. `plos-backend` and `plos-frontend` may NOT import from `apps/web/`. Communication is HTTP-only.
+2. Always import brand from `@nis/brand-tokens`. Never hardcode colors, fonts, spacing.
+3. Use `@nis/ui` Button/Card/Badge primitives instead of raw HTML buttons.
+4. Use `@nis/razorpay-sdk` for any Razorpay calls — never instantiate the SDK directly.
+
+## Coding conventions
+
+- TypeScript everywhere. No `any` without a comment.
+- No `console.log` in committed code.
+- Use `Intl.NumberFormat` for currency, never hardcode `₹`.
+- Store dates UTC, display in user's timezone from settings.
+- Test critical paths (money handling, auth, scheduler).
+
+## Git workflow
+
+- Branch naming: `feat/plos-<short-name>`, `pkg/<package>-<change>`.
+- No direct commits to `main`. Always PR.
+- Conventional commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`.
+
+## Specifically NOT to do
+
+- Don't switch payment processor from Razorpay.
+- Don't move shop to Shopify.
+- Don't build "for everyone" — PLOS wedge is Indian freelancers + dual-income households.
+- Don't gate free-tier features without checking the pricing plan.
+- Don't send notifications without opt-in checks.
+- Don't store secrets in code — use `.env` files.
+
+## When in doubt
+
+- Touching `packages/*`? Open a PR, don't merge yourself. Ishank reviews shared packages.
+- Touching `apps/web/`? Don't. That's Claude Code's territory.
+- Unsure which doc to read? Start with `SETUP.md` at the repo root.
