@@ -29,7 +29,9 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.14.2",
     "recharts": "^3.8.1",
-    "three": "^0.184.0"
+    "three": "^0.184.0",
+    "@sentry/react": "^9.30.0",
+    "posthog-js": "^1.258.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

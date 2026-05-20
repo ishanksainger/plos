@@ -130,9 +130,10 @@ const AppSidebar = ({ variant = 'rail', onNavigate }: AppSidebarProps) => {
 
       <Stack gap={6} style={{ flex: 1 }}>
         <NavRow to="/" icon={IconHome} label="Home" active={is('/', true)} onNavigate={onNavigate} />
+        <NavRow to="/insights" icon={IconChartDots} label="Insights" active={is('/insights')} onNavigate={onNavigate} />
         <NavRow to="/responsibilities" icon={IconFolder} label="Files" active={is('/responsibilities')} onNavigate={onNavigate} />
-        <NavRow to="/finance" icon={IconChartDots} label="Analytics" active={is('/finance')} onNavigate={onNavigate} />
-        <NavRow to="/timeline" icon={IconChartBar} label="Charts" active={is('/timeline')} onNavigate={onNavigate} />
+        <NavRow to="/finance" icon={IconChartDots} label="Finance" active={is('/finance')} onNavigate={onNavigate} />
+        <NavRow to="/timeline" icon={IconChartBar} label="Timeline" active={is('/timeline')} onNavigate={onNavigate} />
         <NavRow to="/people" icon={IconAdjustmentsHorizontal} label="Filter" active={is('/people')} onNavigate={onNavigate} />
         <NavRow to="/settings" icon={IconSettings} label="Settings" active={is('/settings')} onNavigate={onNavigate} />
       </Stack>

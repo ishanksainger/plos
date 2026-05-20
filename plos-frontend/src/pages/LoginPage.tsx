@@ -9,6 +9,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { authService } from '../services/auth.service';
 import { setCredentials } from '../store/authSlice';
 import { useAppDispatch } from '../store/hooks';
+import { identifyUser, trackAppOpened } from '../lib/analytics';
 
 const LoginPage = () => {
   const queryClient = useQueryClient();
@@ -26,7 +27,10 @@ const LoginPage = () => {
     try {
       const res = await authService.login(email, password);
       dispatch(setCredentials(res));
+      identifyUser(res.user.id, res.user.email, res.user.name);
+      trackAppOpened();
       queryClient.removeQueries({ queryKey: ['dashboard'] });
+      queryClient.removeQueries({ queryKey: ['today'] });
       navigate('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');

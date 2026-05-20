@@ -14,7 +14,13 @@ export class SchedulerService {
     private notificationService: NotificationService,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE) // testing; switch to EVERY_DAY at midnight for prod
+  /** Dev: every minute. Prod default: every 5 minutes. Override with SCHEDULER_CRON (cron syntax). */
+  @Cron(
+    process.env.SCHEDULER_CRON?.trim() ||
+      (process.env.NODE_ENV === 'production'
+        ? CronExpression.EVERY_5_MINUTES
+        : CronExpression.EVERY_MINUTE),
+  )
   async checkResponsibilityStateTransitions() {
     const now = new Date();
     const yesterday = new Date(now);

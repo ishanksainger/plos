@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  plos-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: plos-backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: plos-backend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npx prisma validate
+      - name: Prisma migrate diff (schema drift check)
+        run: npx prisma migrate diff --from-migrations prisma/migrations --to-schema-datamodel prisma/schema.prisma --exit-code
+        env:
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+
+  plos-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: plos-frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: plos-frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build

@@ -20,7 +20,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
   /** Desktop: lock shell height so only main workspace scrolls; sidebar stays viewport-aligned. */
   const desktopShellLocked = !isNarrow;
-  const isDashboardWorkspace = location.pathname === '/';
+  const isTintedWorkspace = location.pathname === '/' || location.pathname === '/insights';
 
   return (
     <Box
@@ -100,13 +100,13 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.22, ease: 'easeOut' }}
-              className={isDashboardWorkspace ? 'plos-workspace-dashboard' : undefined}
+              className={isTintedWorkspace ? 'plos-workspace-dashboard' : undefined}
               style={{
                 flex: 1,
                 minHeight: 0,
                 overflow: 'auto',
                 padding: 'clamp(16px, 2.4vw, 26px) 0 clamp(28px, 4vw, 44px)',
-                ...(!isDashboardWorkspace
+                ...(!isTintedWorkspace
                   ? { background: 'linear-gradient(180deg, #fafafa 0%, #ffffff 32%)' }
                   : {}),
               }}

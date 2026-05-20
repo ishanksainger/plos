@@ -45,7 +45,8 @@ const formatPreviewTime = (iso: string) => {
 };
 
 const titleForPath = (path: string): string => {
-  if (path === '/') return 'Dashboard';
+  if (path === '/') return 'Today';
+  if (path === '/insights') return 'Insights';
   if (path.startsWith('/responsibilities')) return 'Files';
   if (path.startsWith('/people')) return 'Filter';
   if (path.startsWith('/finance')) return 'Analytics';
@@ -169,7 +170,7 @@ const AppHeader = ({ openMobileNav }: AppHeaderProps) => {
               {clock}
             </Text>
           </Box>
-          {location.pathname === '/' && isNarrow && (
+          {location.pathname === '/insights' && isNarrow && (
             <Button
               variant="unstyled"
               size="compact-sm"
@@ -233,7 +234,7 @@ const AppHeader = ({ openMobileNav }: AppHeaderProps) => {
           </Box>
         )}
 
-        {location.pathname === '/' && !isNarrow && (
+        {location.pathname === '/insights' && !isNarrow && (
           <Button
             variant="unstyled"
             size="sm"

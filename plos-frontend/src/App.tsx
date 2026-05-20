@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from './layout/AppLayout';
 import ProtectedRoute from './components/ProtectedRoute';
+import TodayPage from './pages/TodayPage';
 import DashboardPage from './pages/DashboardPage';
 import ResponsibilitiesPage from './pages/ResponsibilitiesPage';
 import FinancePage from './pages/FinancePage';
@@ -24,7 +25,8 @@ export default function App() {
           <ProtectedRoute>
             <AppLayout>
               <Routes>
-                <Route path="/"                 element={<DashboardPage />} />
+                <Route path="/"                 element={<TodayPage />} />
+                <Route path="/insights"         element={<DashboardPage />} />
                 <Route path="/responsibilities" element={<ResponsibilitiesPage />} />
                 <Route path="/people"           element={<PeoplePage />} />
                 <Route path="/finance"          element={<FinancePage />} />

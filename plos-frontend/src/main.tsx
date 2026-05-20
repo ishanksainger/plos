@@ -11,6 +11,9 @@ import '@mantine/notifications/styles.css';
 import './index.css';
 import App from './App.tsx';
 import { store } from './store/store.ts';
+import { BRAND, BRAND_VIOLET_SCALE } from './theme/brand.ts';
+import { initAnalytics, identifyUser, trackAppOpened } from './lib/analytics.ts';
+import { initSentry } from './lib/sentry.ts';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,10 +21,26 @@ const queryClient = new QueryClient({
   },
 });
 
+void initSentry();
+initAnalytics();
+
+const storedUser = localStorage.getItem('plos_user');
+if (storedUser) {
+  try {
+    const u = JSON.parse(storedUser) as { id?: number; email?: string; name?: string | null };
+    if (typeof u.id === 'number' && typeof u.email === 'string') {
+      identifyUser(u.id, u.email, u.name);
+      trackAppOpened();
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
 const theme = createTheme({
   primaryColor: 'violet',
   defaultRadius: 'xl',
-  fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  fontFamily: BRAND.fontFamily,
   fontSizes: {
     xs: '0.7rem',
     sm: '0.8125rem',
@@ -42,18 +61,7 @@ const theme = createTheme({
       '#1F2937',
       '#111827',
     ],
-    violet: [
-      '#faf8ff',
-      '#f3edfa',
-      '#e8ddf5',
-      '#d8c8ec',
-      '#c4b0e8',
-      '#9575cd',
-      '#7e57c2',
-      '#5e35b1',
-      '#512da8',
-      '#4527a0',
-    ],
+    violet: [...BRAND_VIOLET_SCALE],
   },
   components: {
     Paper: {
