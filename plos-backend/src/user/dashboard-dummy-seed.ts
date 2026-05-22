@@ -92,6 +92,7 @@ export async function insertDashboardDummyBundle(
       userId,
       name: `${marker} Riya Kumar`,
       relation: 'partner',
+      email: `seed-partner-${userId}@placeholder.plos.local`,
     },
   });
 

@@ -13,6 +13,10 @@ model User {
   passwordHash String?
   timezone     String   @default("Asia/Kolkata")
   currency     String   @default("INR")
+  /** Optional — WhatsApp / SMS reminders (Step J) */
+  phone        String?
+  /** solo | family | shared — roadmap H; permissions model in a later step */
+  accountType  String   @default("solo")
   createdAt    DateTime @default(now())
 
   persons          Person[]
@@ -26,6 +30,9 @@ model Person {
   userId      Int
   user        User      @relation(fields: [userId], references: [id])
   name        String
+  email       String
+  phone       String?
+  avatarUrl   String?
   relation    String    // self, father, mother, partner, child, sibling, other
   dateOfBirth DateTime?
   createdAt   DateTime  @default(now())

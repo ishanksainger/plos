@@ -1,16 +1,27 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { normalizeOptionalPhone } from 'src/common/phone.util';
 import { CreatePersonDto } from './dto/create-person.dto';
+import { UpdatePersonDto } from './dto/update-person.dto';
 
 @Injectable()
 export class PersonService {
   constructor(private prisma: PrismaService) {}
 
+  /**
+   * Creates a person in the user's circle with required email and optional phone.
+   */
   async create(dto: CreatePersonDto) {
     return this.prisma.person.create({
       data: {
-        userId: dto.userId as number,  // always set by controller from JWT
-        name: dto.name,
+        userId: dto.userId as number,
+        name: dto.name.trim(),
+        email: dto.email.trim().toLowerCase(),
+        phone: normalizeOptionalPhone(dto.phone),
         relation: dto.relation,
         dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : undefined,
       },
@@ -28,9 +39,9 @@ export class PersonService {
     return persons;
   }
 
-  async getById(id: number) {
-    const person = await this.prisma.person.findUnique({
-      where: { id },
+  async getById(id: number, userId: number) {
+    const person = await this.prisma.person.findFirst({
+      where: { id, userId },
       include: {
         responsibilities: {
           orderBy: { dueDate: 'asc' },
@@ -41,7 +52,53 @@ export class PersonService {
     return person;
   }
 
-  async delete(id: number) {
+  /**
+   * Updates contact fields for a person owned by the user.
+   */
+  async update(id: number, userId: number, dto: UpdatePersonDto) {
+    await this.assertOwned(id, userId);
+    return this.prisma.person.update({
+      where: { id },
+      data: {
+        ...(dto.name !== undefined ? { name: dto.name.trim() } : {}),
+        ...(dto.email !== undefined
+          ? { email: dto.email.trim().toLowerCase() }
+          : {}),
+        ...(dto.phone !== undefined
+          ? { phone: normalizeOptionalPhone(dto.phone) ?? null }
+          : {}),
+        ...(dto.relation !== undefined ? { relation: dto.relation } : {}),
+        ...(dto.dateOfBirth !== undefined
+          ? { dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : null }
+          : {}),
+      },
+    });
+  }
+
+  /**
+   * Stores the public URL path for a person's avatar after upload.
+   */
+  async setAvatarUrl(id: number, userId: number, avatarUrl: string) {
+    await this.assertOwned(id, userId);
+    return this.prisma.person.update({
+      where: { id },
+      data: { avatarUrl },
+    });
+  }
+
+  async delete(id: number, userId: number) {
+    const person = await this.assertOwned(id, userId);
+    if (person.relation === 'self') {
+      throw new ForbiddenException('Cannot remove your self profile');
+    }
     return this.prisma.person.delete({ where: { id } });
+  }
+
+  private async assertOwned(id: number, userId: number) {
+    const person = await this.prisma.person.findFirst({
+      where: { id, userId },
+    });
+    if (!person) throw new NotFoundException('Person not found');
+    return person;
   }
 }

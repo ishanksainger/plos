@@ -7,7 +7,14 @@ import {
   MaxLength,
   Length,
   Matches,
+  IsIn,
+  IsArray,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ACCOUNT_TYPES } from '../account-type';
+import { PHONE_PATTERN } from 'src/common/phone.util';
+import { HouseholdMemberDto } from './household-member.dto';
 
 export class RegisterDto {
   @IsEmail()
@@ -20,6 +27,18 @@ export class RegisterDto {
   @IsString()
   @IsOptional()
   name?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn([...ACCOUNT_TYPES])
+  accountType?: string;
+
+  /** Optional circle members when account type is family or shared. */
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => HouseholdMemberDto)
+  householdMembers?: HouseholdMemberDto[];
 }
 
 export class LoginDto {
@@ -48,4 +67,15 @@ export class UpdateProfileDto {
   @Length(3, 3)
   @Matches(/^[A-Z]{3}$/)
   currency?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn([...ACCOUNT_TYPES])
+  accountType?: string;
+
+  /** Optional — for WhatsApp / SMS reminders (Step J). */
+  @IsOptional()
+  @IsString()
+  @Matches(PHONE_PATTERN, { message: 'phone must be 8–20 digits (optional + prefix)' })
+  phone?: string;
 }
