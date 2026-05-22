@@ -14,6 +14,10 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (p) => p.replace(/^\/api/, ''),
       },
+      '/uploads': {
+        target: 'http://127.0.0.1:3001',
+        changeOrigin: true,
+      },
     },
   },
   /** Same `/api` → backend routing as dev, so production bundles work under `vite preview` on localhost. */
@@ -25,6 +29,10 @@ export default defineConfig({
         target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         rewrite: (p) => p.replace(/^\/api/, ''),
+      },
+      '/uploads': {
+        target: 'http://127.0.0.1:3001',
+        changeOrigin: true,
       },
     },
   },

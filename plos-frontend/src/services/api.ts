@@ -89,6 +89,31 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+async function uploadRequest<T>(path: string, formData: FormData): Promise<T> {
+  const { origin, prefix } = apiOriginAndPrefix();
+  const url = `${origin}${prefix}${path.startsWith('/') ? path : `/${path}`}`;
+  const token = getToken();
+  const res = await fetch(url, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  if (!res.ok) {
+    let message = `Upload failed (${res.status})`;
+    try {
+      const err = await res.json();
+      if (Array.isArray(err.message)) message = err.message.join(', ');
+      else if (typeof err.message === 'string') message = err.message;
+    } catch {
+      message = res.statusText || message;
+    }
+    throw new Error(message);
+  }
+  return res.json() as Promise<T>;
+}
+
 export const api = {
   get: <T>(path: string) => request<T>(path),
   post: <T>(path: string, body: unknown) =>
@@ -96,4 +121,5 @@ export const api = {
   patch: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: 'PATCH', body: body ? JSON.stringify(body) : undefined }),
   delete: <T>(path: string) => request<T>(path, { method: 'DELETE' }),
+  upload: <T>(path: string, formData: FormData) => uploadRequest<T>(path, formData),
 };

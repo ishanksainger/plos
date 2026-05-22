@@ -9,6 +9,10 @@ import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
 import './index.css';
+import './styles/plos-prototype/tokens.css';
+import './styles/plos-prototype/plos.css';
+import './styles/plos-prototype/cinema.css';
+import './styles/plos-mobile.css';
 import App from './App.tsx';
 import { store } from './store/store.ts';
 import { BRAND, BRAND_VIOLET_SCALE } from './theme/brand.ts';

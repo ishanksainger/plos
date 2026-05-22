@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { AuthUser } from '../types/auth';
+import type { AccountType, AuthUser } from '../types/auth';
 
 export type { AuthUser };
 
@@ -17,12 +17,16 @@ function parseStoredUser(raw: string | null): AuthUser | null {
   try {
     const u = JSON.parse(raw) as Partial<AuthUser> & { id?: number; email?: string };
     if (typeof u.id !== 'number' || typeof u.email !== 'string') return null;
+    const accountType =
+      u.accountType === 'family' || u.accountType === 'shared' ? u.accountType : 'solo';
     return {
       id: u.id,
       email: u.email,
       name: u.name ?? null,
       timezone: typeof u.timezone === 'string' ? u.timezone : 'Asia/Kolkata',
       currency: typeof u.currency === 'string' ? u.currency : 'INR',
+      accountType: accountType as AccountType,
+      phone: typeof u.phone === 'string' ? u.phone : null,
     };
   } catch {
     return null;

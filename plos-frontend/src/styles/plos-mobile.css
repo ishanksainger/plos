@@ -1,0 +1,336 @@
+/**
+ * Narrow-viewport tuning + large-screen guardrails for the PLOS app.
+ * Layered on top of the prototype's plos.css / cinema.css.
+ * The prototype already covers tablet breakpoints (≤1100, ≤900, ≤880);
+ * the rules here fill in the phone-size gaps (≤720, ≤520, ≤420)
+ * AND cap content width on big monitors so typography stays comfortable.
+ */
+
+/* Large screens — cap content width so the page doesn't stretch endlessly */
+.plos-page-enter {
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+/* Chain SVG renders at natural size — no stretch — so dots stay round.
+   Wrapper centers it within the card on wider screens. */
+.streak-chain-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.streak-chain {
+  display: block;
+}
+.streak-chain-wrap .streak-day-label {
+  width: 100%;
+  max-width: 820px;
+}
+/* Hero card pearl scene stays anchored to the right and doesn't bloat */
+.plos-hero-card {
+  max-width: 1280px;
+}
+/* Today pulse can use the full content width comfortably */
+.today-pulse {
+  max-width: 1320px;
+}
+
+/* Insights 3-col row collapses on tablet → 1 col on phone */
+@media (max-width: 1100px) {
+  .insights-row-3 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .insights-row-3 > *:nth-child(3) {
+    grid-column: span 2;
+  }
+}
+@media (max-width: 720px) {
+  .insights-row-3 {
+    grid-template-columns: 1fr !important;
+  }
+  .insights-row-3 > *:nth-child(3) {
+    grid-column: auto;
+  }
+}
+
+/* ───── Today's rhythm row ───── */
+.today-rhythm-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 90px;
+  gap: 18px;
+  align-items: center;
+}
+@media (max-width: 720px) {
+  .today-rhythm-row {
+    grid-template-columns: 1fr 80px;
+    grid-template-areas: "name streak" "chain chain";
+    gap: 12px;
+  }
+  .today-rhythm-row > :nth-child(1) { grid-area: name; }
+  .today-rhythm-row > :nth-child(2) { grid-area: chain; }
+  .today-rhythm-row > :nth-child(3) { grid-area: streak; }
+}
+
+/* When a card is wrapped in PlosTilt, suppress the inner card's own hover
+   lift — otherwise you get a double translate that reads as jitter, and
+   the backdrop-filter blur re-renders on every cursor move. The tilt
+   parent owns the transform; the inner card keeps its glow/shadow change. */
+.plos-tilt > .glass:hover,
+.plos-tilt > .glass.bucket:hover,
+.plos-tilt > .glass.kpi:hover,
+.plos-tilt > .glass.chart-card:hover,
+.plos-tilt > .glass.streak-card:hover,
+.plos-tilt > .glass.person-card:hover {
+  transform: none;
+}
+
+/* Tablet tuning — keep .kpi-grid 2-up but reduce padding */
+@media (max-width: 900px) {
+  .plos-main {
+    padding: 18px clamp(14px, 4vw, 22px) 48px;
+  }
+  .greeting-row {
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .plos-page-title {
+    font-size: clamp(24px, 5.6vw, 30px);
+  }
+}
+
+/* Phone — stack header rows, drop KPI grid to one column, tighten cards */
+@media (max-width: 640px) {
+  .plos-main {
+    padding: 14px 14px 40px;
+  }
+
+  /* Stack the title-on-left, actions-on-right pattern used by Notifications/Settings */
+  .greeting-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .greeting-row .tabs {
+    flex-wrap: wrap;
+  }
+
+  .plos-page-title {
+    font-size: clamp(22px, 6vw, 28px);
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .kpi { padding: 16px 18px; }
+  .kpi-value { font-size: clamp(28px, 8vw, 36px); }
+
+  /* Settings rows stack label-above-input on phones */
+  .settings-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 14px 0;
+  }
+  .settings-row .input-row {
+    flex-wrap: wrap;
+  }
+
+  /* Module hero — shrink the scene further and tighten padding */
+  .plos-module-hero {
+    grid-template-columns: 1fr 80px;
+    padding: 16px 18px 18px;
+  }
+  .plos-module-hero-scene {
+    width: 80px;
+    height: 80px;
+  }
+  .plos-module-sub {
+    font-size: 12.5px;
+  }
+
+  /* Tabs should wrap on narrow widths */
+  .tabs {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .tab { padding: 6px 10px; }
+
+  /* Person grid switches to 1-col via .grid-3 rule at 900px already.
+     The card padding can come down on phones. */
+  .person-card { padding: 18px; }
+
+  /* Streak cards (Habits) breathe less */
+  .streak-card { padding: 18px; }
+  .streak-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* Timeline rows */
+  .tl-day { padding: 14px 0; }
+  .tl-event { gap: 10px; }
+
+  /* Chart cards */
+  .chart-card { padding: 18px; }
+  .chart-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  /* CTA buttons in hero actions wrap nicely */
+  .plos-module-actions {
+    flex-wrap: wrap;
+  }
+
+  /* Topbar CTA: hide the text label on narrow viewports so the button
+     stays as a tight icon-only chip instead of wrapping to two lines. */
+  .plos-topbar .plos-cta .plos-cta-label {
+    display: none;
+  }
+  .plos-topbar .plos-cta {
+    padding: 10px 12px;
+  }
+}
+
+/* Hamburger menu button — only visible on narrow viewports.
+   Desktop hides it because the persistent sidebar makes it redundant. */
+.plos-menu-btn {
+  display: none;
+}
+@media (max-width: 900px) {
+  .plos-menu-btn {
+    display: inline-grid;
+  }
+}
+
+/* Tiny phones — drop the hero scene entirely so the headline can breathe */
+@media (max-width: 420px) {
+  .plos-module-hero {
+    grid-template-columns: 1fr;
+    grid-template-areas: "text" "scene" "actions";
+  }
+  .plos-module-hero-scene {
+    width: 100%;
+    height: 96px;
+    justify-self: start;
+  }
+  .plos-module-hero-scene .ms-svg {
+    height: 96px;
+    width: auto;
+  }
+}
+
+/* Auth pages — they live outside .plos shell, give them the gradient body too */
+.plos-auth-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 18px;
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(900px 600px at -10% -10%, var(--plos-gradient-1), transparent 60%),
+    radial-gradient(700px 500px at 110% 0%,  var(--plos-gradient-2), transparent 55%),
+    radial-gradient(800px 600px at 90% 110%, var(--plos-gradient-3), transparent 55%),
+    radial-gradient(600px 500px at 0% 110%,  var(--plos-gradient-4), transparent 55%),
+    linear-gradient(180deg, var(--plos-bg-base) 0%, var(--plos-bg-deep) 100%);
+  font-family: var(--nis-font-body);
+}
+.plos-auth-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 32px clamp(20px, 4vw, 32px);
+  border-radius: 22px;
+  position: relative;
+  background: var(--plos-glass-bg-strong);
+  border: 1px solid var(--plos-glass-border);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  box-shadow: var(--plos-glass-shadow);
+}
+.plos-auth-card.wide { max-width: 540px; }
+.plos-auth-brand {
+  text-align: center;
+  margin-bottom: 22px;
+}
+.plos-auth-brand .name {
+  font-family: var(--nis-font-display);
+  font-weight: 600;
+  font-size: 30px;
+  letter-spacing: -0.03em;
+  color: var(--plos-ink-1);
+}
+.plos-auth-brand .name em {
+  font-family: var(--nis-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--plos-accent);
+}
+.plos-auth-brand .tag {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--plos-ink-3);
+}
+.plos-auth-h {
+  font-family: var(--nis-font-display);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--plos-ink-1);
+  margin: 0 0 4px;
+}
+.plos-auth-sub {
+  font-size: 13px;
+  color: var(--plos-ink-3);
+  margin: 0 0 22px;
+}
+.plos-auth-foot {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--plos-ink-3);
+}
+.plos-auth-foot a {
+  color: var(--plos-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.plos-auth-foot a:hover { text-decoration: underline; }
+.plos-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.plos-field .label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--plos-ink-2);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.plos-field .help {
+  font-size: 11px;
+  color: var(--plos-ink-3);
+  margin-top: 2px;
+}
+.plos-field .input {
+  width: 100%;
+}
+.plos-alert {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.10);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  color: #b91c1c;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+.plos-cta-block {
+  width: 100%;
+  justify-content: center;
+}

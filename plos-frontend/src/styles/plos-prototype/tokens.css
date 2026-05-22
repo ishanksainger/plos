@@ -1,0 +1,78 @@
+/* NIS Brand Tokens — mirrored from packages/brand-tokens, extended with PLOS light surfaces */
+
+:root {
+  /* Core brand */
+  --nis-bg-primary: #0a0a0a;
+  --nis-bg-secondary: #141414;
+  --nis-bg-card: #1c1c1c;
+  --nis-bg-card-hover: #242424;
+
+  --nis-fg-primary: #fafafa;
+  --nis-fg-secondary: #a3a3a3;
+  --nis-fg-muted: #525252;
+  --nis-fg-on-accent: #ffffff;
+
+  --nis-accent-electric: #7c3aed;
+  --nis-accent-blue: #3b82f6;
+  --nis-accent-pink: #ec4899;
+  --nis-accent-success: #10b981;
+  --nis-accent-danger: #ef4444;
+  --nis-accent-warning: #f59e0b;
+
+  --nis-pillar-tracker: #3b82f6;
+  --nis-pillar-canvas:  #ec4899;
+  --nis-pillar-shop:    #10b981;
+  --nis-pillar-plos:    #7c3aed;
+
+  --nis-border-subtle:  rgba(255, 255, 255, 0.06);
+  --nis-border-default: rgba(255, 255, 255, 0.12);
+  --nis-border-strong:  rgba(255, 255, 255, 0.24);
+
+  --nis-font-display: "Sora", system-ui, sans-serif;
+  --nis-font-serif:   "Instrument Serif", "Times New Roman", serif;
+  --nis-font-body:    "Geist", "Inter", system-ui, sans-serif;
+  --nis-font-mono:    "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  --nis-radius-sm: 6px;
+  --nis-radius-md: 12px;
+  --nis-radius-lg: 20px;
+  --nis-radius-xl: 28px;
+  --nis-radius-full: 9999px;
+
+  /* PLOS light glass palette — extends brand-tokens for the app shell */
+  --plos-bg-base: #f5f2fb;            /* lilac wash */
+  --plos-bg-deep: #ede7f7;
+  --plos-glass-bg: rgba(255, 255, 255, 0.62);
+  --plos-glass-bg-strong: rgba(255, 255, 255, 0.85);
+  --plos-glass-border: rgba(124, 58, 237, 0.10);
+  --plos-glass-shadow: 0 12px 40px -16px rgba(58, 31, 110, 0.18), 0 1px 0 rgba(255,255,255,0.6) inset;
+  --plos-ink-1: #1a0f37;              /* deep eggplant for primary text */
+  --plos-ink-2: #4a3a78;
+  --plos-ink-3: #7c6ea8;
+  --plos-ink-4: #a89cca;
+  --plos-rule: rgba(124, 58, 237, 0.10);
+}
+
+html, body {
+  font-family: var(--nis-font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* Tabular numerals everywhere monetary */
+.mono, .num {
+  font-family: var(--nis-font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}

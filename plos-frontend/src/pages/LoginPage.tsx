@@ -1,17 +1,13 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import {
-  Box, Button, Center, Paper, PasswordInput, Stack, Text, TextInput, Title, Alert,
-} from '@mantine/core';
-import { IconAlertCircle } from '@tabler/icons-react';
-import { motion } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import { authService } from '../services/auth.service';
 import { setCredentials } from '../store/authSlice';
 import { useAppDispatch } from '../store/hooks';
 import { identifyUser, trackAppOpened } from '../lib/analytics';
 
-const LoginPage = () => {
+export default function LoginPage() {
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -40,78 +36,63 @@ const LoginPage = () => {
   };
 
   return (
-    <Center
-      h="100vh"
-      style={{
-        background:
-          'radial-gradient(ellipse 120% 84% at 50% -10%, rgba(142, 112, 255, 0.14) 0%, transparent 55%), linear-gradient(165deg, #faf8ff 0%, var(--shell-bg) 45%, #ede9fe 100%)',
-      }}
-    >
+    <div className="plos plos-auth-shell" data-theme="light">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        style={{ width: '100%', maxWidth: 420 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="plos-auth-card"
       >
-        <Box px="lg">
-          <Stack mb="xl" align="center">
-            <Title order={1} fw={800} style={{ letterSpacing: -1, color: 'var(--accent)' }}>PLOS</Title>
-            <Text size="sm" style={{ color: 'var(--text-secondary)' }}>Your personal life operating system</Text>
-          </Stack>
+        <div className="plos-auth-brand">
+          <div className="name">PL<em>O</em>S</div>
+          <div className="tag">Your personal life operating system</div>
+        </div>
 
-          <Paper
-            p="xl"
-            radius="xl"
-            shadow="md"
-            withBorder
-            style={{
-              borderColor: 'var(--border)',
-              background: 'var(--surface)',
-              boxShadow: 'var(--pl-shadow-card)',
-            }}
+        <h2 className="plos-auth-h">Welcome back</h2>
+        <p className="plos-auth-sub">Sign in to pick up where you left off.</p>
+
+        {error && <div className="plos-alert" role="alert">{error}</div>}
+
+        <form onSubmit={handleSubmit}>
+          <div className="plos-field">
+            <label className="label" htmlFor="login-email">Email</label>
+            <input
+              id="login-email"
+              className="input"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="plos-field">
+            <label className="label" htmlFor="login-password">Password</label>
+            <input
+              id="login-password"
+              className="input"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="plos-cta plos-cta-block"
+            disabled={loading}
+            style={{ width: '100%', marginTop: 8 }}
           >
-            <Title order={3} mb="lg" style={{ color: 'var(--text-primary)' }}>Welcome back</Title>
+            {loading ? 'Signing in…' : 'Sign in'}
+          </button>
+        </form>
 
-            {error && (
-              <Alert icon={<IconAlertCircle size={16} />} color="red" mb="md" radius="md">
-                {error}
-              </Alert>
-            )}
-
-            <form onSubmit={handleSubmit}>
-              <Stack>
-                <TextInput
-                  label="Email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  size="md"
-                />
-                <PasswordInput
-                  label="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  size="md"
-                />
-                <Button type="submit" loading={loading} size="md" color="violet" mt="xs">
-                  Sign in
-                </Button>
-              </Stack>
-            </form>
-
-            <Text size="sm" mt="lg" ta="center" style={{ color: 'var(--text-secondary)' }}>
-              No account?{' '}
-              <Text component={Link} to="/register" c="violet.8" inherit fw={600}>
-                Create one free
-              </Text>
-            </Text>
-          </Paper>
-        </Box>
+        <div className="plos-auth-foot">
+          No account? <Link to="/register">Create one free</Link>
+        </div>
       </motion.div>
-    </Center>
+    </div>
   );
-};
-
-export default LoginPage;
+}

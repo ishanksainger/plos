@@ -1,63 +1,59 @@
-import { useState } from 'react';
-import {
-  ActionIcon, Box, Button, Grid, Group, Loader, Modal, Select, Stack, Text, TextInput, Tooltip,
-} from '@mantine/core';
+import { useMemo, useState } from 'react';
+import { Button, Loader, Modal, Stack } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
-import { motion } from 'framer-motion';
-import {
-  IconPlus, IconTrash, IconUser, IconUsers, IconHeart, IconShield,
-} from '@tabler/icons-react';
-import { personService, type CreatePersonPayload, type PersonWithCount } from '../services/person.service';
-import PageHeader from '../components/PageHeader';
-import { PLOS_SHADOW_CARD, useDS } from '../theme/palette';
+import { IconPlus } from '@tabler/icons-react';
+import { personService, type PersonWithCount } from '../services/person.service';
+import { responsibilityService } from '../services/responsibility.service';
+import { PersonContactFields, type PersonContactDraft, emptyPersonContactDraft } from '../components/person/PersonContactFields';
+import { resolveMediaUrl } from '../utils/mediaUrl';
+import { PlosModuleHero } from '../components/plos/PlosModuleHero';
+import { PlosReveal } from '../components/plos/PlosReveal';
+import { PeopleScene } from '../components/plos/ModuleScenes';
+import { fmtDate, fmtINR } from '../components/plos/ResponsibilityRow';
 import '@mantine/dates/styles.css';
 
-const RELATIONS = [
-  { value: 'self',    label: '◉ Self (You)' },
-  { value: 'father',  label: '👨 Father' },
-  { value: 'mother',  label: '👩 Mother' },
-  { value: 'partner', label: '💞 Partner' },
-  { value: 'child',   label: '👶 Child' },
-  { value: 'sibling', label: '🧑 Sibling' },
-  { value: 'other',   label: '🫂 Other' },
-];
-
-const RELATION_COLORS: Record<string, string> = {
-  self:    '#5e35b1',
-  father:  '#3949ab',
-  mother:  '#6d28d9',
-  partner: '#7e57c2',
-  child:   '#2f4aa0',
-  sibling: '#8e24aa',
-  other:   '#6b7280',
+const RELATION_TONE: Record<string, [string, string]> = {
+  self:    ['#fde68a', '#f0abfc'],
+  father:  ['#fcd34d', '#fb923c'],
+  mother:  ['#bbf7d0', '#86efac'],
+  partner: ['#a5f3fc', '#818cf8'],
+  child:   ['#fecaca', '#f9a8d4'],
+  sibling: ['#ddd6fe', '#c4b5fd'],
+  other:   ['#e5e7eb', '#cbd5e1'],
 };
 
-interface AddPersonModalProps {
-  opened: boolean;
-  onClose: () => void;
-}
+const initials = (name: string) =>
+  name.split(/\s+/).map((s) => s[0]).slice(0, 2).join('').toUpperCase();
 
-const AddPersonModal = ({ opened, onClose }: AddPersonModalProps) => {
+function AddPersonModal({ opened, onClose }: { opened: boolean; onClose: () => void }) {
   const queryClient = useQueryClient();
-  const [name, setName] = useState('');
-  const [relation, setRelation] = useState<string | null>(null);
+  const [draft, setDraft] = useState<PersonContactDraft>(emptyPersonContactDraft);
   const [dob, setDob] = useState<string | null>(null);
 
   const reset = () => {
-    setName('');
-    setRelation(null);
+    setDraft(emptyPersonContactDraft());
     setDob(null);
     onClose();
   };
 
   const mutation = useMutation({
-    mutationFn: (data: CreatePersonPayload) => personService.create(data),
+    mutationFn: async () => {
+      const created = await personService.create({
+        name: draft.name.trim(),
+        email: draft.email.trim(),
+        relation: draft.relation,
+        ...(draft.phone.trim() ? { phone: draft.phone.trim() } : {}),
+        ...(dob ? { dateOfBirth: new Date(dob).toISOString() } : {}),
+      });
+      if (draft.avatarFile) return personService.uploadAvatar(created.id, draft.avatarFile);
+      return created;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['persons'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      notifications.show({ title: 'Added', message: `${name} is now in your circle.`, color: 'teal' });
+      notifications.show({ title: 'Added', message: `${draft.name.trim()} is now in your circle.`, color: 'teal' });
       reset();
     },
     onError: (err: Error) =>
@@ -66,116 +62,41 @@ const AddPersonModal = ({ opened, onClose }: AddPersonModalProps) => {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !relation) return;
-    mutation.mutate({
-      name: name.trim(),
-      relation,
-      ...(dob && { dateOfBirth: new Date(dob).toISOString() }),
-    });
+    if (!draft.name.trim() || !draft.email.trim() || !draft.relation) return;
+    mutation.mutate();
   };
+
+  const canSubmit = Boolean(draft.name.trim() && draft.email.trim() && draft.relation);
 
   return (
     <Modal opened={opened} onClose={reset} title="Add Person" size="md" centered overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}>
       <form onSubmit={submit}>
         <Stack gap="sm">
-          <TextInput label="Name" placeholder="e.g. Mom" value={name} onChange={(e) => setName(e.target.value)} required data-autofocus />
-          <Select label="Relation" placeholder="How are they related to you?" data={RELATIONS} value={relation} onChange={setRelation} required allowDeselect={false} />
+          <PersonContactFields value={draft} onChange={setDraft} />
           <DateInput label="Date of Birth (optional)" placeholder="Pick a date" value={dob} onChange={setDob} clearable />
-          <Button type="submit" color="violet" mt="xs" loading={mutation.isPending} leftSection={<IconPlus size={16} />} disabled={!name.trim() || !relation}>
+          <Button type="submit" color="violet" mt="xs" loading={mutation.isPending} leftSection={<IconPlus size={16} />} disabled={!canSubmit}>
             Add to Circle
           </Button>
         </Stack>
       </form>
     </Modal>
   );
-};
+}
 
-const PersonCard = ({ person, onDelete }: { person: PersonWithCount; onDelete: () => void }) => {
-  const DS = useDS();
-  const color = RELATION_COLORS[person.relation] ?? RELATION_COLORS.other;
-  const count = person._count?.responsibilities ?? 0;
-  const isSelf = person.relation === 'self';
-
-  return (
-      <Box
-        style={{
-          background: DS.surface,
-          border: `1px solid ${DS.border}`,
-          borderTop: `3px solid ${color}`,
-          borderLeft: isSelf ? `3px solid ${DS.accent}` : undefined,
-          borderRadius: 'var(--pl-card-radius)',
-          padding: '16px 18px',
-          position: 'relative',
-          overflow: 'hidden',
-          boxShadow: PLOS_SHADOW_CARD,
-        }}
-      >
-        <Box
-          style={{
-            position: 'absolute',
-            top: -20,
-            right: -20,
-            width: 80,
-            height: 80,
-            borderRadius: '50%',
-            background: `radial-gradient(circle, ${color}22 0%, transparent 70%)`,
-            pointerEvents: 'none',
-          }}
-        />
-
-        <Group justify="space-between" align="flex-start" mb={10}>
-          <Box
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 12,
-              background: `${color}18`,
-              border: `1px solid ${color}33`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Text style={{ fontSize: 18, fontWeight: 800, color, textTransform: 'uppercase' }}>
-              {person.name.charAt(0)}
-            </Text>
-          </Box>
-          {!isSelf && (
-            <Tooltip label="Remove" withArrow>
-              <ActionIcon variant="subtle" size="sm" color="red" onClick={onDelete}>
-                <IconTrash size={13} />
-              </ActionIcon>
-            </Tooltip>
-          )}
-        </Group>
-
-        <Text fw={700} size="md" style={{ color: DS.text1, marginBottom: 2 }}>
-          {person.name}
-        </Text>
-        <Text style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color, fontWeight: 600 }}>
-          {person.relation}
-        </Text>
-
-        <Group gap={6} mt={14}>
-          <Box style={{ width: 5, height: 5, borderRadius: '50%', background: DS.text3 }} />
-          <Text style={{ fontSize: '0.72rem', color: DS.text2, fontVariantNumeric: 'tabular-nums' }}>
-            {count} {count === 1 ? 'task' : 'tasks'} assigned
-          </Text>
-        </Group>
-      </Box>
-  );
-};
-
-const PeoplePage = () => {
-  const DS = useDS();
-  const HERO_ACCENT = DS.accent;
+export default function PeoplePage() {
   const queryClient = useQueryClient();
   const [addOpen, setAddOpen] = useState(false);
 
-  const { data: persons, isLoading, isError, error } = useQuery({
+  const { data: persons = [], isLoading, isError, error } = useQuery({
     queryKey: ['persons'],
     queryFn: personService.getAll,
     staleTime: 30_000,
+  });
+
+  const { data: responsibilities = [] } = useQuery({
+    queryKey: ['responsibilities'],
+    queryFn: () => responsibilityService.getAll(),
+    staleTime: 15_000,
   });
 
   const deleteMutation = useMutation({
@@ -183,130 +104,137 @@ const PeoplePage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['persons'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      notifications.show({ title: 'Removed', message: 'Person removed from your circle.', color: 'teal' });
+      notifications.show({ title: 'Removed', message: 'Person removed.', color: 'teal' });
     },
     onError: (err: Error) =>
       notifications.show({ title: 'Error', message: err.message || 'Cannot delete (active tasks?)', color: 'red' }),
   });
 
-  const list = persons ?? [];
+  const cards = useMemo(() => {
+    return persons.map((p: PersonWithCount) => {
+      const open = responsibilities.filter((r) => r.personId === p.id && !r.completedAt);
+      const overdue = open.filter((r) => r.state === 'OVERDUE').length;
+      const money = open.reduce((s, r) => s + (r.amount ? Number(r.amount) : 0), 0);
+      const next = open
+        .slice()
+        .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0];
+      return { person: p, open: open.length, overdue, money, next };
+    });
+  }, [persons, responsibilities]);
 
-  const summary = list.reduce((acc, p) => {
-    if (p.relation === 'self') acc.self += 1;
-    else if (['father', 'mother', 'child', 'sibling'].includes(p.relation)) acc.family += 1;
-    else acc.other += 1;
-    acc.total += 1;
-    acc.tasks += p._count?.responsibilities ?? 0;
-    return acc;
-  }, { total: 0, self: 0, family: 0, other: 0, tasks: 0 });
+  const totalOpen = cards.reduce((s, c) => s + c.open, 0);
 
   return (
-    <Box style={{ paddingBottom: 32 }}>
+    <div className="plos-page-enter">
       <AddPersonModal opened={addOpen} onClose={() => setAddOpen(false)} />
 
-      <PageHeader
-        eyebrow="MODULE · PEOPLE"
-        title="Your Circle"
-        subtitle={list.length === 0
-          ? 'Add people to start assigning responsibilities.'
-          : `${summary.total} people with ${summary.tasks} shared tasks.`}
-        icon={IconUsers}
-        accent={HERO_ACCENT}
-        metrics={[
-          { label: 'People', value: summary.total, color: HERO_ACCENT },
-          { label: 'Family', value: summary.family, color: DS.green },
-          { label: 'Tasks', value: summary.tasks, color: DS.orange },
-        ]}
-        action={(
-          <motion.button
-            className="plos-btn-accent"
-            whileHover={{ y: -1 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setAddOpen(true)}
-            style={{
-              alignItems: 'center',
-              borderRadius: 12,
-              cursor: 'pointer',
-              display: 'flex',
-              fontFamily: 'inherit',
-              fontSize: '0.8125rem',
-              gap: 8,
-              letterSpacing: '-0.01em',
-              padding: '11px 22px',
-            }}
-          >
-            <IconPlus size={15} stroke={2.5} />
-            Add Person
-          </motion.button>
-        )}
+      <PlosModuleHero
+        eyebrow="Life · People"
+        title="People in your <em>circle</em>."
+        sub={`${persons.length} ${persons.length === 1 ? 'person' : 'people'} · ${totalOpen} open responsibilities tagged to someone`}
+        scene={PeopleScene}
+        accent="#22d3ee"
+        actions={
+          <button type="button" className="plos-cta" onClick={() => setAddOpen(true)}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14" /><path d="M5 12h14" />
+            </svg>
+            <span>Add person</span>
+          </button>
+        }
       />
 
-      {/* ── Quick stats ── */}
-      <Grid gutter="sm" mb={16}>
-        {[
-          { icon: IconUsers, label: 'People Added', value: String(summary.total), accent: HERO_ACCENT },
-          { icon: IconUser,  label: 'Self (You)',   value: String(summary.self),  accent: '#6d28d9' },
-          { icon: IconHeart, label: 'Family',       value: String(summary.family), accent: '#2f4aa0' },
-          { icon: IconShield,label: 'Tasks Shared', value: String(summary.tasks), accent: '#3949ab' },
-        ].map((c) => (
-          <Grid.Col span={{ base: 6, md: 3 }} key={c.label}>
-            <Box
-              className="plos-stat-card plos-interactive-card"
-              style={{
-                background: `linear-gradient(155deg, ${c.accent}12 0%, ${DS.surface} 56%)`,
-                border: `1px solid ${DS.border}`,
-                borderRadius: 'var(--pl-card-radius)',
-                borderLeft: `3px solid ${c.accent}`,
-                padding: '16px 18px',
-                position: 'relative',
-                overflow: 'hidden',
-                boxShadow: PLOS_SHADOW_CARD,
-              }}
-            >
-              <Box aria-hidden style={{
-                position: 'absolute', top: -22, right: -22,
-                width: 110, height: 110, borderRadius: '50%',
-                background: `radial-gradient(circle, ${c.accent}18 0%, transparent 70%)`,
-                pointerEvents: 'none',
-              }} />
-              <Group gap={6} mb={8}>
-                <c.icon size={13} stroke={1.5} style={{ color: c.accent, opacity: 0.85 }} />
-                <Text className="plos-stat-card-label">{c.label}</Text>
-              </Group>
-              <Text className="plos-stat-card-value" style={{ fontSize: 30, fontWeight: 800, color: DS.text1, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{c.value}</Text>
-            </Box>
-          </Grid.Col>
-        ))}
-      </Grid>
-
-      {/* ── People grid ── */}
       {isLoading ? (
-        <Box h={200} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ padding: 48, display: 'flex', justifyContent: 'center' }}>
           <Loader color="violet" size="sm" type="dots" />
-        </Box>
+        </div>
       ) : isError ? (
-        <Text size="sm" style={{ color: DS.red, padding: 16 }}>
-          Failed to load people.
-          {error instanceof Error && error.message ? ` ${error.message}` : ''}
-          {' '}
-          If the API is on another host, set VITE_API_BASE_URL or use dev with the Vite /api proxy (see .env.example).
-        </Text>
-      ) : list.length === 0 ? (
-        <Box className="plos-empty-panel" style={{ background: DS.surface, border: `1px solid ${DS.border}`, borderRadius: 12 }}>
-          <Text fw={600} className="plos-empty-panel-title" style={{ marginBottom: 6 }}>No people yet</Text>
-          <Text className="plos-empty-panel-sub" style={{ fontSize: '0.8rem' }}>Add your first person to start delegating responsibilities.</Text>
-        </Box>
+        <div style={{ padding: 24, color: '#ef4444', fontSize: 14 }}>
+          Failed to load people.{error instanceof Error && error.message ? ` ${error.message}` : ''}
+        </div>
+      ) : cards.length === 0 ? (
+        <div className="glass" style={{ padding: 28, textAlign: 'center' }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--plos-ink-1)', marginBottom: 6 }}>
+            No people yet
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--plos-ink-3)', marginBottom: 16 }}>
+            Add your first person to start delegating responsibilities.
+          </div>
+          <button type="button" className="plos-cta" onClick={() => setAddOpen(true)}>
+            <span>Add your first person</span>
+          </button>
+        </div>
       ) : (
-        <Grid gutter="sm">
-          {list.map((p) => (
-            <Grid.Col span={{ base: 12, sm: 6, md: 4, lg: 3 }} key={p.id}>
-              <PersonCard person={p} onDelete={() => deleteMutation.mutate(p.id)} />
-            </Grid.Col>
-          ))}
-        </Grid>
+        <div className="grid-3">
+          {cards.map(({ person, open, overdue, money, next }, i) => {
+            const tone = RELATION_TONE[person.relation] ?? RELATION_TONE.other;
+            const avatar = resolveMediaUrl(person.avatarUrl);
+            const isSelf = person.relation === 'self';
+            return (
+              <PlosReveal key={person.id} delay={i}>
+                <div className="glass person-card plos-tilt" style={{ position: 'relative' }}>
+                  <div className="person-head">
+                    <div
+                      className="person-avatar"
+                      style={{
+                        background: avatar
+                          ? `center/cover no-repeat url(${avatar})`
+                          : `linear-gradient(135deg, ${tone[0]}, ${tone[1]})`,
+                      }}
+                    >
+                      {avatar ? '' : initials(person.name)}
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <div className="person-name">{person.name}</div>
+                      <div className="person-relation">{person.relation}</div>
+                    </div>
+                    {!isSelf && (
+                      <button
+                        type="button"
+                        onClick={() => deleteMutation.mutate(person.id)}
+                        title="Remove"
+                        style={{
+                          marginLeft: 'auto',
+                          fontSize: 11,
+                          color: 'var(--plos-ink-3)',
+                          fontFamily: 'var(--nis-font-mono)',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.1em',
+                        }}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  <div style={{ fontSize: 13, color: 'var(--plos-ink-2)' }}>
+                    {next ? (
+                      <>
+                        Next: <strong style={{ color: 'var(--plos-ink-1)' }}>{next.title}</strong> · {fmtDate(next.dueDate)}
+                      </>
+                    ) : (
+                      <span style={{ color: 'var(--plos-ink-3)' }}>No open items. Lovely.</span>
+                    )}
+                  </div>
+                  <div className="person-stats">
+                    <div className="person-stat">
+                      <div className="num">{open}</div>
+                      <div className="label">Open</div>
+                    </div>
+                    <div className="person-stat">
+                      <div className="num" style={{ color: overdue > 0 ? '#ef4444' : undefined }}>{overdue}</div>
+                      <div className="label">Overdue</div>
+                    </div>
+                    <div className="person-stat">
+                      <div className="num">{money ? fmtINR(money) : '—'}</div>
+                      <div className="label">Spend</div>
+                    </div>
+                  </div>
+                </div>
+              </PlosReveal>
+            );
+          })}
+        </div>
       )}
-    </Box>
+    </div>
   );
-};
-
-export default PeoplePage;
+}

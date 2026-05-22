@@ -3,6 +3,9 @@ export type ResponsibilityState = 'UPCOMING' | 'DUE' | 'OVERDUE' | 'COMPLETED';
 export interface Person {
   id: number;
   name: string;
+  email: string;
+  phone?: string | null;
+  avatarUrl?: string | null;
   relation: string;
   dateOfBirth?: string | null;
 }

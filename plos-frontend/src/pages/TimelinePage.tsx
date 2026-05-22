@@ -1,254 +1,168 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { Loader } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
-import { Box, Grid, Group, Loader, Stack, Text } from '@mantine/core';
-import { motion } from 'framer-motion';
-import {
-  IconTimeline, IconHistory, IconCalendarStats, IconChartLine,
-  IconCheck, IconAlertTriangle, IconClockHour4, IconCalendarEvent,
-} from '@tabler/icons-react';
 import { eventService, type UserEventEntry } from '../services/event.service';
-import PageHeader from '../components/PageHeader';
-import { PLOS_SHADOW_CARD, useDS } from '../theme/palette';
+import { PlosModuleHero } from '../components/plos/PlosModuleHero';
+import { TimelineScene } from '../components/plos/ModuleScenes';
 
-const HERO_ACCENT = '#5e35b1';
-
-const STATE_META: Record<string, { color: string; icon: React.ElementType; label: string }> = {
-  COMPLETED: { color: '#15803d', icon: IconCheck,           label: 'Completed' },
-  OVERDUE:   { color: '#dc2626', icon: IconAlertTriangle,   label: 'Became Overdue' },
-  DUE:       { color: '#b45309', icon: IconClockHour4,      label: 'Became Due' },
-  UPCOMING:  { color: '#5e35b1', icon: IconCalendarEvent,   label: 'Scheduled' },
+const CATEGORY_COLOR: Record<string, string> = {
+  finance: '#7c3aed',
+  health:  '#fb7185',
+  habit:   '#3b82f6',
+  family:  '#ec4899',
+  admin:   '#22d3ee',
+  other:   '#f59e0b',
 };
 
-const CAT_COLORS: Record<string, string> = {
-  finance: '#5e35b1',
-  health:  '#3949ab',
-  habit:   '#92400e',
-  family:  '#be185d',
-  admin:   '#2f4aa0',
-};
+type Filter = 'all' | 'you' | 'system';
 
-const formatRelative = (iso: string): string => {
-  const then = new Date(iso).getTime();
-  const now = Date.now();
-  const diff = Math.floor((now - then) / 1000);
-  if (diff < 60) return `${diff}s ago`;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
-  return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-};
+const isSystemEvent = (e: UserEventEntry) => e.toState !== 'COMPLETED';
 
-const TimelinePage = () => {
-  const DS = useDS();
-  const { data, isLoading, isError, error } = useQuery({
+function describeEvent(e: UserEventEntry): string {
+  const title = `<strong>${escapeHtml(e.responsibility.title)}</strong>`;
+  const amount = e.responsibility.amount != null
+    ? ` · ₹ ${Number(e.responsibility.amount).toLocaleString('en-IN')}`
+    : '';
+  switch (e.toState) {
+    case 'COMPLETED':
+      return `You completed ${title}${amount}`;
+    case 'OVERDUE':
+      return `${title} moved to overdue`;
+    case 'DUE':
+      return `${title} became due${amount}`;
+    case 'UPCOMING':
+      return `Scheduled ${title}`;
+    default:
+      return `${title} · ${e.fromState} → ${e.toState}`;
+  }
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+const sameDay = (a: Date, b: Date) =>
+  a.getFullYear() === b.getFullYear() &&
+  a.getMonth() === b.getMonth() &&
+  a.getDate() === b.getDate();
+
+function dayLabel(d: Date): string {
+  const now = new Date();
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (sameDay(d, now)) return 'Today';
+  if (sameDay(d, yesterday)) return 'Yesterday';
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+}
+
+function timeLabel(iso: string): string {
+  return new Date(iso).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
+}
+
+export default function TimelinePage() {
+  const [filter, setFilter] = useState<Filter>('all');
+
+  const { data: events = [], isLoading, isError, error } = useQuery({
     queryKey: ['events'],
     queryFn: () => eventService.getFeed(150),
     staleTime: 15_000,
   });
 
-  const events = data ?? [];
+  const filtered = useMemo(() => {
+    if (filter === 'you') return events.filter((e) => !isSystemEvent(e));
+    if (filter === 'system') return events.filter((e) => isSystemEvent(e));
+    return events;
+  }, [events, filter]);
 
-  const stats = useMemo(() => {
-    const days = new Set<string>();
-    let completions = 0;
-    let stateChanges = 0;
-    events.forEach((e) => {
-      days.add(new Date(e.occurredAt).toDateString());
-      if (e.toState === 'COMPLETED') completions += 1;
-      stateChanges += 1;
-    });
-    return {
-      total: events.length,
-      stateChanges,
-      days: days.size,
-      completions,
-    };
-  }, [events]);
+  const days = useMemo(() => {
+    const groups: { day: string; date: Date; items: UserEventEntry[] }[] = [];
+    for (const e of filtered) {
+      const d = new Date(e.occurredAt);
+      const last = groups[groups.length - 1];
+      if (last && sameDay(last.date, d)) {
+        last.items.push(e);
+      } else {
+        groups.push({ day: dayLabel(d), date: d, items: [e] });
+      }
+    }
+    return groups;
+  }, [filtered]);
 
   return (
-    <Box style={{ paddingBottom: 32 }} data-page="timeline">
-      <PageHeader
-        eyebrow="MODULE · TIMELINE"
-        title="Activity History"
-        subtitle={events.length === 0
-          ? 'State changes will appear as you manage responsibilities.'
-          : `${stats.total} events over ${stats.days} day${stats.days !== 1 ? 's' : ''}, ${stats.completions} completed.`}
-        icon={IconTimeline}
-        accent={HERO_ACCENT}
-        metrics={[
-          { label: 'Events', value: stats.total, color: HERO_ACCENT },
-          { label: 'Days', value: stats.days, color: DS.green },
-          { label: 'Done', value: stats.completions, color: DS.orange },
-        ]}
+    <div className="plos-page-enter">
+      <PlosModuleHero
+        eyebrow="Life · Timeline"
+        title="A timeline of your <em>life</em>."
+        sub="Everything that changed, in order. System events grey, you in colour."
+        scene={TimelineScene}
+        accent="#fb7185"
+        actions={
+          <div className="tabs">
+            <button type="button" className={`tab ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>
+              All
+            </button>
+            <button type="button" className={`tab ${filter === 'you' ? 'active' : ''}`} onClick={() => setFilter('you')}>
+              You
+            </button>
+            <button type="button" className={`tab ${filter === 'system' ? 'active' : ''}`} onClick={() => setFilter('system')}>
+              System
+            </button>
+          </div>
+        }
       />
 
-      {/* ── Quick stats ── */}
-      <Grid gutter="sm" mb={16}>
-        {[
-          { icon: IconTimeline,      label: 'Total Events',  value: stats.total,        accent: HERO_ACCENT },
-          { icon: IconHistory,       label: 'State Changes', value: stats.stateChanges, accent: '#3949ab' },
-          { icon: IconCalendarStats, label: 'Days Tracked',  value: stats.days,         accent: '#6d28d9' },
-          { icon: IconChartLine,     label: 'Completions',   value: stats.completions,  accent: '#2f4aa0' },
-        ].map((c, i) => (
-          <Grid.Col span={{ base: 6, md: 3 }} key={c.label}>
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: i * 0.06 }}>
-              <Box
-                className="plos-stat-card plos-interactive-card"
-                style={{
-                  background: `linear-gradient(155deg, ${c.accent}12 0%, ${DS.surface} 56%)`,
-                  border: `1px solid ${DS.border}`,
-                  borderRadius: 'var(--pl-card-radius)',
-                  borderLeft: `3px solid ${c.accent}`,
-                  padding: '16px 18px',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  boxShadow: PLOS_SHADOW_CARD,
-                }}
-              >
-                <Box aria-hidden style={{
-                  position: 'absolute', top: -22, right: -22,
-                  width: 110, height: 110, borderRadius: '50%',
-                  background: `radial-gradient(circle, ${c.accent}18 0%, transparent 70%)`,
-                  pointerEvents: 'none',
-                }} />
-                <Group gap={6} mb={8}>
-                  <c.icon size={13} stroke={1.5} style={{ color: c.accent, opacity: 0.85 }} />
-                  <Text className="plos-stat-card-label">{c.label}</Text>
-                </Group>
-                <Text className="plos-stat-card-value" style={{ fontSize: 30, fontWeight: 800, color: DS.text1, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{c.value}</Text>
-              </Box>
-            </motion.div>
-          </Grid.Col>
-        ))}
-      </Grid>
-
-      {/* ── Event feed ── */}
-      <Box style={{
-        background: DS.surface,
-        border: `1px solid ${DS.border}`,
-        borderRadius: 'var(--pl-card-radius)',
-        overflow: 'hidden',
-        position: 'relative',
-        boxShadow: PLOS_SHADOW_CARD,
-      }}>
-        <Box aria-hidden style={{
-          position: 'absolute', top: 0, left: 0, right: 0, height: 2,
-          background: `linear-gradient(90deg, ${HERO_ACCENT}, ${HERO_ACCENT}55)`,
-        }} />
-        <Box aria-hidden style={{
-          position: 'absolute',
-          top: -60, right: -60, width: 220, height: 220, borderRadius: '50%',
-          background: `radial-gradient(circle, ${HERO_ACCENT}0d 0%, transparent 65%)`,
-          pointerEvents: 'none',
-        }} />
-        <Box style={{ padding: '14px 20px', borderBottom: `1px solid ${DS.border}`, position: 'relative' }}>
-          <Text fw={500} className="plos-section-header">Activity Feed</Text>
-          <Text size="xs" style={{ color: DS.text2, marginTop: 2 }}>Newest first — every change recorded by the scheduler or by you</Text>
-        </Box>
-
-        {isLoading ? (
-          <Box h={200} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Loader color="violet" size="sm" type="dots" />
-          </Box>
-        ) : isError ? (
-          <Text size="sm" style={{ color: DS.red, padding: 16 }}>
-            Failed to load timeline.
-            {error instanceof Error && error.message ? ` ${error.message}` : ''}
-            {' '}
-            If the API is on another host, set VITE_API_BASE_URL or use dev with the Vite /api proxy (see .env.example).
-          </Text>
-        ) : events.length === 0 ? (
-          <Box className="plos-empty-panel">
-            <Text fw={600} className="plos-empty-panel-title" style={{ marginBottom: 6 }}>No events yet</Text>
-            <Text className="plos-empty-panel-sub" style={{ fontSize: '0.8rem' }}>
-              As you create and complete responsibilities, every state change will appear here.
-            </Text>
-          </Box>
-        ) : (
-          <Stack gap={0}>
-            {events.map((e: UserEventEntry, idx) => {
-              const meta = STATE_META[e.toState] ?? STATE_META.UPCOMING;
-              const catColor = CAT_COLORS[e.responsibility.category] ?? '#5a7d68';
-              const Icon = meta.icon;
-              return (
-                <Group
-                  key={e.id}
-                  gap={14}
-                  wrap="nowrap"
-                  style={{
-                    padding: '14px 20px',
-                    borderBottom: idx < events.length - 1 ? `1px solid ${DS.border}` : 'none',
-                    background: idx % 2 === 1 ? DS.elev : 'transparent',
-                  }}
-                >
-                  {/* Timeline rail dot */}
-                  <Box style={{ width: 28, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
-                    <Box style={{
-                      width: 28, height: 28, borderRadius: '50%',
-                      background: `${meta.color}18`, border: `1px solid ${meta.color}55`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      boxShadow: `0 0 12px ${meta.color}30`,
-                    }}>
-                      <Icon size={13} stroke={2} style={{ color: meta.color }} />
-                    </Box>
-                  </Box>
-
-                  {/* Event content */}
-                  <Box style={{ flex: 1, minWidth: 0 }}>
-                    <Group gap={8} wrap="nowrap">
-                      <Text fw={600} size="sm" style={{ color: DS.text1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {e.responsibility.title}
-                      </Text>
-                      <Box style={{
-                        padding: '1px 7px', borderRadius: 4,
-                        background: `${meta.color}18`, border: `1px solid ${meta.color}33`,
-                        flexShrink: 0,
-                      }}>
-                        <Text style={{ fontSize: '0.58rem', fontWeight: 700, color: meta.color, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                          {meta.label}
-                        </Text>
-                      </Box>
-                    </Group>
-                    <Group gap={10} mt={4} wrap="nowrap">
-                      <Group gap={4}>
-                        <Box style={{ width: 5, height: 5, borderRadius: '50%', background: catColor }} />
-                        <Text style={{ fontSize: '0.68rem', color: DS.text2, textTransform: 'capitalize' }}>
-                          {e.responsibility.category}
-                        </Text>
-                      </Group>
-                      {e.responsibility.person && (
-                        <Text style={{ fontSize: '0.68rem', color: DS.text2, fontWeight: 600 }}>
-                          → {e.responsibility.person.name}
-                        </Text>
-                      )}
-                      {e.responsibility.amount != null && (
-                        <Text style={{ fontSize: '0.68rem', color: catColor, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-                          ₹{Number(e.responsibility.amount).toLocaleString('en-IN')}
-                        </Text>
-                      )}
-                      <Text style={{ fontSize: '0.65rem', color: DS.text2 }}>
-                        {e.fromState} → {e.toState}
-                      </Text>
-                    </Group>
-                  </Box>
-
-                  {/* Time */}
-                  <Box style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <Text style={{ fontSize: '0.7rem', color: DS.text2, fontVariantNumeric: 'tabular-nums' }}>
-                      {formatRelative(e.occurredAt)}
-                    </Text>
-                    <Text style={{ fontSize: '0.6rem', color: DS.text2, fontVariantNumeric: 'tabular-nums', marginTop: 2 }}>
-                      {new Date(e.occurredAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
-                    </Text>
-                  </Box>
-                </Group>
-              );
-            })}
-          </Stack>
-        )}
-      </Box>
-    </Box>
+      {isLoading ? (
+        <div style={{ padding: 48, display: 'flex', justifyContent: 'center' }}>
+          <Loader color="violet" size="sm" type="dots" />
+        </div>
+      ) : isError ? (
+        <div style={{ padding: 24, color: '#ef4444', fontSize: 14 }}>
+          Failed to load timeline.{error instanceof Error && error.message ? ` ${error.message}` : ''}
+        </div>
+      ) : days.length === 0 ? (
+        <div className="glass" style={{ padding: 28, textAlign: 'center' }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--plos-ink-1)', marginBottom: 6 }}>
+            No events yet
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--plos-ink-3)' }}>
+            As you create and complete responsibilities, every state change will appear here.
+          </div>
+        </div>
+      ) : (
+        <div className="glass" style={{ padding: '8px 24px' }}>
+          {days.map((d) => (
+            <div className="tl-day" key={d.date.toISOString()}>
+              <div className="tl-date">{d.day}</div>
+              <div className="tl-events">
+                {d.items.map((e) => {
+                  const system = isSystemEvent(e);
+                  const color = system
+                    ? 'var(--plos-ink-4)'
+                    : CATEGORY_COLOR[e.responsibility.category] ?? '#10b981';
+                  return (
+                    <div className="tl-event" key={e.id}>
+                      <div className="tl-dot" style={{ background: color }} />
+                      <div>
+                        <div className="tl-event-body" dangerouslySetInnerHTML={{ __html: describeEvent(e) }} />
+                        <div className="tl-event-time">
+                          {timeLabel(e.occurredAt)}
+                          {system ? ' · system' : ''}
+                          {e.responsibility.person ? ` · ${e.responsibility.person.name.split(' ')[0]}` : ''}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
-};
-
-export default TimelinePage;
+}

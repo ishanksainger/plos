@@ -1,71 +1,41 @@
-import { IconCurrencyRupee, IconReceipt, IconTrendingUp, IconWallet } from '@tabler/icons-react';
-import CategoryModulePage, { type CategoryStat } from '../components/CategoryModulePage';
-import type { Responsibility } from '../types/dashboard';
-import { MODULE_ACCENT_HEX } from '../theme/palette';
+import { useState } from 'react';
+import { PlosCategoryModule } from '../components/plos/PlosCategoryModule';
+import { FinanceScene } from '../components/plos/ModuleScenes';
+import { fmtINR } from '../components/plos/ResponsibilityRow';
+import CreateResponsibilityModal from '../components/responsibilities/CreateResponsibilityModal';
 
-const formatINR = (n: number) =>
-  n >= 100000
-    ? `₹${(n / 100000).toFixed(1)}L`
-    : n >= 1000
-      ? `₹${(n / 1000).toFixed(1)}k`
-      : `₹${n}`;
+export default function FinancePage() {
+  const [createOpen, setCreateOpen] = useState(false);
 
-const stats: CategoryStat[] = [
-  {
-    label: 'Monthly Spend',
-    Icon: IconCurrencyRupee,
-    accent: MODULE_ACCENT_HEX,
-    stripColor: MODULE_ACCENT_HEX,
-    valueColor: 'var(--accent)',
-    compute: (rows) => {
-      const start = new Date();
-      start.setDate(1);
-      const total = rows.reduce<number>((s, r: Responsibility) => {
-        const due = new Date(r.dueDate);
-        return due >= start && r.amount ? s + Number(r.amount) : s;
-      }, 0);
-      return formatINR(total);
-    },
-  },
-  {
-    label: 'Recurring',
-    Icon: IconReceipt,
-    accent: MODULE_ACCENT_HEX,
-    stripColor: 'var(--secondary)',
-    compute: (rows) => rows.filter((r) => r.recurrence && r.recurrence !== 'none').length,
-  },
-  {
-    label: 'Pending',
-    Icon: IconTrendingUp,
-    accent: MODULE_ACCENT_HEX,
-    stripColor: 'var(--warning)',
-    compute: (rows) => rows.filter((r) => !r.completedAt).length,
-  },
-  {
-    label: 'Total Outstanding',
-    Icon: IconWallet,
-    accent: MODULE_ACCENT_HEX,
-    stripColor: MODULE_ACCENT_HEX,
-    valueColor: 'var(--accent)',
-    compute: (rows) => {
-      const total = rows.reduce<number>(
-        (s, r) => (!r.completedAt && r.amount ? s + Number(r.amount) : s),
-        0,
-      );
-      return formatINR(total);
-    },
-  },
-];
-
-const FinancePage = () => (
-  <CategoryModulePage
-    category="finance"
-    moduleLabel="MODULE · FINANCE"
-    title={'Financial\nOverview'}
-    subtitle="Bills, EMIs, subscriptions, and all money obligations tracked by amount and urgency."
-    accent={MODULE_ACCENT_HEX}
-    stats={stats}
-  />
-);
-
-export default FinancePage;
+  return (
+    <>
+      <CreateResponsibilityModal opened={createOpen} onClose={() => setCreateOpen(false)} />
+      <PlosCategoryModule
+        category="finance"
+        eyebrow="Module · Finance"
+        title="Money, <em>held</em>."
+        accent="#fbbf24"
+        scene={FinanceScene}
+        ctaLabel="Add finance"
+        onAddClick={() => setCreateOpen(true)}
+        kpis={(rows) => {
+          const open = rows.filter((r) => !r.completedAt);
+          const openTotal = open.reduce((s, r) => s + (r.amount ? Number(r.amount) : 0), 0);
+          const overdue = rows.filter((r) => r.state === 'OVERDUE').length;
+          const recurring = rows.filter((r) => r.recurrence && r.recurrence !== 'none').length;
+          const dueSoon = open.filter((r) => {
+            const due = new Date(r.dueDate);
+            const days = (due.getTime() - Date.now()) / 86_400_000;
+            return days >= 0 && days <= 7;
+          }).length;
+          return [
+            { label: 'Open · ₹', value: <span className="num">{fmtINR(openTotal)}</span>, delta: `${open.length} item${open.length === 1 ? '' : 's'}` },
+            { label: 'Overdue', value: overdue, color: overdue > 0 ? '#ef4444' : undefined, delta: overdue > 0 ? 'Late fees risk' : 'All clear' },
+            { label: 'Recurring', value: recurring, delta: 'Auto-rolling' },
+            { label: 'Due in 7d', value: dueSoon, delta: 'Watch the week' },
+          ];
+        }}
+      />
+    </>
+  );
+}
