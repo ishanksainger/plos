@@ -1,5 +1,22 @@
-// Stub. Real implementation ships in:
-//   - apps/web Week 1 (first paid purchase)   - see nis_code_plan_v1.md
-//   - plos-backend Sprint 5 (subscriptions)   - see plos_code_plan_v1.md
-// Whichever ships first writes the shared client; the other reuses it.
-export {};
+/**
+ * Shared Razorpay client. Server-side helpers (createOrder, verifySignature)
+ * and a tiny browser helper (loadCheckoutScript + openCheckout).
+ *
+ * Server import path: `@nis/razorpay-sdk/server`
+ * Browser import path: `@nis/razorpay-sdk/client`
+ *
+ * Usage rules (see CLAUDE.md):
+ *   - Never instantiate `new Razorpay()` directly outside this package.
+ *   - Always go through createOrder / verifySignature.
+ *   - Amounts are in paise (₹1 = 100 paise).
+ */
+
+export type {
+  CreateOrderOptions,
+  CreateOrderResult,
+  VerifySignatureOptions,
+  RazorpayCheckoutOptions,
+  RazorpayCheckoutHandlerPayload,
+} from './types';
+
+export { isLiveMode, isTestMode } from './mode';
