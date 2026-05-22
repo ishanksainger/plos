@@ -1,0 +1,135 @@
+/**
+ * Phone-friendly tuning for the NIS site.
+ * Existing nis.css and cinema.css cover desktop and tablet (≤880, ≤720, ≤540);
+ * this file covers the gaps at ≤640 (large phone) and ≤420 (small phone)
+ * plus large-screen guardrails.
+ */
+
+/* ───── Header: collapse on phones to logo + Open PLOS only ───── */
+@media (max-width: 880px) {
+  .nis-header-inner {
+    padding: 12px 18px;
+    gap: 12px;
+  }
+  .nis-header-actions .nis-btn:not(.nis-btn-primary) {
+    /* Hide the "Sign in" pill, keep just the Open PLOS CTA */
+    display: none;
+  }
+}
+@media (max-width: 720px) {
+  .nis-nav {
+    display: none;
+  }
+  .nis-header-inner {
+    padding: 10px 14px;
+  }
+  .nis-logo {
+    font-size: 15px;
+  }
+}
+
+/* ───── Tracker grid: 1-col at ≤640 (already 1-col at ≤720, but tighten gap) ───── */
+@media (max-width: 720px) {
+  .nis-tracker-grid {
+    gap: 16px;
+  }
+  .nis-card-art {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+/* ───── Section padding tighter on phones ───── */
+@media (max-width: 640px) {
+  .nis-section {
+    padding: clamp(44px, 10vw, 64px) 16px;
+  }
+}
+@media (max-width: 420px) {
+  .nis-section {
+    padding: 36px 14px;
+  }
+  .nis-h2 {
+    font-size: clamp(28px, 8vw, 36px) !important;
+  }
+}
+
+/* ───── Cinematic hero: shorter scroll on phones so users reach content fast ───── */
+@media (max-width: 720px) {
+  .nis-cinema {
+    height: 320vh;
+  }
+  .nis-cinema-pin {
+    padding: 40px 20px;
+    gap: 18px;
+  }
+}
+@media (max-width: 480px) {
+  .nis-cinema {
+    height: 280vh;
+  }
+}
+
+/* ───── Stat row stacks on phones, but keeps single column readable ───── */
+@media (max-width: 720px) {
+  .stat-row {
+    gap: 24px;
+  }
+  .stat-cell .fig {
+    font-size: clamp(36px, 10vw, 48px);
+  }
+}
+
+/* ───── Pillar rail (used on /plos pillar page) gets tighter on phone ───── */
+@media (max-width: 720px) {
+  .nis-pillar-rail {
+    gap: 12px;
+  }
+}
+@media (max-width: 480px) {
+  .nis-pillar-rail {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ───── Detail page (tracker detail) — left art stacks above right copy ───── */
+@media (max-width: 720px) {
+  .nis-detail .nis-detail-art,
+  .nis-detail [class*="art"] {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* ───── About page — team grid 1-col on small phones ───── */
+@media (max-width: 480px) {
+  .nis-about-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ───── Footer ───── */
+@media (max-width: 480px) {
+  .nis-footer-inner {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* ───── Large screens — cap content so it doesn't stretch absurdly ───── */
+@media (min-width: 1700px) {
+  :root {
+    --max-w: 1320px;
+  }
+}
+
+/* ───── Marquee: don't let it cause horizontal page scroll ───── */
+.marquee,
+.plos-marquee {
+  overflow: hidden;
+  max-width: 100vw;
+}
+
+/* ───── Prevent any rogue element from causing horizontal page scroll ───── */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
