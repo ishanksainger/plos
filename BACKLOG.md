@@ -6,6 +6,25 @@
 
 ---
 
+## ▶ Next session — pick from this short list
+
+These are the highest-leverage things to do next. Each is sized to fit in one focused session.
+
+1. **NIS mobile hamburger** (P0 · `claude`) — phones can't navigate beyond home + /plos. Add a hamburger that opens a drawer with the 6 nav links. ~30 min.
+2. **NIS Sign-in button wiring** (P0 · `claude`) — header button currently does nothing. Point it at `http://localhost:5173/login` (env-driven) or a modal that explains PLOS auth. ~15 min.
+3. **`packages/ui` primitives** (P1 · `either`) — lift `Button`, `Card`, `Badge` out of inline JSX so both apps share one component. Visible polish + reduces duplication. ~1 hr.
+4. **PLOS Person detail page** (P1 · `claude` frontend + `cursor` may extend endpoint) — `/people/:id` route showing that person's responsibilities + activity. Currently the card on `/people` goes nowhere. ~45 min.
+5. **PLOS Search bar wiring** (P1 · split) — topbar search is a placeholder. Cursor: add `GET /search?q=…` endpoint. Claude: wire the autocomplete UI. ~1–2 hrs total.
+
+After those, the next tier:
+- Real product imagery (Nikita) — Spline hero, Canvas tiles, Shop merch, About portraits
+- 3 more trackers content (human)
+- Razorpay KYC (human, 5–7 day wait — start ASAP)
+
+Everything else is itemized below.
+
+---
+
 ## How to use this file
 
 - Items are grouped by **app**, then by **priority** (P0 → P3).
@@ -111,9 +130,18 @@
 
 ## Recently completed (last 30 days)
 
-- ✅ BACKLOG.md + CLAUDE.md + `.cursorrules` rewritten for shared `plos-frontend` ownership with a clear coordination protocol (2026-05-23)
-- ✅ CI extended to cover `apps/web` (typecheck + Next.js build) (2026-05-23)
-- ✅ NIS marketing site — all 7 pages, cinematic scroll hero, 5 SVG scenes, glass cards, mobile responsive (2026-05-22 → 2026-05-23)
+**Session 2026-05-23 (pushed to `main` in 6 commits):**
+- ✅ `feat(plos-backend)` — household members, account types, person avatars + migrations
+- ✅ `feat(packages)` — razorpay-sdk split into client/server + brand-tokens extended with Instrument Serif + PLOS glass palette
+- ✅ `feat(web)` — NIS marketing site, all 7 routes, cinematic 5-stage scroll hero, mobile responsive overlay (`nis-mobile.css`), Reveal fallback timer
+- ✅ `feat(plos-frontend)` — full visual redesign to prototype: glass shell, `PlosModuleHero` + 6 SVG scenes, `PlosTilt` + `PlosReveal` + `usePlosMouseMesh`, `TodayPulse` + `LifeRingsBar` + `PlosMarquee`, `PlosStreakChain` (round dots, gradient ribbon, pulsing today), all 12 routes redesigned, mobile hamburger menu, error UX unified, page width capped at 1320px, hover-tilt tamed
+- ✅ `docs(repo)` — `BACKLOG.md` + shared ownership protocol in `CLAUDE.md` / `.cursorrules` + `apps-web` CI job
+- ✅ `fix(plos-frontend)` — `mediaUrl` util that was referenced but untracked
+
+Earlier (pre-2026-05-23):
+- ✅ Sprint 0 hardening + Today home + Insights dashboard (commit `6ca7afd`)
+- ✅ Auth, dashboard, notifications, full app shell (commit `601d3da`)
+- ✅ Monorepo scaffolding + docs + START_HERE guide (commit `4a8f0c3`)
 - ✅ PLOS app — all 12 pages redesigned to the prototype, glass shell, module hero scenes, streak chain, TodayPulse, LifeRingsBar, Marquee, mobile responsive, hamburger menu (2026-05-22 → 2026-05-23)
 - ✅ Brand tokens extended with Instrument Serif + Geist + PLOS light glass palette (2026-05-22)
 - ✅ Mobile responsive pass across phone → ultrawide for both apps (2026-05-23)

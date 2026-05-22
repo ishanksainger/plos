@@ -1,6 +1,29 @@
 # Start here
 
-**Updated 2026-05-23.** Both products have been redesigned 1:1 to the prototype in `/Volumes/DevSSD/dev/projects/ishank/Design Files/` and made responsive across phone → ultra-wide.
+**Updated 2026-05-23 (end of long redesign session).** Both products have been redesigned 1:1 to the prototype in `/Volumes/DevSSD/dev/projects/ishank/Design Files/` and made responsive across phone → ultra-wide. Six commits pushed to `main`.
+
+> **For pending work and the next session's priorities → [`BACKLOG.md`](./BACKLOG.md)** (top of file has a "Next session, pick from this short list" section)
+>
+> **For AI coordination rules** → [`CLAUDE.md`](./CLAUDE.md) (Claude Code) or [`.cursorrules`](./.cursorrules) (Cursor) — both AIs share `plos-frontend/` now; `BACKLOG.md` is the lock queue
+
+## Session log — what shipped 2026-05-23
+
+Six commits, in this order on `main`:
+
+| Commit | What |
+|---|---|
+| `3c30a1f` | `feat(plos-backend)` — household members, account types, person avatars + Prisma migrations |
+| `94d8cc5` | `feat(packages)` — razorpay-sdk split into client/server + brand-tokens extended with Instrument Serif + PLOS glass palette |
+| `328a776` | `feat(web)` — NIS marketing site: 7 routes, cinematic 5-stage scroll hero, 5 SVG scenes, mobile responsive |
+| `8314cf9` | `feat(plos-frontend)` — full visual redesign to prototype: glass shell, 6 module hero scenes, streak chain (round dots + gradient ribbon + pulsing today), TodayPulse, LifeRings, Marquee, PlosTilt 3D mouse tracking, mouse-mesh body gradient, mobile hamburger, error UX unified, large-screen width cap |
+| `6fe18eb` | `docs(repo)` — `BACKLOG.md` + shared ownership protocol in CLAUDE.md / .cursorrules + `apps-web` CI job |
+| `a65d51b` | `fix(plos-frontend)` — `mediaUrl` util that was referenced but untracked |
+
+## Pending (high-level — full list in `BACKLOG.md`)
+
+**NIS P0:** mobile hamburger, cart + checkout, 3 more trackers, waitlist form, sign-in wiring, Razorpay KYC, Resend domain, Supabase setup, Vercel deploy
+**PLOS P0:** per-day habit history endpoint, notification prefs API, data export endpoints, Razorpay billing
+**Cross-cutting P1:** `packages/ui` primitives (lift Button/Card/Badge so both apps share)
 
 ---
 
