@@ -49,7 +49,7 @@ This repository cannot push edits directly into Google Drive. To merge this into
 | **E** | **Notifications** — in-app queue (DB), API, header + full page UI; hooks from complete + scheduler. | **Done** (this iteration). |
 | **F** | **Billing / Razorpay** — fields on `Subscription`; no flow yet. | Not started (deferred — build last). |
 | **G** | **Real habit streaks** — data + API + bind habits hero / KPIs. | **Done** (this iteration). |
-| **H** | **Account type** — `solo` / `family` / `shared` at onboarding + **change later** in Settings; backend field + copy/warnings when downgrading. Family/shared **permissions model** in follow-up steps. | Not started. |
+| **H** | **Account type** — `solo` / `family` / `shared` at onboarding + **change later** in Settings; household members at signup (family/shared) with **email required**, **phone optional**, **photo upload**; People module same fields; owner **phone** in Settings. Family/shared **permissions model** in follow-up steps. | **Done** (2026-05-20). |
 
 ---
 
@@ -93,6 +93,8 @@ The app cannot edit your Google Doc without your Google Cloud setup and user con
 | 2026-05-11 | Roadmap G: habit streak API + Habits UI; Vite `/api` proxy + configurable API origin; clearer load-failure copy on main pages. |
 | 2026-05-11 | Added `PLOS_CONTEXT.md` (vision, sheets vs PLOS, Today home, solo/family/shared + change later). Roadmap **H** for account type. Billing F noted as deferred last. |
 | 2026-05-20 | Sprint 0 foundation + Step I Today home (`/`, `/insights`, `GET /users/today`). |
+| 2026-05-20 | Roadmap H: `accountType` on User, register picker, Settings change + confirmation modal. |
+| 2026-05-20 | Roadmap H+: Person `email` (required), `phone` (optional), `avatarUrl` + `POST /persons/:id/avatar`; household members on family/shared register; user `phone` in Settings. |
 
 _Add a row here whenever you merge a roadmap step._
 

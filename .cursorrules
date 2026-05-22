@@ -2,16 +2,36 @@
 
 Cursor reads this file at the start of every chat. These are the same rules as `CLAUDE.md` — keep them in sync if you edit either.
 
+**Both AIs share PLOS work now** (Claude Code led the May 2026 visual redesign of `plos-frontend`; Cursor continues backend work and shares the frontend). See ownership table + coordination protocol below.
+
+**Before starting any task, read `BACKLOG.md` at the repo root** — it's the single source of truth for pending work and ownership.
+
+**Last updated:** 2026-05-23
+
 ## What's in this repo
 
 Monorepo holding two products under one brand (NIS):
-- `apps/web/` → NIS brand site (Next.js, thenispace.com) — **Claude Code owns this. Cursor: hands off.**
-- `plos-backend/` → PLOS API (NestJS) — **Cursor owns**
-- `plos-frontend/` → PLOS web app (Vite + Mantine) — **Cursor owns**
+- `apps/web/` → NIS brand site (Next.js, thenispace.com) — **Claude Code primary. Cursor: hands off unless BACKLOG.md tags an item `cursor` or `either`.**
+- `plos-backend/` → PLOS API (NestJS) — **Cursor primary. Claude Code touches only when an item is tagged for them.**
+- `plos-frontend/` → PLOS web app (Vite + Mantine) — **Shared. Coordinate via BACKLOG.md.**
 - `packages/brand-tokens/` → shared design tokens — **Nikita owns. Don't change values without explicit approval.**
 - `packages/ui/` → shared UI primitives — either AI may add components with PR review
 - `packages/razorpay-sdk/` → shared Razorpay client — either AI may extend with PR review
 - `docs/` → product context and roadmaps
+- `BACKLOG.md` → pending work register (READ FIRST)
+- `START_HERE.md` → current state + what's running + click-through flow
+
+## Coordination protocol (shared frontend)
+
+The protocol is simple: **`BACKLOG.md` is the queue.** Don't start a task that isn't in there or isn't tagged for you.
+
+1. Open `BACKLOG.md`, find an item tagged `cursor` or `either`. To pick up something tagged `claude`, ask the human first.
+2. Edit the line to `[in progress · YYYY-MM-DD · cursor]` and commit before writing code — this is the lock.
+3. Branch as `feat/plos-<short-name>`. One PR per item.
+4. When done, strike through the bullet, add `→ shipped in <commit-or-PR>`. Update `START_HERE.md` if user-visible.
+5. New pending work discovered mid-task → add a bullet with priority + owner. Don't leave silent TODOs in code.
+
+If you need to touch a file outside your primary area without a BACKLOG.md entry, write the entry FIRST, get human approval, then code.
 
 ## Read before substantial work
 
@@ -23,23 +43,34 @@ Plans live in `/Volumes/DevSSD/dev/claude/`:
 ## Cross-app rules
 
 1. `plos-backend` and `plos-frontend` may NOT import from `apps/web/`. Communication is HTTP-only.
-2. Always import brand from `@nis/brand-tokens`. Never hardcode colors, fonts, spacing.
-3. Use `@nis/ui` Button/Card/Badge primitives instead of raw HTML buttons.
-4. Use `@nis/razorpay-sdk` for any Razorpay calls — never instantiate the SDK directly.
+2. `apps/web/` may NOT import from `plos-backend/` or `plos-frontend/`. Same reason.
+3. Always import brand from `@nis/brand-tokens`. Never hardcode colors, fonts, spacing.
+4. Use `@nis/ui` Button/Card/Badge primitives instead of raw HTML buttons (when they exist — see BACKLOG.md P1).
+5. Use `@nis/razorpay-sdk` for any Razorpay calls — never instantiate the SDK directly.
 
 ## Coding conventions
 
 - TypeScript everywhere. No `any` without a comment.
-- No `console.log` in committed code.
+- No `console.log` in committed code. Use Pino in backend; dev-only console with eslint-disable in frontend.
 - Use `Intl.NumberFormat` for currency, never hardcode `₹`.
 - Store dates UTC, display in user's timezone from settings.
 - Test critical paths (money handling, auth, scheduler).
 
+## Frontend conventions (when working in plos-frontend/)
+
+Claude Code's May 2026 redesign established these patterns — preserve them:
+- **Shared design components** live in `src/components/plos/` — `PlosModuleHero`, `PlosReveal`, `PlosTilt`, `ModuleScenes`, `Charts`, `ResponsibilityRow`, `PlosCategoryModule`, `TodayPulse`, `LifeRings`, `PlosMarquee`. Reuse them; don't create parallel versions.
+- **Glass / streak chain CSS** lives in `src/styles/plos-prototype/*.css` (copied from prototype, treat as read-only) plus `src/styles/plos-mobile.css` (our responsive layer — edit here).
+- **Mobile responsive** — sidebar collapses to a Drawer at ≤900px (`useMediaQuery('(max-width: 900px)')` in `AppLayout`); a hamburger button in `PlosTopbar` opens it. KPI grid drops to 1-col at ≤640px.
+- **Auth + queries** — `useAppSelector(s => s.auth.user)` for the current user; `@tanstack/react-query` for all server data; `responsibilityService`, `personService`, etc. in `src/services/`.
+- **Brand tokens** — colors from `var(--plos-accent)` etc. (defined in `tokens.css`); fonts via `var(--nis-font-display)` (Sora) / `var(--nis-font-serif)` (Instrument Serif italic).
+
 ## Git workflow
 
-- Branch naming: `feat/plos-<short-name>`, `pkg/<package>-<change>`.
+- Branch naming: `feat/plos-<short-name>`, `feat/web-<short-name>`, `pkg/<package>-<change>`.
 - No direct commits to `main`. Always PR.
 - Conventional commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`.
+- One PR = one BACKLOG.md item.
 
 ## Specifically NOT to do
 
@@ -49,9 +80,11 @@ Plans live in `/Volumes/DevSSD/dev/claude/`:
 - Don't gate free-tier features without checking the pricing plan.
 - Don't send notifications without opt-in checks.
 - Don't store secrets in code — use `.env` files.
+- Don't restructure `plos-frontend/src/components/plos/` or `src/styles/plos-prototype/` without an entry in BACKLOG.md — that's the design-system surface both AIs depend on.
 
 ## When in doubt
 
-- Touching `packages/*`? Open a PR, don't merge yourself. Ishank reviews shared packages.
-- Touching `apps/web/`? Don't. That's Claude Code's territory.
-- Unsure which doc to read? Start with `SETUP.md` at the repo root.
+- Item not in `BACKLOG.md`? Don't code it. Add the entry first.
+- Touching `packages/*`? Open a PR with a clear "why" in the description. Ishank reviews shared packages.
+- Touching `apps/web/`? Don't, unless the BACKLOG.md item is tagged for you.
+- Unsure which doc to read? Start with `BACKLOG.md`, then `START_HERE.md`, then `SETUP.md`.

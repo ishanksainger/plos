@@ -2,7 +2,11 @@
 
 This file is read automatically by Claude Code at the start of every session. Cursor reads the equivalent `.cursorrules` file. Both files contain the same rules — keep them in sync if you edit either.
 
-**Last updated:** 2026-05-20
+**Both AIs share PLOS work now** (Claude Code did the May 2026 visual redesign of `plos-frontend`; Cursor still owns the backend and continues feature work on the frontend alongside Claude). See section 3 and the coordination protocol in section 3a.
+
+**Before starting any task, read `BACKLOG.md` at the repo root** — it's the single source of truth for what's still pending and who's expected to do it.
+
+**Last updated:** 2026-05-23
 
 ---
 
@@ -13,14 +17,16 @@ This is a monorepo holding two products under one brand (NIS — Nest of Innovat
 ```
 plos/                              ← repo root (will likely be renamed to thenispace/ later)
 ├── apps/
-│   └── web/                       → NIS brand site (Next.js, thenispace.com)  ← Claude Code owns
-├── plos-backend/                  → PLOS API (NestJS, app.thenispace.com)     ← Cursor owns
-├── plos-frontend/                 → PLOS web app (Vite + Mantine)             ← Cursor owns
+│   └── web/                       → NIS brand site (Next.js, thenispace.com)  ← Claude Code primary
+├── plos-backend/                  → PLOS API (NestJS, app.thenispace.com)     ← Cursor primary
+├── plos-frontend/                 → PLOS web app (Vite + Mantine)             ← Shared (see §3)
 ├── packages/
 │   ├── brand-tokens/              → shared design tokens (Nikita owns)
 │   ├── ui/                        → shared UI primitives (Button, Card, Badge)
 │   └── razorpay-sdk/              → shared Razorpay client
 ├── docs/                          → product context, roadmaps, planning notes
+├── BACKLOG.md                     → pending work register — READ THIS FIRST
+├── START_HERE.md                  → current state + what's running + click-through flow
 ├── CLAUDE.md                      → this file (conventions for Claude Code)
 ├── .cursorrules                   → same rules, for Cursor
 ├── SETUP.md                       → day-to-day commands for the human owner
@@ -42,15 +48,27 @@ For long-term context, `ishank_income_strategy_2026_v3.md` is the master busines
 
 ## 3. Tool ownership (avoid stepping on each other)
 
-| Folder | Owned by | Other AIs may touch? |
+| Folder | Primary | Secondary may touch? |
 |---|---|---|
-| `apps/web/` | Claude Code | No. Cursor: hands off. |
-| `plos-backend/` | Cursor | No. Claude Code: hands off. |
-| `plos-frontend/` | Cursor | No. Claude Code: hands off. |
+| `apps/web/` | Claude Code | Cursor: only if explicitly invited via BACKLOG.md, otherwise hands off. |
+| `plos-backend/` | Cursor | Claude Code: only backend endpoints listed in BACKLOG.md and tagged `claude` / `either`. Don't restructure NestJS modules unprompted. |
+| `plos-frontend/` | **Shared** (Claude Code led the May 2026 visual redesign; Cursor continues feature work) | Either may touch any file. Coordinate via BACKLOG.md — see §3a. |
 | `packages/brand-tokens/` | **Nikita (human)** | Neither AI changes values without explicit human approval. |
 | `packages/ui/` | Whichever AI first needs a new primitive. PR required. | Either, with PR review by Ishank. |
 | `packages/razorpay-sdk/` | Whichever AI ships payment first. | Either, with PR review by Ishank. |
-| `docs/` | Humans + AI | Either may add. Don't delete others' docs. |
+| `docs/` + `BACKLOG.md` + `START_HERE.md` | Humans + AI | Either may add. Don't delete others' docs. **Always update `BACKLOG.md` when you finish an item.** |
+
+## 3a. Coordination protocol (when two AIs share `plos-frontend/`)
+
+The protocol is simple: **`BACKLOG.md` is the queue.** Don't start a task that isn't in there or isn't tagged for you.
+
+1. **Before starting work**, open `BACKLOG.md` and find an item tagged for you (`claude` or `either`). If you want to pick up something tagged `cursor`, ask the human first.
+2. **Claim the item** by editing the line to `[in progress · YYYY-MM-DD · claude]` and committing that edit before you write any code. This is the lock — if Cursor sees the line is in progress, they'll pick a different one.
+3. **Work on a branch** named `feat/plos-<short-name>` (see §6). One PR per item.
+4. **When done**, strike through the bullet in `BACKLOG.md` and add `→ shipped in <commit-or-PR-link>`. Update `START_HERE.md` if the change is user-visible.
+5. **If you find new pending work** during a task (a real follow-up, not scope creep), add a new bullet to `BACKLOG.md` with a sensible priority and owner. Don't silently leave TODO comments in code.
+
+If you ever need to touch a file outside your primary area without a BACKLOG.md entry, write the entry FIRST, get human approval, then code.
 
 ## 4. Cross-app rules (the important ones)
 
@@ -85,11 +103,12 @@ For long-term context, `ishank_income_strategy_2026_v3.md` is the master busines
 
 ## 7. When in doubt
 
+- **Item not in `BACKLOG.md`?** Don't code it. Add the item to BACKLOG.md first (with priority + owner), then claim it per §3a.
 - **Touching `packages/*`?** Stop. Open a PR with a clear "why" in the description. Ishank reviews.
-- **Touching the other AI's `apps/` folder?** Don't. Tell the human what you'd change and let them coordinate.
+- **About to touch the other AI's primary area** (Cursor → `apps/web/`, Claude Code → `plos-backend/`)? Don't, unless the BACKLOG.md item is tagged for you.
 - **Adding a new dependency?** Justify it in the PR. Prefer existing deps. Especially: don't add a new state library, CSS framework, or API client without discussion.
 - **Renaming files?** Use `git mv` so history is preserved.
-- **Deleting code?** Comment-out with `// REMOVED-2026-05-20: reason` if you're unsure, leave for one review cycle, then delete.
+- **Deleting code?** Comment-out with `// REMOVED-2026-05-23: reason` if you're unsure, leave for one review cycle, then delete.
 
 ## 8. Things specifically NOT to do
 
