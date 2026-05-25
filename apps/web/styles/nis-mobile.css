@@ -5,7 +5,131 @@
  * plus large-screen guardrails.
  */
 
-/* ───── Header: collapse on phones to logo + Open PLOS only ───── */
+/* ───── Header: collapse on phones to logo + Open PLOS + hamburger ───── */
+.nis-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 10px;
+  border: 1px solid var(--rule);
+  background: var(--bg-card);
+  color: var(--ink-1);
+  cursor: pointer;
+  transition: background 160ms, border-color 160ms;
+}
+.nis-hamburger:hover { background: var(--bg-card-hover); border-color: var(--rule-strong); }
+.nis-hamburger > span {
+  position: relative;
+  width: 16px;
+  height: 12px;
+  display: inline-block;
+}
+.nis-hamburger > span > span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform 200ms ease, opacity 160ms ease, top 200ms ease;
+}
+.nis-hamburger > span > span:nth-child(1) { top: 0; }
+.nis-hamburger > span > span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+.nis-hamburger > span > span:nth-child(3) { top: 100%; transform: translateY(-100%); }
+.nis-hamburger > span[data-state="open"] > span:nth-child(1) {
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+.nis-hamburger > span[data-state="open"] > span:nth-child(2) { opacity: 0; }
+.nis-hamburger > span[data-state="open"] > span:nth-child(3) {
+  top: 50%;
+  transform: translateY(-50%) rotate(-45deg);
+}
+
+/* ───── Mobile menu sheet ───── */
+.nis-mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.nis-mobile-menu.open {
+  pointer-events: auto;
+  opacity: 1;
+}
+.nis-mobile-menu-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(20, 12, 36, 0.55);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  cursor: pointer;
+}
+.nis-mobile-menu-sheet {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100dvh;
+  width: min(320px, 86vw);
+  background: var(--bg);
+  border-left: 1px solid var(--rule);
+  box-shadow: -16px 0 40px -16px rgba(20, 12, 36, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 80px 22px 28px;
+  transform: translateX(100%);
+  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.nis-mobile-menu.open .nis-mobile-menu-sheet {
+  transform: translateX(0);
+}
+.nis-mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.nis-mobile-nav-link {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-family: var(--nis-font-display);
+  font-weight: 500;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  color: var(--ink-2);
+  text-decoration: none;
+  transition: background 160ms, color 160ms;
+}
+.nis-mobile-nav-link:hover { background: var(--bg-card); color: var(--ink-1); }
+.nis-mobile-nav-link.active {
+  background: var(--bg-card);
+  color: var(--ink-1);
+}
+.nis-mobile-menu-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nis-mobile-menu-actions .nis-btn {
+  justify-content: center;
+  width: 100%;
+  text-decoration: none;
+}
+
+@media (min-width: 721px) {
+  /* Desktop / tablet: hide sheet completely so it can't be focused. */
+  .nis-mobile-menu { display: none; }
+}
+
 @media (max-width: 880px) {
   .nis-header-inner {
     padding: 12px 18px;
@@ -25,6 +149,14 @@
   }
   .nis-logo {
     font-size: 15px;
+  }
+  .nis-hamburger {
+    display: inline-flex;
+  }
+  /* At ≤720 we surface the Open PLOS button inside the drawer instead, to
+     keep the topbar to logo + hamburger only. */
+  .nis-header-actions > .nis-btn-primary {
+    display: none;
   }
 }
 
