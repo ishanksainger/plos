@@ -1,4 +1,5 @@
 @import '@nis/brand-tokens/tokens.css';
+@import '@nis/ui/ui.css';
 @import '../styles/nis.css';
 @import '../styles/cinema.css';
 @import '../styles/nis-mobile.css';

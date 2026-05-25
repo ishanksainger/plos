@@ -1,3 +1,8 @@
-// Stub. Real components ship in Week 0 of nis_code_plan_v1.md.
-// Cursor / Claude Code: implement Button, Card, Badge, Container here.
-export {};
+export { Button } from './Button';
+export type { ButtonProps, ButtonVariant, ButtonSize } from './Button';
+
+export { Card } from './Card';
+export type { CardProps, CardVariant, CardPadding } from './Card';
+
+export { Badge } from './Badge';
+export type { BadgeProps, BadgeTone, BadgeSize } from './Badge';

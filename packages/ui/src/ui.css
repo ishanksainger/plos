@@ -1,0 +1,207 @@
+/**
+ * @nis/ui — shared primitive styles.
+ *
+ * Imported by:
+ *   - apps/web/app/globals.css
+ *   - plos-frontend/src/main.tsx
+ *
+ * Uses CSS variables from @nis/brand-tokens (`--nis-*`) and the PLOS glass
+ * palette (`--plos-*`). The same component renders correctly in both shells
+ * because dark surfaces use --nis-bg-* and light surfaces use --plos-glass-*.
+ */
+
+/* ───── Button ───── */
+.nis-ui-btn {
+  --_btn-bg: var(--nis-bg-card);
+  --_btn-fg: var(--nis-fg-primary);
+  --_btn-border: var(--nis-border-default);
+  --_btn-bg-hover: var(--nis-bg-card-hover);
+  --_btn-border-hover: var(--nis-border-strong);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--nis-font-body), system-ui, sans-serif;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  border-radius: var(--nis-radius-full);
+  border: 1px solid var(--_btn-border);
+  background: var(--_btn-bg);
+  color: var(--_btn-fg);
+  cursor: pointer;
+  transition:
+    background var(--nis-motion-fast) ease,
+    border-color var(--nis-motion-fast) ease,
+    color var(--nis-motion-fast) ease,
+    transform var(--nis-motion-fast) ease,
+    opacity var(--nis-motion-fast) ease;
+  user-select: none;
+}
+.nis-ui-btn:hover:not(:disabled) {
+  background: var(--_btn-bg-hover);
+  border-color: var(--_btn-border-hover);
+}
+.nis-ui-btn:focus-visible {
+  outline: 2px solid var(--nis-accent-electric);
+  outline-offset: 2px;
+}
+.nis-ui-btn:active:not(:disabled) { transform: translateY(1px); }
+.nis-ui-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.nis-ui-btn--full { width: 100%; }
+
+/* Sizes */
+.nis-ui-btn--sm { padding: 6px 12px; font-size: 12px; }
+.nis-ui-btn--md { padding: 9px 16px; font-size: 13px; }
+.nis-ui-btn--lg { padding: 12px 22px; font-size: 14px; }
+
+/* Variants */
+.nis-ui-btn--primary {
+  --_btn-bg: var(--nis-accent-electric);
+  --_btn-fg: var(--nis-fg-on-accent);
+  --_btn-border: var(--nis-accent-electric);
+  --_btn-bg-hover: color-mix(in srgb, var(--nis-accent-electric) 92%, white 8%);
+  --_btn-border-hover: var(--_btn-bg-hover);
+}
+.nis-ui-btn--primary:hover:not(:disabled) { transform: translateY(-1px); }
+
+.nis-ui-btn--secondary {
+  /* Inherits the default neutral surface; works in both NIS dark + PLOS light
+     because both expose --nis-bg-card / --nis-border-default. */
+}
+
+.nis-ui-btn--ghost {
+  --_btn-bg: transparent;
+  --_btn-border: transparent;
+  --_btn-bg-hover: var(--nis-border-subtle);
+  --_btn-border-hover: transparent;
+}
+
+.nis-ui-btn--danger {
+  --_btn-bg: var(--nis-accent-danger);
+  --_btn-fg: #fff;
+  --_btn-border: var(--nis-accent-danger);
+  --_btn-bg-hover: color-mix(in srgb, var(--nis-accent-danger) 90%, black 10%);
+  --_btn-border-hover: var(--_btn-bg-hover);
+}
+
+.nis-ui-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.nis-ui-btn__label { display: inline-flex; align-items: center; }
+
+.nis-ui-btn__spinner {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  border-top-color: transparent;
+  animation: nis-ui-spin 600ms linear infinite;
+}
+@keyframes nis-ui-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ───── Card ───── */
+.nis-ui-card {
+  border-radius: var(--nis-radius-lg);
+  background: var(--nis-bg-card);
+  color: var(--nis-fg-primary);
+  border: 1px solid var(--nis-border-subtle);
+  transition:
+    background var(--nis-motion-normal) ease,
+    border-color var(--nis-motion-normal) ease,
+    transform var(--nis-motion-normal) var(--nis-easing-smooth),
+    box-shadow var(--nis-motion-normal) ease;
+}
+
+.nis-ui-card--glass {
+  background: var(--plos-glass-bg, rgba(255, 255, 255, 0.62));
+  color: var(--plos-ink-1, var(--nis-fg-primary));
+  border: 1px solid var(--plos-glass-border, var(--nis-border-subtle));
+  box-shadow: var(--plos-glass-shadow, var(--nis-shadow-md));
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+}
+
+.nis-ui-card--outline {
+  background: transparent;
+  border: 1px solid var(--nis-border-default);
+}
+
+.nis-ui-card--p-none { padding: 0; }
+.nis-ui-card--p-sm { padding: 12px; }
+.nis-ui-card--p-md { padding: 20px; }
+.nis-ui-card--p-lg { padding: 28px; }
+
+.nis-ui-card--interactive {
+  cursor: pointer;
+}
+.nis-ui-card--interactive:hover {
+  transform: translateY(-2px);
+  border-color: var(--nis-border-default);
+}
+.nis-ui-card--interactive:focus-visible {
+  outline: 2px solid var(--nis-accent-electric);
+  outline-offset: 2px;
+}
+
+/* ───── Badge ───── */
+.nis-ui-badge {
+  --_bd-bg: var(--nis-border-subtle);
+  --_bd-fg: var(--nis-fg-secondary);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--nis-radius-full);
+  background: var(--_bd-bg);
+  color: var(--_bd-fg);
+  font-family: var(--nis-font-body), system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.nis-ui-badge--sm { padding: 4px 8px; font-size: 11px; }
+.nis-ui-badge--md { padding: 6px 12px; font-size: 12px; }
+
+.nis-ui-badge--neutral {
+  /* defaults already set */
+}
+.nis-ui-badge--accent {
+  --_bd-bg: color-mix(in srgb, var(--nis-accent-electric) 14%, transparent);
+  --_bd-fg: var(--nis-accent-electric);
+}
+.nis-ui-badge--info {
+  --_bd-bg: color-mix(in srgb, var(--nis-accent-blue) 14%, transparent);
+  --_bd-fg: var(--nis-accent-blue);
+}
+.nis-ui-badge--success {
+  --_bd-bg: color-mix(in srgb, var(--nis-accent-success) 14%, transparent);
+  --_bd-fg: var(--nis-accent-success);
+}
+.nis-ui-badge--warning {
+  --_bd-bg: color-mix(in srgb, var(--nis-accent-warning) 18%, transparent);
+  --_bd-fg: var(--nis-accent-warning);
+}
+.nis-ui-badge--danger {
+  --_bd-bg: color-mix(in srgb, var(--nis-accent-danger) 14%, transparent);
+  --_bd-fg: var(--nis-accent-danger);
+}
+
+.nis-ui-badge__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
