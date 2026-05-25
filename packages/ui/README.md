@@ -75,6 +75,22 @@ PLOS uses Mantine + plain CSS; NIS uses Tailwind. Authoring components in
 plain CSS keeps the package framework-agnostic and avoids dragging a
 Tailwind preset into every consumer.
 
+## Browsing the components
+
+```bash
+npm run stories --workspace=@nis/ui
+```
+
+Opens a Ladle dev server (~http://localhost:61000) with every story
+under `src/stories/*.stories.tsx`. Toggle the "Background" control in
+the right rail to preview against NIS dark vs PLOS glass.
+
+To build a static snapshot:
+
+```bash
+npm run stories:build --workspace=@nis/ui
+```
+
 ## Ownership
 
 Ishank reviews PRs that change the public API. Either AI (Claude Code or

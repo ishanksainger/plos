@@ -10,8 +10,18 @@
     "./ui.css": "./src/ui.css"
   },
   "files": ["src"],
+  "scripts": {
+    "stories": "ladle serve",
+    "stories:build": "ladle build"
+  },
   "peerDependencies": {
     "react": ">=18",
     "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@ladle/react": "^5.0.3",
+    "@nis/brand-tokens": "*",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }
