@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { createOrder } from '@nis/razorpay-sdk/server';
 import { getPurchasableTracker } from '@/lib/tracker-catalog';
+import { rateLimit, callerIp, rateLimitHeaders } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
+
+const RL = { bucket: 'razorpay-cart-order', max: 10, windowSec: 60 };
 
 type CartItemInput = { slug: string; qty: number };
 type CartOrderRequest = { items: CartItemInput[]; email?: string };
@@ -10,6 +13,14 @@ type CartOrderRequest = { items: CartItemInput[]; email?: string };
 const MAX_QTY_PER_LINE = 5;
 
 export async function POST(req: Request) {
+  const limit = await rateLimit({ ...RL, key: callerIp(req) });
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: 'Slow down — too many checkout attempts. Try again in a minute.' },
+      { status: 429, headers: rateLimitHeaders(limit, RL.max) },
+    );
+  }
+
   let body: CartOrderRequest;
   try {
     body = (await req.json()) as CartOrderRequest;

@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto, UpdateProfileDto } from './dto/auth.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -9,11 +10,16 @@ import type { JwtPayload } from './current-user.decorator';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // Tight: 5 register attempts per minute per IP — covers honest typos but
+  // stops sign-up bots from spamming the persons table + outbound email.
+  @Throttle({ long: { ttl: 60_000, limit: 5 } })
   @Post('register')
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
   }
 
+  // Tight: 10 login attempts per minute. Brute force + credential stuffing.
+  @Throttle({ long: { ttl: 60_000, limit: 10 } })
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);

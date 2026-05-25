@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
+import { rateLimit, callerIp, rateLimitHeaders } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
+
+const RL = { bucket: 'waitlist', max: 5, windowSec: 60 };
 
 type WaitlistRequest = {
   email?: string;
@@ -19,6 +22,14 @@ const sanitiseSource = (s: string | undefined) => {
 };
 
 export async function POST(req: Request) {
+  const limit = await rateLimit({ ...RL, key: callerIp(req) });
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: 'Too many requests. Try again in a minute.' },
+      { status: 429, headers: rateLimitHeaders(limit, RL.max) },
+    );
+  }
+
   let body: WaitlistRequest;
   try {
     body = (await req.json()) as WaitlistRequest;

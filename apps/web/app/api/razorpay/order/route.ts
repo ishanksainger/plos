@@ -1,12 +1,23 @@
 import { NextResponse } from 'next/server';
 import { createOrder } from '@nis/razorpay-sdk/server';
 import { getTracker } from '@/lib/tracker-catalog';
+import { rateLimit, callerIp, rateLimitHeaders } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
+
+const RL = { bucket: 'razorpay-order', max: 10, windowSec: 60 };
 
 type OrderRequest = { productSlug: string; email?: string };
 
 export async function POST(req: Request) {
+  const limit = await rateLimit({ ...RL, key: callerIp(req) });
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: 'Slow down — too many order attempts. Try again in a minute.' },
+      { status: 429, headers: rateLimitHeaders(limit, RL.max) },
+    );
+  }
+
   let body: OrderRequest;
   try {
     body = (await req.json()) as OrderRequest;
