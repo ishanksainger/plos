@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import TodayPage from './pages/TodayPage';
 import DashboardPage from './pages/DashboardPage';
 import ResponsibilitiesPage from './pages/ResponsibilitiesPage';
+import ResponsibilityDetailPage from './pages/ResponsibilityDetailPage';
 import FinancePage from './pages/FinancePage';
 import HealthPage from './pages/HealthPage';
 import HabitsPage from './pages/HabitsPage';
@@ -28,7 +29,8 @@ export default function App() {
               <Routes>
                 <Route path="/"                 element={<TodayPage />} />
                 <Route path="/insights"         element={<DashboardPage />} />
-                <Route path="/responsibilities" element={<ResponsibilitiesPage />} />
+                <Route path="/responsibilities"     element={<ResponsibilitiesPage />} />
+                <Route path="/responsibilities/:id" element={<ResponsibilityDetailPage />} />
                 <Route path="/people"           element={<PeoplePage />} />
                 <Route path="/people/:id"       element={<PersonDetailPage />} />
                 <Route path="/finance"          element={<FinancePage />} />

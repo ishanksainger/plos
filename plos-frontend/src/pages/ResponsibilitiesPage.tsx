@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Loader } from '@mantine/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
@@ -77,7 +78,8 @@ function Row({
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <div
+          <Link
+            to={`/responsibilities/${r.id}`}
             style={{
               fontSize: 14,
               fontWeight: 600,
@@ -87,7 +89,7 @@ function Row({
             }}
           >
             {r.title}
-          </div>
+          </Link>
           <span
             style={{
               fontSize: 10,

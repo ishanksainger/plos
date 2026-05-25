@@ -41,6 +41,8 @@ export const responsibilityService = {
   update: (id: number, data: UpdateResponsibilityPayload) =>
     api.patch<Responsibility>(`/responsibility/${id}`, data),
 
+  getById: (id: number) => api.get<Responsibility>(`/responsibility/${id}`),
+
   markComplete: (id: number) =>
     api.patch<Responsibility>(`/responsibility/${id}/complete`),
 
