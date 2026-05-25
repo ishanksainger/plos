@@ -8,13 +8,21 @@
 
 ## ▶ Next session — pick from this short list
 
-Three batches of 5 worked on 2026-05-25 (this one in progress — see "Recently completed" as each item lands).
+Three back-to-back batches of 5 shipped on 2026-05-25 (15 BACKLOG items closed today). The next-leverage chunk:
 
-1. ~~**NIS bundle page**~~ [in progress · 2026-05-25c · claude] — `/trackers/bundle` showing all 4 trackers with a "buy all" discount.
-2. ~~**PLOS per-day habit history endpoint**~~ [in progress · 2026-05-25c · claude] — backend `GET /responsibility/habits/:id/history?days=42` + frontend wire (user gave claude authority to do both halves).
-3. ~~**PLOS notification preferences API**~~ [in progress · 2026-05-25c · claude] — `GET/PATCH /users/notification-preferences` + Settings tab wire (user gave claude authority for both halves).
-4. ~~**NIS analytics + SEO**~~ [in progress · 2026-05-25c · claude] — `sitemap.xml`, `robots.txt`, schema.org Product markup, Plausible.
-5. ~~**PLOS loading skeletons + retry buttons**~~ [in progress · 2026-05-25c · claude] — replace `<Loader dots>` placeholders with skeleton cards; Retry CTAs on error states.
+1. **PLOS data export endpoints** (P0 · either) — `GET /users/export?format=json|csv` returning all responsibilities/people/timeline. Settings → Plan buttons are wired but stub. ~1 hr (BE) + 30 min (FE).
+2. **PLOS Razorpay billing wiring** (P0 · either) — plan upgrade endpoint + Razorpay subscription create + webhook. Hooks into existing `Subscription` Prisma model. ~3 hrs end-to-end.
+3. **PLOS WhatsApp reminder pipeline** (P1 · either) — Twilio or Meta WhatsApp Business API + opt-in flow (the `whatsappOptIn` toggle is already wired to a persisted user pref). ~2 hrs.
+4. **PLOS streaks-at-risk reminder cron** (P1 · either) — scheduler picks habits with streaks ≤1 day from breaking and emits notifications (gate via the new `streakAtRisk` user pref). ~1 hr (scheduler already exists).
+5. **NIS shop/canvas content + Spline hero** (P1 · human + claude wires) — Nikita produces 3D + imagery; claude wires real Spline embed in `HeroOrb` and real merch in `nis-data.ts`. Time bound on Nikita.
+
+After those, the next tier:
+- 3 more tracker contents (human, P0)
+- Razorpay KYC (human · 5–7 day wait — **start ASAP**)
+- Resend domain verification for `thenispace.com`
+- Supabase project + schema execution + storage bucket
+- Vercel deploy + DNS
+- Lawyer review of legal placeholder copy
 
 After those, the next tier:
 - 3 more trackers content + files (human)
@@ -73,7 +81,8 @@ Everything else is itemized below.
 
 ### P2 — polish
 
-- [ ] **SEO** — `sitemap.xml`, `robots.txt`, schema.org product markup on tracker detail pages. **Owner:** `claude`
+- ~~**SEO**~~ → shipped 2026-05-25 in `f623388` (`app/sitemap.ts` + `app/robots.ts` Next.js convention files; `ProductJsonLd` JSON-LD mounted on /trackers/[slug] and /trackers/bundle with INR currency + availability).
+- ~~**Analytics** — Plausible or GA on every page.~~ → shipped 2026-05-25 in `f623388` (env-gated Plausible `<Script>` in root layout — only renders when NEXT_PUBLIC_PLAUSIBLE_DOMAIN is set; custom CDN supported).
 - [ ] **Newsletter signup** in footer — single-email POST to a list. **Owner:** `claude`
 - [ ] **Analytics** — Plausible or GA on every page. **Owner:** `claude`
 - [ ] **OG images** per page — currently no `og:image` for social sharing. **Owner:** `claude` + `human` (designs)
@@ -84,8 +93,8 @@ Everything else is itemized below.
 
 ### P0 — launch blockers
 
-- [ ] **Per-day habit completion history endpoint** — `GET /responsibility/habits/:id/history?days=42` returning per-day completion array. Frontend currently synthesizes the 42-day pattern from streak count (deterministic-by-id, fake). **Owner:** `cursor` (backend) + `claude` (wire frontend after)
-- [ ] **Notification preferences API** — `GET/PATCH /users/notification-preferences` with `inApp`, `emailDigests`, `whatsappOptIn`, `streakAtRisk` toggles. Settings → Notifications tab is display-only. **Owner:** `cursor`
+- ~~**Per-day habit completion history endpoint**~~ → shipped 2026-05-25 in `48e4d0a` (BE service + controller + migration-friendly query; FE `useQueries` fan-out on `HabitsPage`; deterministic synth removed in favour of real per-day data). Claude handled both halves with explicit authority.
+- ~~**Notification preferences API**~~ → shipped 2026-05-25 in `e2b28cb` (Prisma model + lazy-create getOrCreate + PATCH partial update; Settings tab swaps the display-only chips for live `role="switch"` toggles with optimistic update + rollback). Claude handled both halves with explicit authority.
 - [ ] **Data export endpoints** — `GET /users/export?format=json|csv` returning all responsibilities/people/timeline. Settings → Plan buttons are stubs. **Owner:** `cursor`
 - [ ] **Razorpay billing wiring** — `subscription.tier/status` exists in `MeResponse` but there's no payment flow. Need plan upgrade endpoint + Razorpay subscription create + webhook. **Owner:** `cursor`
 
@@ -100,8 +109,8 @@ Everything else is itemized below.
 
 ### P2 — polish
 
-- [ ] **Loading skeletons** — current `<Loader>` dots; better with skeleton cards that match final layout. **Owner:** `claude`
-- [ ] **Error retry buttons** — "Failed to load …" text has no retry CTA. **Owner:** `claude`
+- ~~**Loading skeletons**~~ → shipped 2026-05-25 in `5d36972` (`SkeletonBlock` / `SkeletonText` / `SkeletonCard` / `SkeletonGrid` / `SkeletonRowList` primitives with a single shimmer keyframe; applied across Today, Insights, People, Responsibilities, Habits, Person detail, Responsibility detail).
+- ~~**Error retry buttons**~~ → shipped 2026-05-25 in `5d36972` (`PlosErrorRetry` primitive with title + optional message + "Try again" CTA bound to React Query refetch; applied alongside skeletons on every page that had a "Failed to load…" state).
 - [ ] **Empty-state illustrations** — current empty states are text-only; even small SVG illustrations would warm them up. **Owner:** `claude` + `human` (Nikita illustrations)
 - [ ] **Form validation copy** on `/register` — password length, email format. Currently HTML-default validation. **Owner:** `claude`
 - [ ] **Avatar upload preview** before save — show the file thumbnail in the modal. **Owner:** `claude`
@@ -136,6 +145,14 @@ Everything else is itemized below.
 ---
 
 ## Recently completed (last 30 days)
+
+**Session 2026-05-25c (third batch of 5 — claude on both backend + frontend with explicit authority):**
+- ✅ `docs(repo)` (`41af317`) — claimed batch 3 per §3a
+- ✅ `feat(web)` (`fe3006c`) — **NIS bundle page + bundle SKU end-to-end.** `BUNDLE` Tracker with `kind: 'bundle'` + components, 25%-off price math, cart-compatible, `persistAndEmailBundle` fulfillment branch that creates download tokens for each shipped component + bundle email template. `/trackers/bundle` landing + banner on /trackers grid.
+- ✅ `feat(web)` (`f623388`) — **NIS SEO + Plausible.** `sitemap.ts` + `robots.ts` Next.js conventions; `ProductJsonLd` JSON-LD on tracker pages; env-gated Plausible `<Script>` in root layout.
+- ✅ `feat(plos)` (`48e4d0a`) — **PLOS habit history endpoint.** `GET /responsibility/habits/:id/history?days=42` returns per-day completion (BE service + controller); frontend uses `useQueries` to fan out; deterministic synth removed.
+- ✅ `feat(plos)` (`e2b28cb`) — **PLOS notification preferences.** New `NotificationPreferences` Prisma model + migration + service (lazy-create) + `GET/PATCH /users/notification-preferences`; Settings tab swaps display-only chips for live optimistic toggles.
+- ✅ `feat(plos-frontend)` (`5d36972`) — **Loading skeletons + retry buttons.** `PlosSkeleton` (5 primitives) + `PlosErrorRetry` applied across Today / Insights / People / Responsibilities / Habits / Person detail / Responsibility detail. Single shimmer keyframe respects `prefers-reduced-motion`.
 
 **Session 2026-05-25b (second batch of 5 — pushed to `main` in 6 commits):**
 - ✅ `docs(repo)` (`29c9424`) — claimed the second-batch top 5 in BACKLOG per §3a

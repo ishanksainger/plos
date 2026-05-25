@@ -1,10 +1,21 @@
 # Start here
 
-**Updated 2026-05-25 (end of second top-5 batch — 10 of BACKLOG's top items now shipped today).** Two rounds of "Next session" items closed in 13 commits on `main`.
+**Updated 2026-05-25 (end of third top-5 batch — 15 of BACKLOG's top items now shipped today).** Three rounds of "Next session" items closed in 20+ commits on `main`. Batch 3 included two normally-Cursor-owned backend items (habit history endpoint + notification preferences API) — claude shipped both halves with the user's explicit authority.
 
 > **For pending work and the next session's priorities → [`BACKLOG.md`](./BACKLOG.md)** (top of file has a "Next session, pick from this short list" section)
 >
 > **For AI coordination rules** → [`CLAUDE.md`](./CLAUDE.md) (Claude Code) or [`.cursorrules`](./.cursorrules) (Cursor) — both AIs share `plos-frontend/` now; `BACKLOG.md` is the lock queue
+
+## Session log — what shipped 2026-05-25 (third batch)
+
+| Commit | What |
+|---|---|
+| `41af317` | `docs(repo)` — claimed batch 3 per §3a (incl. the two backend items the user gave claude authority for) |
+| `fe3006c` | `feat(web)` — **NIS bundle page + bundle SKU.** `/trackers/bundle` landing, `BUNDLE` catalog entry with `kind: 'bundle'`, cart-compatible flow, `persistAndEmailBundle` fulfillment branch that creates per-component download tokens + sends a single bundle email. Closes NIS P1. |
+| `f623388` | `feat(web)` — **SEO + Plausible.** `sitemap.ts` + `robots.ts` (Next.js conventions), `ProductJsonLd` on tracker pages, env-gated `<Script>` in root layout. Closes NIS P2. |
+| `48e4d0a` | `feat(plos)` — **Per-day habit history endpoint** (BE + FE). `GET /responsibility/habits/:id/history?days=42` returns the calendar-day completion array; `HabitsPage` fans out via `useQueries`; deterministic synth gone. Closes PLOS P0. |
+| `e2b28cb` | `feat(plos)` — **Notification preferences API.** New Prisma model + migration + service (lazy-create) + GET/PATCH `/users/notification-preferences`; Settings tab swapped to live optimistic toggles. Closes PLOS P0. |
+| `5d36972` | `feat(plos-frontend)` — **Skeletons + retry buttons.** `PlosSkeleton` + `PlosErrorRetry` primitives applied across Today / Insights / People / Responsibilities / Habits / Person detail / Responsibility detail. Single shimmer keyframe respects `prefers-reduced-motion`. Closes PLOS P2. |
 
 ## Session log — what shipped 2026-05-25 (second batch)
 
@@ -43,10 +54,11 @@ Six commits, in this order on `main`:
 
 ## Pending (high-level — full list in `BACKLOG.md`)
 
-**NIS P0 still open:** 3 more trackers (content), Razorpay KYC, Resend domain, Supabase setup, Vercel deploy
-**PLOS P0 still open:** per-day habit history endpoint, notification prefs API, data export endpoints, Razorpay billing, `GET /search?q=` backend endpoint
-**NIS P1 still open:** bundle page, real Spline 3D embed, real shop SKUs, lawyer-reviewed legal copy, OG images, sitemap/SEO
-**Cross-cutting P1 still open:** branch protection on `main`, Dependabot
+**NIS P0 still open:** 3 more tracker contents (human), Razorpay KYC (human · 5–7 day wait), Resend domain verification, Supabase project setup, Vercel deploy + DNS
+**PLOS P0 still open:** data export endpoints, Razorpay billing wiring, `GET /search?q=` backend endpoint
+**NIS P1 still open:** real Spline 3D embed (Nikita), real shop SKUs (Nikita), about portraits (Nikita), real testimonials, 404 page, lawyer review of legal placeholder copy
+**PLOS P1 still open:** WhatsApp reminder pipeline, streaks-at-risk reminder cron
+**Cross-cutting still open:** branch protection on `main` (human · GitHub settings), Dependabot, visual regression testing, Storybook for `@nis/ui`
 
 ---
 
