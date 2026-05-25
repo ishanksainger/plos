@@ -8,13 +8,13 @@
 
 ## ▶ Next session — pick from this short list
 
-These are the highest-leverage things to do next. Each is sized to fit in one focused session.
+The previous batch of 5 shipped on 2026-05-25 (see "Recently completed"). Pick the next chunk of highest-leverage work:
 
-1. ~~**NIS mobile hamburger**~~ [in progress · 2026-05-25 · claude] — phones can't navigate beyond home + /plos. Add a hamburger that opens a drawer with the 6 nav links. ~30 min.
-2. ~~**NIS Sign-in button wiring**~~ [in progress · 2026-05-25 · claude] — header button currently does nothing. Point it at `http://localhost:5173/login` (env-driven) or a modal that explains PLOS auth. ~15 min.
-3. ~~**`packages/ui` primitives**~~ [in progress · 2026-05-25 · claude] — lift `Button`, `Card`, `Badge` out of inline JSX so both apps share one component. Visible polish + reduces duplication. ~1 hr.
-4. ~~**PLOS Person detail page**~~ [in progress · 2026-05-25 · claude] — `/people/:id` route showing that person's responsibilities + activity. Currently the card on `/people` goes nowhere. ~45 min.
-5. ~~**PLOS Search bar wiring (frontend)**~~ [in progress · 2026-05-25 · claude] — topbar search is a placeholder. Claude wires autocomplete UI now (with safe client-side fallback if `GET /search?q=…` 404s); Cursor still owns the backend endpoint. ~1–2 hrs total.
+1. **NIS cart + multi-item checkout** (P0 · `claude`) — current `BuyButton` is single-product Razorpay only; need Zustand cart store, cart drawer, multi-item checkout, bundle page. ~2–3 hrs.
+2. **NIS waitlist form on /plos** (P0 · split) — placeholder block on `/plos`; needs frontend form + backend `POST /waitlist` endpoint. ~1 hr split.
+3. **PLOS Responsibility detail page** (P1 · `claude`) — `/responsibilities/:id` route with full timeline + edit + complete. Timeline endpoint already exists at `responsibilityService.getTimeline`. ~45 min.
+4. **PLOS `⌘K` command palette** (P1 · `claude`) — extend the search popover with actions (jump-to-page, create responsibility, mark today done). ~1 hr.
+5. **NIS Privacy / Terms / Refund pages** (P1 · split) — footer links 404 today. Claude scaffolds the template + routes, human supplies legal copy. ~30 min for the scaffold.
 
 After those, the next tier:
 - Real product imagery (Nikita) — Spline hero, Canvas tiles, Shop merch, About portraits
@@ -44,11 +44,11 @@ Everything else is itemized below.
 
 ### P0 — launch blockers
 
-- [ ] **Mobile navigation (hamburger)** [in progress · 2026-05-25 · claude] — nav links are hidden at ≤720px but there's no replacement; phone users can only reach `/plos` via the Open PLOS button or the footer. **Owner:** `claude`
+- ~~**Mobile navigation (hamburger)**~~ → shipped 2026-05-25 in `df9a32e` (slide-in drawer + scroll lock + Esc/click-outside close).
 - [ ] **Cart + multi-item checkout flow** — `BuyButton` does single-product Razorpay orders only; need Zustand cart store, cart drawer, multi-item checkout, bundle page. **Owner:** `claude`
 - [ ] **3 more trackers content + files** — SIP / Wedding Budget / Job Application Tracker. Currently listed in catalog but empty. Need the actual `.xlsx` files + detail page copy + feature lists. **Owner:** `human` (content) + `claude` (wiring)
 - [ ] **PLOS waitlist form** on `/plos` pillar page — POST to `app.thenispace.com/api/waitlist`. Backend endpoint also needed. **Owner:** `claude` (frontend) + `cursor` (backend endpoint)
-- [ ] **Sign-in button wiring** [in progress · 2026-05-25 · claude] — header has a "Sign in" button (visible on desktop) that does nothing. Should link to `app.thenispace.com/login` or open a modal that bounces to PLOS auth. **Owner:** `claude`
+- ~~**Sign-in button wiring**~~ → shipped 2026-05-25 in `df9a32e` (points at `NEXT_PUBLIC_PLOS_URL/login`, defaults to `http://localhost:5173/login`).
 - [ ] **Razorpay KYC** — 5–7 day approval window, start ASAP. **Owner:** `human`
 - [ ] **Resend domain verification** for `thenispace.com` — transactional email for purchases. **Owner:** `human`
 - [ ] **Supabase project setup** — create project, run `apps/web/supabase/schema.sql`, create `products` storage bucket, upload `.xlsx` files to `products/trackers/<slug>.xlsx`. **Owner:** `human`
@@ -84,9 +84,9 @@ Everything else is itemized below.
 
 ### P1 — visible gaps
 
-- [ ] **Person detail page** [in progress · 2026-05-25 · claude] — clicking a person card on `/people` should open `/people/:id` with their assigned responsibilities + activity. **Owner:** `claude` (route + component) + `cursor` (endpoint already exists at `personService.getById`, may need expansion)
+- ~~**Person detail page**~~ → shipped 2026-05-25 in `ffefa9d` (route + UI; existing `GET /persons/:id` endpoint covered the data).
 - [ ] **Responsibility detail page** — `/responsibilities/:id` with full timeline + edit + complete. **Owner:** `claude` (route) + `cursor` (timeline endpoint already exists)
-- [ ] **Search bar in topbar** [frontend in progress · 2026-05-25 · claude] — placeholder doesn't actually search anything. Needs an autocomplete endpoint `GET /search?q=…` returning responsibilities/people/notes. **Owner:** `cursor` (endpoint) + `claude` (frontend autocomplete)
+- [ ] **Search bar in topbar** — frontend shipped 2026-05-25 in `27f7dd1` (autocomplete popover, ⌘K shortcut, keyboard nav, client-side fallback). **Still pending:** backend `GET /search?q=…` endpoint — once Cursor ships it, the frontend will start using it automatically (no FE changes needed). **Owner:** `cursor`.
 - [ ] **`⌘K` command palette** — currently just a visual hint. Wire it to a search modal. **Owner:** `claude`
 - [ ] **WhatsApp reminder pipeline** — Settings marks it "Coming soon"; need Twilio / Meta integration + opt-in flow. **Owner:** `cursor`
 - [ ] **Streaks-at-risk reminder cron** — scheduler should pick streaks ≤1 day from breaking and fire notifications. **Owner:** `cursor`
@@ -113,7 +113,7 @@ Everything else is itemized below.
 
 ### P1
 
-- [ ] **`packages/ui` primitives still empty** [in progress · 2026-05-25 · claude] — both apps currently inline buttons and cards. Lift `Button`, `Card`, `Badge` (and maybe `Tag`) into `@nis/ui` so PLOS + NIS share a single visual language. **Owner:** `either` — needs PR + Ishank review per `CLAUDE.md`
+- ~~**`packages/ui` primitives still empty**~~ → shipped 2026-05-25 in `d661705`: `<Button>` (4 variants × 3 sizes, loading, icons), `<Card>` (solid/glass/outline, padding scale, interactive, polymorphic), `<Badge>` (6 tones × 2 sizes, optional dot). CSS uses brand-token vars so a single component renders correctly in NIS dark + PLOS glass. Both apps wired (apps/web via globals.css, plos-frontend via main.tsx). First adoption in `PersonDetailPage`. README updated with usage docs.
 
 ### P2
 
@@ -129,6 +129,13 @@ Everything else is itemized below.
 ---
 
 ## Recently completed (last 30 days)
+
+**Session 2026-05-25 (pushed to `main` in 6 commits — top-5 next-session items):**
+- ✅ `docs(repo)` (`189c02c`) — claimed all 5 items in BACKLOG per §3a lock protocol
+- ✅ `feat(web)` (`df9a32e`) — mobile hamburger drawer (≤720px) + Sign-in button now points at `NEXT_PUBLIC_PLOS_URL/login`. Drawer closes on route change, link click, backdrop, or Escape; body scroll locked while open. **Closes NIS P0 #1 + #2.**
+- ✅ `feat(packages/ui)` (`d661705`) — first three shared primitives shipped: `<Button>`, `<Card>`, `<Badge>`. CSS consumes `--nis-*` / `--plos-*` tokens so a single component renders correctly in NIS dark + PLOS glass. Both apps wired; README + usage docs updated. **Closes cross-cutting P1.**
+- ✅ `feat(plos-frontend)` (`ffefa9d`) — `/people/:id` detail page with avatar + contact + KPI grid + open/recurring/overdue tabs + recently-completed list. People cards on `/people` are now keyboard-accessible buttons that navigate. First @nis/ui adoption inside PLOS. **Closes PLOS P1 — Person detail page.**
+- ✅ `feat(plos-frontend)` (`27f7dd1`) — topbar search becomes a real autocomplete popover (160ms debounce, ⌘K focus, ↑/↓/Enter keyboard nav, grouped Responsibilities · People sections, route inference by category). Tries `GET /search?q=` first; falls back to client-side filtering so the UI works without the backend endpoint. **Closes PLOS P1 frontend half — backend endpoint still Cursor's.**
 
 **Session 2026-05-23 (pushed to `main` in 6 commits):**
 - ✅ `feat(plos-backend)` — household members, account types, person avatars + migrations

@@ -1,10 +1,20 @@
 # Start here
 
-**Updated 2026-05-23 (end of long redesign session).** Both products have been redesigned 1:1 to the prototype in `/Volumes/DevSSD/dev/projects/ishank/Design Files/` and made responsive across phone → ultra-wide. Six commits pushed to `main`.
+**Updated 2026-05-25 (end of next-session top-5 batch).** Closed the highest-leverage items from BACKLOG's "Next session" list in six commits on `main`.
 
 > **For pending work and the next session's priorities → [`BACKLOG.md`](./BACKLOG.md)** (top of file has a "Next session, pick from this short list" section)
 >
 > **For AI coordination rules** → [`CLAUDE.md`](./CLAUDE.md) (Claude Code) or [`.cursorrules`](./.cursorrules) (Cursor) — both AIs share `plos-frontend/` now; `BACKLOG.md` is the lock queue
+
+## Session log — what shipped 2026-05-25
+
+| Commit | What |
+|---|---|
+| `189c02c` | `docs(repo)` — claimed the five next-session items in BACKLOG per §3a lock protocol |
+| `df9a32e` | `feat(web)` — mobile hamburger drawer (≤720px slide-in, scroll lock, Esc/click-outside close) + header Sign-in button now points at `NEXT_PUBLIC_PLOS_URL/login`. Closes NIS P0 #1 + #2. |
+| `d661705` | `feat(packages/ui)` — `<Button>` / `<Card>` / `<Badge>` primitives live; CSS uses brand-token vars so one component renders in NIS dark + PLOS glass. Both apps wired; README updated. Closes cross-cutting P1. |
+| `ffefa9d` | `feat(plos-frontend)` — `/people/:id` Person detail page (avatar, contact, KPI grid, open/recurring/overdue tabs, recently-completed list). `/people` cards are now keyboard-accessible buttons. First @nis/ui adoption inside PLOS. Closes PLOS P1. |
+| `27f7dd1` | `feat(plos-frontend)` — topbar search is a real autocomplete (160ms debounce, ⌘K focus, ↑/↓/Enter nav, grouped sections). Tries `GET /search?q=` first; falls back to client-side filtering so it works before Cursor's backend lands. Closes PLOS P1 frontend half. |
 
 ## Session log — what shipped 2026-05-23
 
@@ -21,9 +31,9 @@ Six commits, in this order on `main`:
 
 ## Pending (high-level — full list in `BACKLOG.md`)
 
-**NIS P0:** mobile hamburger, cart + checkout, 3 more trackers, waitlist form, sign-in wiring, Razorpay KYC, Resend domain, Supabase setup, Vercel deploy
-**PLOS P0:** per-day habit history endpoint, notification prefs API, data export endpoints, Razorpay billing
-**Cross-cutting P1:** `packages/ui` primitives (lift Button/Card/Badge so both apps share)
+**NIS P0 still open:** cart + multi-item checkout, 3 more trackers, waitlist form on `/plos`, Razorpay KYC, Resend domain, Supabase setup, Vercel deploy
+**PLOS P0 still open:** per-day habit history endpoint, notification prefs API, data export endpoints, Razorpay billing
+**Cross-cutting P1 still open:** branch protection on `main`, Dependabot
 
 ---
 
@@ -61,7 +71,7 @@ npm run dev:web
 | `/plos` | PLOS pillar page with 42-day StreakChain demo |
 | `/about` | Two-person studio bio |
 
-### PLOS app (`plos-frontend/`) — all 12 routes done
+### PLOS app (`plos-frontend/`) — all 12 routes + Person detail
 
 | Route | What's there |
 |---|---|
@@ -72,7 +82,8 @@ npm run dev:web
 | `/habits` | Module hero (woven nest scene) + 4 KPIs + per-habit cards with the signature **42-day streak chain** (round dots, gradient ribbon, pulsing today indicator) |
 | `/finance` | Module hero (coin stack scene) + KPIs + filtered open commitments list |
 | `/health` | Module hero (beating heart scene) + KPIs + filtered list |
-| `/people` | Module hero (avatar constellation) + glass person-card grid with next-up + open/overdue/spend |
+| `/people` | Module hero (avatar constellation) + glass person-card grid with next-up + open/overdue/spend (cards click through to detail) |
+| `/people/:id` | Avatar + contact + KPI grid + open/overdue/recurring tabs + recently-completed list. First @nis/ui adoption (uses `<Card>` and `<Badge>`). |
 | `/timeline` | Module hero (twin-ribbon scene) + tl-day / tl-event grouping + All / You / System filter |
 | `/notifications` | Eyebrow + greeting-row + glass list with unread dots + Mark-all-read |
 | `/settings` | 4 tabs (Profile / Account / Notifications / Plan) + 220px label/input rows |
@@ -185,6 +196,7 @@ Open Chrome DevTools → toggle device mode. Sweep through:
 - **Per-day habit history endpoint** — streak chain currently synthesized from streak count
 - **Notification preferences API** — Settings toggles are display-only
 - **Data export endpoints** — JSON/CSV buttons are stubs
+- **`GET /search?q=` backend endpoint** — frontend search popover ships with a client-side fallback; backend endpoint is Cursor's to ship and will be picked up automatically
 - **`CLAUDE.md` still says `plos-frontend/` is Cursor's** — was overridden for the redesign; doc is stale
 
 ---
