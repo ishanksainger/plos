@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { NewsletterRow } from './NewsletterRow';
 
 export function SiteFooter() {
   return (
@@ -16,12 +17,13 @@ export function SiteFooter() {
               color: 'var(--ink-3)',
               fontSize: 13,
               maxWidth: '28ch',
-              margin: 0,
+              margin: '0 0 20px',
               lineHeight: 1.55,
             }}
           >
             Nest of Innovative Space. A small studio in Pune building tools, trackers, and one life-OS for India.
           </p>
+          <NewsletterRow />
         </div>
         <div>
           <h4>Products</h4>
