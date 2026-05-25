@@ -4,6 +4,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type ReactNode,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -13,39 +14,63 @@ import type { PersonWithCount } from '../../services/person.service';
 import { fmtDate } from './ResponsibilityRow';
 
 const SearchIcon = (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="11" cy="11" r="7" />
     <path d="m21 21-4.3-4.3" />
   </svg>
 );
 
+// ───── Actions ────────────────────────────────────────────────────────────
+type Action = {
+  id: string;
+  label: string;
+  hint?: string;
+  route: string;
+  keywords?: string;
+  group: 'Jump to' | 'Create';
+};
+
+const ACTIONS: Action[] = [
+  { id: 'jump-today',            label: 'Today',              hint: 'pearl orbit', route: '/',                keywords: 'home now',          group: 'Jump to' },
+  { id: 'jump-insights',         label: 'Insights',           hint: 'dashboard',   route: '/insights',         keywords: 'analytics charts',  group: 'Jump to' },
+  { id: 'jump-habits',           label: 'Habits',             hint: 'streak chains', route: '/habits',          keywords: 'rituals daily',     group: 'Jump to' },
+  { id: 'jump-finance',          label: 'Finance',            hint: 'money',       route: '/finance',          keywords: 'bills sip',         group: 'Jump to' },
+  { id: 'jump-health',           label: 'Health',             hint: 'family body', route: '/health',           keywords: 'doctor',            group: 'Jump to' },
+  { id: 'jump-people',           label: 'People',             hint: 'circle',      route: '/people',           keywords: 'family contacts',   group: 'Jump to' },
+  { id: 'jump-timeline',         label: 'Timeline',           hint: 'audit',       route: '/timeline',         keywords: 'history events',    group: 'Jump to' },
+  { id: 'jump-responsibilities', label: 'Responsibilities',   hint: 'master list', route: '/responsibilities', keywords: 'tasks todos',       group: 'Jump to' },
+  { id: 'jump-notifications',    label: 'Notifications',      hint: 'bell',        route: '/notifications',    keywords: 'alerts inbox',      group: 'Jump to' },
+  { id: 'jump-settings',         label: 'Settings',           hint: 'preferences', route: '/settings',         keywords: 'profile account',   group: 'Jump to' },
+  { id: 'new-responsibility',    label: 'New responsibility…', hint: 'opens create modal', route: '/responsibilities?new=1', keywords: 'add create task', group: 'Create' },
+];
+
+function actionMatches(a: Action, q: string): boolean {
+  if (!q) return true;
+  const haystack = `${a.label} ${a.hint ?? ''} ${a.keywords ?? ''}`.toLowerCase();
+  return q.split(/\s+/).every((token) => haystack.includes(token));
+}
+
+// ───── Hits (search results) ─────────────────────────────────────────────
 type Hit =
+  | { kind: 'action'; item: Action }
   | { kind: 'responsibility'; item: Responsibility }
   | { kind: 'person'; item: PersonWithCount };
 
-function flatten(results: SearchResults): Hit[] {
-  return [
-    ...results.responsibilities.map<Hit>((item) => ({ kind: 'responsibility', item })),
-    ...results.persons.map<Hit>((item) => ({ kind: 'person', item })),
-  ];
+function flatten(actions: Action[], results: SearchResults | undefined): Hit[] {
+  const out: Hit[] = actions.map<Hit>((item) => ({ kind: 'action', item }));
+  if (results) {
+    out.push(
+      ...results.responsibilities.map<Hit>((item) => ({ kind: 'responsibility', item })),
+      ...results.persons.map<Hit>((item) => ({ kind: 'person', item })),
+    );
+  }
+  return out;
 }
 
 function routeFor(hit: Hit): string {
+  if (hit.kind === 'action') return hit.item.route;
   if (hit.kind === 'person') return `/people/${hit.item.id}`;
-  const r = hit.item;
-  if (r.category === 'finance') return '/finance';
-  if (r.category === 'health') return '/health';
-  if (r.category === 'habit' || r.module === 'habits') return '/habits';
-  return '/responsibilities';
+  return `/responsibilities/${hit.item.id}`;
 }
 
 const initials = (name: string) =>
@@ -60,39 +85,43 @@ export function PlosSearchPopover() {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Debounce input to avoid hammering the API on every keystroke.
   useEffect(() => {
     const t = setTimeout(() => setDebounced(value.trim()), 160);
     return () => clearTimeout(t);
   }, [value]);
 
-  const enabled = open && debounced.length >= 1;
+  const remoteEnabled = open && debounced.length >= 1;
 
   const { data, isFetching } = useQuery({
     queryKey: ['search', debounced],
     queryFn: () => search(debounced),
-    enabled,
+    enabled: remoteEnabled,
     staleTime: 5_000,
   });
 
-  const hits = useMemo<Hit[]>(() => (data ? flatten(data) : []), [data]);
+  const matchingActions = useMemo(
+    () => ACTIONS.filter((a) => actionMatches(a, debounced.toLowerCase())),
+    [debounced],
+  );
 
-  // Reset highlighted row whenever the hit list changes.
-  useEffect(() => setActiveIndex(0), [hits.length]);
+  const hits = useMemo<Hit[]>(
+    () => flatten(matchingActions, data),
+    [matchingActions, data],
+  );
 
-  // Click outside closes the popover.
+  useEffect(() => setActiveIndex(0), [hits.length, debounced]);
+
+  // Click outside closes.
   useEffect(() => {
     if (!open) return;
     const onMouseDown = (e: MouseEvent) => {
-      if (!containerRef.current?.contains(e.target as Node)) {
-        setOpen(false);
-      }
+      if (!containerRef.current?.contains(e.target as Node)) setOpen(false);
     };
     window.addEventListener('mousedown', onMouseDown);
     return () => window.removeEventListener('mousedown', onMouseDown);
   }, [open]);
 
-  // ⌘K / Ctrl+K focuses the input from anywhere. Esc closes + blurs.
+  // ⌘K / Ctrl+K focuses; Esc closes.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const isMod = e.metaKey || e.ctrlKey;
@@ -134,8 +163,7 @@ export function PlosSearchPopover() {
     }
   };
 
-  const showPopover = open && debounced.length >= 1;
-  const isEmpty = !isFetching && hits.length === 0;
+  const showPopover = open;
 
   return (
     <div className="plos-search" ref={containerRef} style={{ position: 'relative' }}>
@@ -149,7 +177,7 @@ export function PlosSearchPopover() {
         }}
         onFocus={() => setOpen(true)}
         onKeyDown={handleKeyDown}
-        placeholder="Search responsibilities, people, notes…"
+        placeholder="Search or jump · ⌘K"
         aria-autocomplete="list"
         aria-expanded={showPopover}
         aria-controls="plos-search-results"
@@ -178,98 +206,26 @@ export function PlosSearchPopover() {
             top: 'calc(100% + 8px)',
             left: 0,
             right: 0,
-            maxHeight: 360,
+            maxHeight: 420,
             overflowY: 'auto',
             padding: 6,
             zIndex: 40,
             borderRadius: 14,
           }}
         >
-          {isFetching && hits.length === 0 ? (
-            <div style={{ padding: '14px 12px', fontSize: 12, color: 'var(--plos-ink-3)' }}>
-              Searching…
-            </div>
-          ) : isEmpty ? (
+          {hits.length === 0 && !isFetching ? (
             <div style={{ padding: '14px 12px', fontSize: 12, color: 'var(--plos-ink-3)' }}>
               Nothing matches “{debounced}”.
             </div>
           ) : (
-            <>
-              {data && data.responsibilities.length > 0 && (
-                <SectionLabel>Responsibilities</SectionLabel>
-              )}
-              {data?.responsibilities.map((r, i) => (
-                <ResultRow
-                  key={`r-${r.id}`}
-                  active={i === activeIndex}
-                  onSelect={() => commit({ kind: 'responsibility', item: r })}
-                  onMouseEnter={() => setActiveIndex(i)}
-                  primary={r.title}
-                  secondary={[
-                    fmtDate(r.dueDate),
-                    r.category,
-                    r.state ? r.state.toLowerCase() : null,
-                  ]
-                    .filter(Boolean)
-                    .join(' · ')}
-                  tone={r.state === 'OVERDUE' ? 'danger' : undefined}
-                  icon={
-                    <span
-                      style={{
-                        width: 22,
-                        height: 22,
-                        borderRadius: 6,
-                        background: 'var(--plos-accent-soft, rgba(124,58,237,0.12))',
-                        color: 'var(--plos-accent, #7c3aed)',
-                        fontSize: 11,
-                        fontWeight: 600,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flex: 'none',
-                      }}
-                    >
-                      R
-                    </span>
-                  }
-                />
-              ))}
-
-              {data && data.persons.length > 0 && <SectionLabel>People</SectionLabel>}
-              {data?.persons.map((p, i) => {
-                const idx = (data?.responsibilities.length ?? 0) + i;
-                return (
-                  <ResultRow
-                    key={`p-${p.id}`}
-                    active={idx === activeIndex}
-                    onSelect={() => commit({ kind: 'person', item: p })}
-                    onMouseEnter={() => setActiveIndex(idx)}
-                    primary={p.name}
-                    secondary={p.relation}
-                    icon={
-                      <span
-                        style={{
-                          width: 22,
-                          height: 22,
-                          borderRadius: '50%',
-                          background:
-                            'linear-gradient(135deg, #a5f3fc, #818cf8)',
-                          color: '#1a0f37',
-                          fontSize: 10,
-                          fontWeight: 600,
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flex: 'none',
-                        }}
-                      >
-                        {initials(p.name)}
-                      </span>
-                    }
-                  />
-                );
-              })}
-            </>
+            <PaletteBody
+              hits={hits}
+              activeIndex={activeIndex}
+              onSelect={commit}
+              onHover={setActiveIndex}
+              isFetching={isFetching}
+              queryEmpty={debounced.length === 0}
+            />
           )}
         </div>
       )}
@@ -277,7 +233,168 @@ export function PlosSearchPopover() {
   );
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
+function PaletteBody({
+  hits,
+  activeIndex,
+  onSelect,
+  onHover,
+  isFetching,
+  queryEmpty,
+}: {
+  hits: Hit[];
+  activeIndex: number;
+  onSelect: (hit: Hit) => void;
+  onHover: (i: number) => void;
+  isFetching: boolean;
+  queryEmpty: boolean;
+}) {
+  // Group preserving order so ↑/↓ keys still traverse the flat list.
+  const groups: Array<{ label: string; from: number; items: Hit[] }> = [];
+  let i = 0;
+  while (i < hits.length) {
+    const groupLabel = labelFor(hits[i], queryEmpty);
+    const from = i;
+    const items: Hit[] = [];
+    while (i < hits.length && labelFor(hits[i], queryEmpty) === groupLabel) {
+      items.push(hits[i]);
+      i++;
+    }
+    groups.push({ label: groupLabel, from, items });
+  }
+
+  return (
+    <>
+      {groups.map((g) => (
+        <div key={`${g.label}-${g.from}`}>
+          <SectionLabel>{g.label}</SectionLabel>
+          {g.items.map((hit, j) => {
+            const flatIdx = g.from + j;
+            const active = flatIdx === activeIndex;
+            return (
+              <ResultRow
+                key={`${hit.kind}-${idOf(hit)}-${flatIdx}`}
+                active={active}
+                onSelect={() => onSelect(hit)}
+                onMouseEnter={() => onHover(flatIdx)}
+                {...renderHit(hit)}
+              />
+            );
+          })}
+        </div>
+      ))}
+      {isFetching && (
+        <div style={{ padding: '10px 12px', fontSize: 11, color: 'var(--plos-ink-4)' }}>
+          Searching…
+        </div>
+      )}
+    </>
+  );
+}
+
+function labelFor(hit: Hit, queryEmpty: boolean): string {
+  if (hit.kind === 'action') {
+    return queryEmpty ? hit.item.group : 'Actions';
+  }
+  if (hit.kind === 'responsibility') return 'Responsibilities';
+  return 'People';
+}
+
+function idOf(hit: Hit): string | number {
+  if (hit.kind === 'action') return hit.item.id;
+  return hit.item.id;
+}
+
+function renderHit(hit: Hit): {
+  primary: string;
+  secondary?: string;
+  icon: ReactNode;
+  tone?: 'danger';
+} {
+  if (hit.kind === 'action') {
+    return {
+      primary: hit.item.label,
+      secondary: hit.item.hint,
+      icon: (
+        <span
+          style={{
+            width: 22,
+            height: 22,
+            borderRadius: 6,
+            background: 'var(--plos-rule)',
+            color: 'var(--plos-ink-2)',
+            fontSize: 12,
+            fontWeight: 600,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flex: 'none',
+          }}
+        >
+          {hit.item.group === 'Create' ? '＋' : '↗'}
+        </span>
+      ),
+    };
+  }
+  if (hit.kind === 'responsibility') {
+    const r = hit.item;
+    return {
+      primary: r.title,
+      secondary: [
+        fmtDate(r.dueDate),
+        r.category,
+        r.state ? r.state.toLowerCase() : null,
+      ]
+        .filter(Boolean)
+        .join(' · '),
+      tone: r.state === 'OVERDUE' ? 'danger' : undefined,
+      icon: (
+        <span
+          style={{
+            width: 22,
+            height: 22,
+            borderRadius: 6,
+            background: 'var(--plos-accent-soft, rgba(124,58,237,0.12))',
+            color: 'var(--plos-accent, #7c3aed)',
+            fontSize: 11,
+            fontWeight: 600,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flex: 'none',
+          }}
+        >
+          R
+        </span>
+      ),
+    };
+  }
+  const p = hit.item;
+  return {
+    primary: p.name,
+    secondary: p.relation,
+    icon: (
+      <span
+        style={{
+          width: 22,
+          height: 22,
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #a5f3fc, #818cf8)',
+          color: '#1a0f37',
+          fontSize: 10,
+          fontWeight: 600,
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flex: 'none',
+        }}
+      >
+        {initials(p.name)}
+      </span>
+    ),
+  };
+}
+
+function SectionLabel({ children }: { children: ReactNode }) {
   return (
     <div
       className="plos-page-eyebrow"
@@ -302,7 +419,7 @@ function ResultRow({
   onMouseEnter: () => void;
   primary: string;
   secondary?: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   tone?: 'danger';
 }) {
   return (
@@ -311,7 +428,6 @@ function ResultRow({
       role="option"
       aria-selected={active}
       onMouseDown={(e) => {
-        // Use mousedown so the click registers before the input blurs.
         e.preventDefault();
         onSelect();
       }}
