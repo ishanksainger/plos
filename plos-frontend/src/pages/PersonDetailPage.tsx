@@ -81,11 +81,10 @@ export default function PersonDetailPage() {
       }),
   });
 
-  const responsibilities = person?.responsibilities ?? [];
-
   const { open, completed, overdueCount, totalOpenAmount, nextItem } = useMemo(() => {
-    const open = responsibilities.filter((r) => !r.completedAt);
-    const completed = responsibilities.filter((r) => Boolean(r.completedAt));
+    const rs = person?.responsibilities ?? [];
+    const open = rs.filter((r) => !r.completedAt);
+    const completed = rs.filter((r) => Boolean(r.completedAt));
     const overdueCount = open.filter((r) => r.state === 'OVERDUE').length;
     const totalOpenAmount = open.reduce(
       (s, r) => s + (r.amount ? Number(r.amount) : 0),
@@ -95,7 +94,7 @@ export default function PersonDetailPage() {
       .slice()
       .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0];
     return { open, completed, overdueCount, totalOpenAmount, nextItem };
-  }, [responsibilities]);
+  }, [person?.responsibilities]);
 
   const visibleOpen = useMemo(() => {
     if (filter === 'overdue') return open.filter((r) => r.state === 'OVERDUE');

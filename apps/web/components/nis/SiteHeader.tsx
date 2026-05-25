@@ -98,6 +98,7 @@ export function SiteHeader() {
         aria-modal="true"
         aria-label="Site navigation"
         aria-hidden={!menuOpen}
+        {...(!menuOpen ? { inert: '' as unknown as boolean } : {})}
       >
         <button
           type="button"
