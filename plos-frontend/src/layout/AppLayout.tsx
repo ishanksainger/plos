@@ -8,6 +8,7 @@ import PlosTopbar from './PlosTopbar';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { requestDashboardNewResponsibility } from '../utils/dashboard-create-bridge';
 import { usePlosMouseMesh } from '../components/plos/usePlosMouseMesh';
+import { useAppSelector } from '../store/hooks';
 
 /**
  * Glassy light shell, ported from the design prototype.
@@ -18,9 +19,11 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const [mobileNav, setMobileNav] = useState(false);
   const isNarrow = useMediaQuery('(max-width: 900px)');
   const location = useLocation();
+  const theme = useAppSelector((s) => s.ui.theme);
 
-  // Apply the body class once on mount; remove on unmount. This is what
-  // activates the gradient-mesh background defined by the prototype CSS.
+  // Apply the body class + theme attribute once on mount. The attribute
+  // also lives on .plos for the prototype CSS selectors; mirroring it on
+  // body keeps full-bleed elements (modals, drawers) consistent.
   useEffect(() => {
     document.body.classList.add('plos-body');
     return () => {
@@ -28,11 +31,18 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
+  useEffect(() => {
+    document.documentElement.dataset.plosTheme = theme;
+    return () => {
+      delete document.documentElement.dataset.plosTheme;
+    };
+  }, [theme]);
+
   // Drive the body mesh gradient off the cursor.
   usePlosMouseMesh(!isNarrow);
 
   return (
-    <div className="plos" data-theme="light" data-display="sans">
+    <div className="plos" data-theme={theme} data-display="sans">
       {!isNarrow && <PlosSidebar />}
 
       <Drawer

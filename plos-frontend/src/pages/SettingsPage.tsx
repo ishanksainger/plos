@@ -10,6 +10,8 @@ import {
   type NotificationPrefsPatch,
 } from '../services/notification-prefs.service';
 import { downloadExport, type ExportFormat } from '../services/export.service';
+import { useAppDispatch as useAppDispatchUi, useAppSelector } from '../store/hooks';
+import { setTheme, type ThemeMode } from '../store/uiSlice';
 import { useAppDispatch } from '../store/hooks';
 import { patchUser } from '../store/authSlice';
 import { CURRENCY_OPTIONS, TIMEZONE_OPTIONS } from '../constants/preferences';
@@ -246,6 +248,7 @@ export default function SettingsPage() {
                 </select>
               </div>
             </div>
+            <ThemeRow />
             <div style={{ padding: '18px 0', display: 'flex', justifyContent: 'flex-end' }}>
               <button
                 type="button"
@@ -406,6 +409,57 @@ export default function SettingsPage() {
           </button>
         </div>
       </Modal>
+    </div>
+  );
+}
+
+const THEME_OPTIONS: Array<{ value: ThemeMode; label: string; hint: string }> = [
+  { value: 'light', label: 'Light', hint: 'Glassy lavender (default)' },
+  { value: 'dark',  label: 'Dark',  hint: 'Deep ink with glow accents' },
+];
+
+function ThemeRow() {
+  const theme = useAppSelector((s) => s.ui.theme);
+  const dispatch = useAppDispatchUi();
+  return (
+    <div className="settings-row">
+      <div>
+        <div className="label">Appearance</div>
+        <div className="help">Saved on this browser. We respect your system preference on first visit.</div>
+      </div>
+      <div
+        role="radiogroup"
+        aria-label="Theme"
+        style={{ display: 'inline-flex', gap: 6, padding: 4, borderRadius: 999, background: 'var(--plos-rule)' }}
+      >
+        {THEME_OPTIONS.map((opt) => {
+          const active = theme === opt.value;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              title={opt.hint}
+              onClick={() => dispatch(setTheme(opt.value))}
+              style={{
+                padding: '6px 14px',
+                borderRadius: 999,
+                border: 0,
+                background: active ? 'var(--plos-glass-bg-strong, white)' : 'transparent',
+                color: active ? 'var(--plos-ink-1)' : 'var(--plos-ink-3)',
+                fontWeight: active ? 600 : 500,
+                fontSize: 12,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                transition: 'background 160ms, color 160ms',
+              }}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

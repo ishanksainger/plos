@@ -1,10 +1,11 @@
-import { StrictMode } from 'react';
+import { StrictMode, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { MantineProvider, createTheme } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Provider } from 'react-redux';
+import { useAppSelector } from './store/hooks';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import '@nis/ui/ui.css';
@@ -89,15 +90,24 @@ const theme = createTheme({
   },
 });
 
+function ThemedMantine({ children }: { children: ReactNode }) {
+  const mode = useAppSelector((s) => s.ui.theme);
+  return (
+    <MantineProvider defaultColorScheme={mode} forceColorScheme={mode} theme={theme}>
+      <Notifications position="top-right" />
+      {children}
+    </MantineProvider>
+  );
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <MantineProvider defaultColorScheme="light" forceColorScheme="light" theme={theme}>
-            <Notifications position="top-right" />
+          <ThemedMantine>
             <App />
-          </MantineProvider>
+          </ThemedMantine>
         </BrowserRouter>
       </QueryClientProvider>
     </Provider>
