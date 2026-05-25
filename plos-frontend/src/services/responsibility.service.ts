@@ -55,4 +55,11 @@ export const responsibilityService = {
     ),
 
   getHabitStreaks: () => api.get<HabitStreaksResponse>('/responsibility/habits/streaks'),
+
+  getHabitHistory: (id: number, days = 42) =>
+    api.get<{
+      habitId: number;
+      days: number;
+      items: { date: string; completed: boolean }[];
+    }>(`/responsibility/habits/${id}/history?days=${days}`),
 };

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Loader } from '@mantine/core';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { responsibilityService } from '../services/responsibility.service';
 import type { Responsibility } from '../types/dashboard';
@@ -12,27 +12,19 @@ import CreateResponsibilityModal from '../components/responsibilities/CreateResp
 
 const HABIT_COLORS = ['#7c3aed', '#3b82f6', '#10b981', '#ec4899', '#f59e0b', '#22d3ee', '#fb7185'];
 
+const HISTORY_DAYS = 42;
+
 /**
- * Synthesize a 42-day pattern from a streak count + responsibility id.
- * Real per-day completion history isn't exposed by the API yet, so this
- * is deterministic-by-id (won't shuffle between renders) and honest about
- * the trailing streak: last N days are filled, today is `-1` if not done.
+ * Convert backend history (per-day { completed }) into the chain pattern
+ * the renderer expects: 1 = completed, 0 = missed, -1 = today open.
  */
-function synthPattern(id: number, streak: number, todayDone: boolean, days = 60): number[] {
-  const out: number[] = [];
-  let rng = (id * 9301) % 233280;
-  // baseline completion rate roughly correlated with streak length
-  const completion = Math.min(0.95, 0.4 + Math.min(streak, 30) / 60);
-  for (let i = 0; i < days; i++) {
-    rng = (rng * 9301 + 49297) % 233280;
-    const r = rng / 233280;
-    out.push(r < completion ? 1 : 0);
-  }
-  // Force the trailing `streak` days to be completed (today still open).
-  for (let i = days - streak; i < days - 1; i++) {
-    if (i >= 0) out[i] = 1;
-  }
-  out[days - 1] = todayDone ? 1 : -1;
+function patternFromHistory(
+  items: { date: string; completed: boolean }[],
+  todayDone: boolean,
+): number[] {
+  if (items.length === 0) return [];
+  const out: number[] = items.map((d) => (d.completed ? 1 : 0));
+  out[out.length - 1] = todayDone ? 1 : -1;
   return out;
 }
 
@@ -73,6 +65,24 @@ export default function HabitsPage() {
     streaksQuery.data?.items?.forEach((i) => { map[i.id] = i.streak; });
     return map;
   }, [streaksQuery.data]);
+
+  // Fan out: one query per habit pulling the real 42-day completion history.
+  const historyQueries = useQueries({
+    queries: habits.map((h) => ({
+      queryKey: ['habits', h.id, 'history', HISTORY_DAYS],
+      queryFn: () => responsibilityService.getHabitHistory(h.id, HISTORY_DAYS),
+      staleTime: 60_000,
+    })),
+  });
+
+  const historyById = useMemo(() => {
+    const map: Record<number, { date: string; completed: boolean }[]> = {};
+    habits.forEach((h, idx) => {
+      const data = historyQueries[idx]?.data;
+      if (data) map[h.id] = data.items;
+    });
+    return map;
+  }, [habits, historyQueries]);
 
   const completeMutation = useMutation({
     mutationFn: (id: number) => responsibilityService.markComplete(id),
@@ -166,7 +176,10 @@ export default function HabitsPage() {
             const color = HABIT_COLORS[i % HABIT_COLORS.length];
             const streak = streakById[h.id] ?? 0;
             const doneToday = isCompletedToday(h.completedAt);
-            const pattern = synthPattern(h.id, streak, doneToday);
+            const history = historyById[h.id];
+            const pattern = history
+              ? patternFromHistory(history, doneToday)
+              : Array.from({ length: HISTORY_DAYS }, () => 0); // skeleton while loading
             return (
               <PlosReveal key={h.id} delay={i % 3}>
                 <div className="glass streak-card plos-tilt">

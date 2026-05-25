@@ -51,6 +51,20 @@ export class ResponsibilityController {
     return this.responsibilityService.getHabitStreaks(user.sub);
   }
 
+  /** Per-day completion history for one habit's streak chain. */
+  @Get('habits/:id/history')
+  getHabitHistory(
+    @CurrentUser() user: JwtPayload,
+    @Param('id') id: string,
+    @Query('days') days?: string,
+  ) {
+    return this.responsibilityService.getHabitHistory(
+      user.sub,
+      Number(id),
+      days ? Number(days) : 42,
+    );
+  }
+
   @Get()
   getByUser(
     @CurrentUser() user: JwtPayload,

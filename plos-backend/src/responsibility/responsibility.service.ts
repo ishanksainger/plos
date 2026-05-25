@@ -224,6 +224,53 @@ export class ResponsibilityService {
     return { items, maxStreak, activeRecurring, completionsLast7Days };
   }
 
+  /**
+   * Per-day completion history for a single habit. Returns the last `days`
+   * calendar days (server-local), oldest first, with `{ date, completed }`.
+   * `completed` is true when at least one completion event landed on that
+   * calendar day. The current day stays unmarked until the user finishes.
+   */
+  async getHabitHistory(userId: number, habitId: number, daysParam = 42) {
+    const days = Math.max(7, Math.min(180, Math.floor(daysParam) || 42));
+
+    const habit = await this.prisma.responsibility.findFirst({
+      where: { id: habitId, userId, category: 'habit' },
+      select: { id: true, title: true },
+    });
+    if (!habit) throw new NotFoundException('Habit not found');
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const windowStart = new Date(today);
+    windowStart.setDate(windowStart.getDate() - (days - 1));
+
+    const events = await this.prisma.event.findMany({
+      where: {
+        responsibilityId: habitId,
+        occurredAt: { gte: windowStart },
+        OR: [
+          { toState: ResponsibilityState.COMPLETED },
+          { note: { startsWith: RECURRING_COMPLETION_NOTE_PREFIX } },
+        ],
+      },
+      select: { occurredAt: true },
+    });
+
+    const completionDays = new Set<string>();
+    for (const e of events) completionDays.add(localDayKey(new Date(e.occurredAt)));
+
+    const items: { date: string; completed: boolean }[] = [];
+    for (let i = 0; i < days; i++) {
+      const d = new Date(windowStart);
+      d.setDate(d.getDate() + i);
+      const key = localDayKey(d);
+      items.push({ date: key, completed: completionDays.has(key) });
+    }
+
+    return { habitId: habit.id, days, items };
+  }
+
   async getStateSummaryByUser(userId: number) {
     const responsibilities = await this.prisma.responsibility.findMany({
       where: { userId },
