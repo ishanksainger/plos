@@ -7,23 +7,53 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  name         String?
-  passwordHash String?
-  timezone     String   @default("Asia/Kolkata")
-  currency     String   @default("INR")
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
+  name            String?
+  passwordHash    String?
+  /** Set when the user clicks the verification link. Null = unverified. */
+  emailVerifiedAt DateTime?
+  timezone        String    @default("Asia/Kolkata")
+  currency        String    @default("INR")
   /** Optional — WhatsApp / SMS reminders (Step J) */
-  phone        String?
+  phone           String?
   /** solo | family | shared — roadmap H; permissions model in a later step */
-  accountType  String   @default("solo")
-  createdAt    DateTime @default(now())
+  accountType     String    @default("solo")
+  createdAt       DateTime  @default(now())
 
-  persons           Person[]
-  responsibilities  Responsibility[]
-  notifications     Notification[]
-  subscription      Subscription?
-  notificationPrefs NotificationPreferences?
+  persons                Person[]
+  responsibilities       Responsibility[]
+  notifications          Notification[]
+  subscription           Subscription?
+  notificationPrefs      NotificationPreferences?
+  passwordResetTokens    PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
+}
+
+/** Short-lived, single-use token for the /reset-password flow. */
+model PasswordResetToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+/** Token mailed at signup; clicking marks `User.emailVerifiedAt`. */
+model EmailVerificationToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
 }
 
 /**

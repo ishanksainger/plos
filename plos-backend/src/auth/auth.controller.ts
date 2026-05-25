@@ -14,6 +14,17 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 import { CurrentUser } from './current-user.decorator';
 import type { JwtPayload } from './current-user.decorator';
 
+interface ForgotPasswordDto {
+  email?: string;
+}
+interface ResetPasswordDto {
+  token?: string;
+  password?: string;
+}
+interface VerifyEmailDto {
+  token?: string;
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -31,6 +42,40 @@ export class AuthController {
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
+  }
+
+  /**
+   * Request a password reset email. Always returns ok — we never reveal
+   * whether the email is registered (account-enumeration defence).
+   */
+  @Throttle({ long: { ttl: 60_000, limit: 5 } })
+  @Post('forgot-password')
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    await this.authService.requestPasswordReset(dto?.email ?? '');
+    return { ok: true };
+  }
+
+  /** Consume a reset token, rotate the password. */
+  @Throttle({ long: { ttl: 60_000, limit: 10 } })
+  @Post('reset-password')
+  resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto?.token ?? '', dto?.password ?? '');
+  }
+
+  /** Re-send the verification email for the currently logged-in user. */
+  @Throttle({ long: { ttl: 60_000, limit: 5 } })
+  @Post('resend-verification')
+  @UseGuards(JwtAuthGuard)
+  async resendVerification(@CurrentUser() user: JwtPayload) {
+    await this.authService.sendEmailVerification(user.sub);
+    return { ok: true };
+  }
+
+  /** Consume the verification token (link target in the email). */
+  @Throttle({ long: { ttl: 60_000, limit: 30 } })
+  @Post('verify-email')
+  verifyEmail(@Body() dto: VerifyEmailDto) {
+    return this.authService.verifyEmail(dto?.token ?? '');
   }
 
   @Get('me')

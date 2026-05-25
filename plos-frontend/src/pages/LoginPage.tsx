@@ -67,7 +67,19 @@ export default function LoginPage() {
             />
           </div>
           <div className="plos-field">
-            <label className="label" htmlFor="login-password">Password</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <label className="label" htmlFor="login-password">Password</label>
+              <Link
+                to="/forgot-password"
+                style={{
+                  fontSize: 12,
+                  color: 'var(--plos-ink-3)',
+                  textDecoration: 'none',
+                }}
+              >
+                Forgot?
+              </Link>
+            </div>
             <input
               id="login-password"
               className="input"
