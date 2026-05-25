@@ -4,6 +4,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { authService } from '../services/auth.service';
 import { personService } from '../services/person.service';
+import {
+  notificationPrefsService,
+  type NotificationPrefs,
+  type NotificationPrefsPatch,
+} from '../services/notification-prefs.service';
 import { useAppDispatch } from '../store/hooks';
 import { patchUser } from '../store/authSlice';
 import { CURRENCY_OPTIONS, TIMEZONE_OPTIONS } from '../constants/preferences';
@@ -338,49 +343,7 @@ export default function SettingsPage() {
           </>
         )}
 
-        {tab === 'notifications' && (
-          <>
-            {[
-              { label: 'In-app notifications', help: 'Bell icon + notifications page.', on: true, disabled: false },
-              { label: 'Email digests', help: 'A weekly summary every Sunday at 8am.', on: false, disabled: false },
-              { label: 'WhatsApp reminders', help: 'Coming soon. Opt-in required.', on: false, disabled: true },
-              { label: 'Streak-at-risk pings', help: 'Notify when a habit is one day from breaking.', on: true, disabled: false },
-            ].map((row) => (
-              <div key={row.label} className="settings-row">
-                <div>
-                  <div className="label">{row.label}</div>
-                  <div className="help">{row.help}</div>
-                </div>
-                <div>
-                  <span
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 8,
-                      padding: '6px 12px',
-                      borderRadius: 999,
-                      background: row.on ? 'var(--plos-accent-soft)' : 'var(--plos-rule)',
-                      color: row.on ? 'var(--plos-accent)' : 'var(--plos-ink-3)',
-                      fontSize: 12,
-                      fontWeight: 600,
-                      opacity: row.disabled ? 0.5 : 1,
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: 50,
-                        background: row.on ? 'var(--plos-accent)' : 'var(--plos-ink-4)',
-                      }}
-                    />
-                    {row.on ? 'On' : row.disabled ? 'Coming soon' : 'Off'}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </>
-        )}
+        {tab === 'notifications' && <NotificationPrefsPanel />}
 
         {tab === 'plan' && (
           <>
@@ -456,5 +419,130 @@ export default function SettingsPage() {
         </div>
       </Modal>
     </div>
+  );
+}
+
+const PREF_ROWS: Array<{
+  key: keyof Omit<NotificationPrefs, 'updatedAt'>;
+  label: string;
+  help: string;
+  disabled?: boolean;
+}> = [
+  { key: 'inAppEnabled',  label: 'In-app notifications', help: 'Bell icon + notifications page.' },
+  { key: 'emailDigests',  label: 'Email digests',         help: 'A weekly summary every Sunday at 8am.' },
+  { key: 'whatsappOptIn', label: 'WhatsApp reminders',    help: 'Opt-in required. Pipeline ships soon — toggle is saved either way.' },
+  { key: 'streakAtRisk',  label: 'Streak-at-risk pings',  help: 'Notify when a habit is one day from breaking.' },
+];
+
+function NotificationPrefsPanel() {
+  const queryClient = useQueryClient();
+
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ['notification-prefs'],
+    queryFn: notificationPrefsService.get,
+    staleTime: 30_000,
+  });
+
+  const mutation = useMutation({
+    mutationFn: (patch: NotificationPrefsPatch) => notificationPrefsService.update(patch),
+    onMutate: async (patch) => {
+      await queryClient.cancelQueries({ queryKey: ['notification-prefs'] });
+      const prev = queryClient.getQueryData<NotificationPrefs>(['notification-prefs']);
+      if (prev) {
+        queryClient.setQueryData<NotificationPrefs>(['notification-prefs'], {
+          ...prev,
+          ...patch,
+        });
+      }
+      return { prev };
+    },
+    onError: (err: Error, _patch, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(['notification-prefs'], ctx.prev);
+      notifications.show({
+        title: 'Could not save',
+        message: err.message || 'Try again in a minute.',
+        color: 'red',
+      });
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(['notification-prefs'], data);
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div style={{ padding: 24, display: 'flex', justifyContent: 'center' }}>
+        <Loader color="violet" size="sm" type="dots" />
+      </div>
+    );
+  }
+
+  if (isError || !data) {
+    return (
+      <div className="settings-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
+        <div className="label" style={{ color: '#ef4444' }}>
+          Couldn&rsquo;t load your notification preferences.
+        </div>
+        <div className="help">
+          {error instanceof Error && error.message ? error.message : ''}
+        </div>
+        <button
+          type="button"
+          className="plos-cta"
+          onClick={() => refetch()}
+          style={{ marginTop: 6 }}
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {PREF_ROWS.map((row) => {
+        const on = data[row.key];
+        return (
+          <div key={row.key} className="settings-row">
+            <div>
+              <div className="label">{row.label}</div>
+              <div className="help">{row.help}</div>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={on}
+              disabled={mutation.isPending}
+              onClick={() => mutation.mutate({ [row.key]: !on } as NotificationPrefsPatch)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '6px 12px',
+                borderRadius: 999,
+                border: 0,
+                cursor: mutation.isPending ? 'wait' : 'pointer',
+                background: on ? 'var(--plos-accent-soft)' : 'var(--plos-rule)',
+                color: on ? 'var(--plos-accent)' : 'var(--plos-ink-3)',
+                fontSize: 12,
+                fontWeight: 600,
+                fontFamily: 'inherit',
+                transition: 'background 160ms ease, color 160ms ease',
+              }}
+            >
+              <span
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 50,
+                  background: on ? 'var(--plos-accent)' : 'var(--plos-ink-4)',
+                }}
+              />
+              {on ? 'On' : 'Off'}
+            </button>
+          </div>
+        );
+      })}
+    </>
   );
 }

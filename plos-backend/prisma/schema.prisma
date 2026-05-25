@@ -19,10 +19,26 @@ model User {
   accountType  String   @default("solo")
   createdAt    DateTime @default(now())
 
-  persons          Person[]
-  responsibilities Responsibility[]
-  notifications    Notification[]
-  subscription     Subscription?
+  persons           Person[]
+  responsibilities  Responsibility[]
+  notifications     Notification[]
+  subscription      Subscription?
+  notificationPrefs NotificationPreferences?
+}
+
+/**
+ * Per-user toggles for the four notification surfaces. A row is created
+ * lazily on first GET if missing; defaults match the prior hardcoded UI.
+ */
+model NotificationPreferences {
+  id            Int      @id @default(autoincrement())
+  userId        Int      @unique
+  user          User     @relation(fields: [userId], references: [id])
+  inAppEnabled  Boolean  @default(true)
+  emailDigests  Boolean  @default(false)
+  whatsappOptIn Boolean  @default(false)
+  streakAtRisk  Boolean  @default(true)
+  updatedAt     DateTime @default(now()) @updatedAt
 }
 
 model Person {

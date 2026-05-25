@@ -2,13 +2,14 @@ import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { TodayService } from './today.service';
+import { NotificationPrefsService } from './notification-prefs.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { EventModule } from 'src/event/event.module';
 
 @Module({
   imports: [AuthModule, EventModule],
-  providers: [UserService, TodayService],
+  providers: [UserService, TodayService, NotificationPrefsService],
   controllers: [UserController],
-  exports: [UserService],
+  exports: [UserService, NotificationPrefsService],
 })
 export class UserModule {}
