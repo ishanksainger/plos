@@ -8,13 +8,13 @@
 
 ## ▶ Next session — pick from this short list
 
-Two batches of 5 already shipped on 2026-05-25 (see "Recently completed"). The next-leverage chunk:
+Three batches of 5 worked on 2026-05-25 (this one in progress — see "Recently completed" as each item lands).
 
-1. **NIS bundle page** (P1 · `claude`) — `/trackers/bundle` showing all 4 trackers with a "buy all" discount. Cart already supports multi-item; just needs a curated landing page + a bundle-price calculation. ~45 min.
-2. **PLOS per-day habit history endpoint** (P0 · `cursor` + claude wire) — backend `GET /responsibility/habits/:id/history?days=42`; once landed, replace the streak-chain's deterministic synth with real data. Frontend wire: ~20 min after endpoint exists.
-3. **PLOS notification preferences API** (P0 · `cursor`) — `GET/PATCH /users/notification-preferences`. Settings → Notifications tab is currently display-only.
-4. **NIS analytics + SEO** (P2 · `claude`) — `sitemap.xml`, `robots.txt`, schema.org Product markup on `/trackers/:slug`, Plausible script tag. ~1 hr.
-5. **PLOS loading skeletons + retry buttons** (P2 · `claude`) — replace the `<Loader dots>` placeholders with skeleton cards on Today / Insights / People / Responsibilities / Habits; "Failed to load…" copy gains a Retry CTA. ~1–1.5 hrs.
+1. ~~**NIS bundle page**~~ [in progress · 2026-05-25c · claude] — `/trackers/bundle` showing all 4 trackers with a "buy all" discount.
+2. ~~**PLOS per-day habit history endpoint**~~ [in progress · 2026-05-25c · claude] — backend `GET /responsibility/habits/:id/history?days=42` + frontend wire (user gave claude authority to do both halves).
+3. ~~**PLOS notification preferences API**~~ [in progress · 2026-05-25c · claude] — `GET/PATCH /users/notification-preferences` + Settings tab wire (user gave claude authority for both halves).
+4. ~~**NIS analytics + SEO**~~ [in progress · 2026-05-25c · claude] — `sitemap.xml`, `robots.txt`, schema.org Product markup, Plausible.
+5. ~~**PLOS loading skeletons + retry buttons**~~ [in progress · 2026-05-25c · claude] — replace `<Loader dots>` placeholders with skeleton cards; Retry CTAs on error states.
 
 After those, the next tier:
 - 3 more trackers content + files (human)
