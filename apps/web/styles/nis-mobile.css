@@ -510,6 +510,121 @@ html, body {
 .nis-cart-status.ok { color: var(--accent-success, #10b981); }
 .nis-cart-status.err { color: var(--accent-danger, #ef4444); }
 
+/* ───── Legal page template ───── */
+.nis-legal {
+  max-width: 880px;
+  margin: 0 auto;
+}
+.nis-legal-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 18px;
+  margin-bottom: 36px;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--nis-radius-md);
+  background: var(--bg-card);
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.nis-legal-banner a { color: var(--accent); }
+.nis-legal-head {
+  margin-bottom: 36px;
+}
+.nis-legal-updated {
+  margin: 0 0 18px;
+  color: var(--ink-3);
+  font-size: 13px;
+  font-family: var(--nis-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.nis-legal-intro {
+  margin: 0;
+  font-size: clamp(17px, 1.6vw, 20px);
+  color: var(--ink-2);
+  line-height: 1.55;
+  max-width: 60ch;
+}
+.nis-legal-toc {
+  margin: 24px 0 48px;
+  padding: 16px 18px;
+  border: 1px solid var(--rule);
+  border-radius: var(--nis-radius-md);
+  background: var(--bg-card);
+}
+.nis-legal-toc ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 6px 18px;
+}
+.nis-legal-toc a {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding: 6px 0;
+  color: var(--ink-2);
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 160ms;
+}
+.nis-legal-toc a:hover { color: var(--ink-1); }
+.nis-legal-toc-num {
+  font-family: var(--nis-font-mono);
+  font-size: 11px;
+  color: var(--ink-4);
+  letter-spacing: 0.04em;
+  min-width: 22px;
+}
+.nis-legal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+.nis-legal-section {
+  scroll-margin-top: 80px;
+}
+.nis-legal-section h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin: 0 0 14px;
+}
+.nis-legal-section-num {
+  font-family: var(--nis-font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-4);
+  letter-spacing: 0.04em;
+}
+.nis-legal-prose {
+  color: var(--ink-2);
+  font-size: 15px;
+  line-height: 1.65;
+  max-width: 62ch;
+}
+.nis-legal-prose p { margin: 0 0 12px; }
+.nis-legal-prose ul {
+  margin: 0 0 12px;
+  padding-left: 18px;
+}
+.nis-legal-prose li { margin-bottom: 6px; }
+.nis-legal-prose strong { color: var(--ink-1); }
+.nis-legal-prose a { color: var(--accent); text-decoration: underline; }
+.nis-legal-foot {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+  color: var(--ink-3);
+  font-size: 13px;
+}
+.nis-legal-foot a { color: var(--accent); }
+
 /* ───── Waitlist form ───── */
 .nis-waitlist-wrap {
   max-width: 640px;

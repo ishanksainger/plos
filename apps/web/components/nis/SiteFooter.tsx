@@ -38,7 +38,9 @@ export function SiteFooter() {
             <li><Link href="/about">About</Link></li>
             <li><a>Journal</a></li>
             <li><a>Press kit</a></li>
-            <li><a>Refund policy</a></li>
+            <li><Link href="/refund">Refund policy</Link></li>
+            <li><Link href="/privacy">Privacy</Link></li>
+            <li><Link href="/terms">Terms</Link></li>
           </ul>
         </div>
         <div>
