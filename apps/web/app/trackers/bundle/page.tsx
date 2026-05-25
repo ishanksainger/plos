@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { NisShell } from '@/components/nis/Shell';
 import { BundlePage } from '@/components/nis/pages/BundlePage';
+import { ProductJsonLd } from '@/components/nis/ProductJsonLd';
+import { BUNDLE } from '@/lib/tracker-catalog';
 
 export const metadata: Metadata = {
   title: 'All-Trackers Bundle',
@@ -11,6 +13,14 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <NisShell pillar="trackers">
+      <ProductJsonLd
+        slug="bundle"
+        title={BUNDLE.title}
+        description={BUNDLE.description}
+        pricePaise={BUNDLE.pricePaise}
+        isAvailable={BUNDLE.active}
+        catalogEntry={BUNDLE}
+      />
       <BundlePage />
     </NisShell>
   );

@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { Sora, Instrument_Serif, Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
+
+const PLAUSIBLE_DOMAIN = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
+const PLAUSIBLE_SRC = process.env.NEXT_PUBLIC_PLAUSIBLE_SRC ?? 'https://plausible.io/js/script.js';
 
 const sora = Sora({
   subsets: ['latin'],
@@ -56,7 +60,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${sora.variable} ${instrumentSerif.variable} ${geist.variable} ${geistMono.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        {children}
+        {PLAUSIBLE_DOMAIN && (
+          <Script
+            defer
+            data-domain={PLAUSIBLE_DOMAIN}
+            src={PLAUSIBLE_SRC}
+            strategy="afterInteractive"
+          />
+        )}
+      </body>
     </html>
   );
 }
