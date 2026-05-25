@@ -1,0 +1,27 @@
+{
+  "name": "PLOS — Personal Life Operating System",
+  "short_name": "PLOS",
+  "description": "Money, health, habits, family, admin. One timeline you can read like a heartbeat.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#faf7ff",
+  "theme_color": "#7c3aed",
+  "lang": "en-IN",
+  "categories": ["productivity", "lifestyle", "finance"],
+  "icons": [
+    {
+      "src": "/plos-icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    },
+    {
+      "src": "/plos-icon-maskable.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "maskable"
+    }
+  ]
+}
