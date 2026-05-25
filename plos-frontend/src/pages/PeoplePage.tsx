@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, Loader, Modal, Stack } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -85,6 +86,7 @@ function AddPersonModal({ opened, onClose }: { opened: boolean; onClose: () => v
 
 export default function PeoplePage() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [addOpen, setAddOpen] = useState(false);
 
   const { data: persons = [], isLoading, isError, error } = useQuery({
@@ -172,7 +174,20 @@ export default function PeoplePage() {
             const isSelf = person.relation === 'self';
             return (
               <PlosReveal key={person.id} delay={i}>
-                <div className="glass person-card plos-tilt" style={{ position: 'relative' }}>
+                <div
+                  className="glass person-card plos-tilt"
+                  style={{ position: 'relative', cursor: 'pointer' }}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => navigate(`/people/${person.id}`)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      navigate(`/people/${person.id}`);
+                    }
+                  }}
+                  aria-label={`Open ${person.name}'s detail`}
+                >
                   <div className="person-head">
                     <div
                       className="person-avatar"
@@ -191,7 +206,10 @@ export default function PeoplePage() {
                     {!isSelf && (
                       <button
                         type="button"
-                        onClick={() => deleteMutation.mutate(person.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteMutation.mutate(person.id);
+                        }}
                         title="Remove"
                         style={{
                           marginLeft: 'auto',

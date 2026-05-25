@@ -1,8 +1,12 @@
 import { api } from './api';
-import type { Person } from '../types/dashboard';
+import type { Person, Responsibility } from '../types/dashboard';
 
 export interface PersonWithCount extends Person {
   _count?: { responsibilities: number };
+}
+
+export interface PersonDetail extends Person {
+  responsibilities: Responsibility[];
 }
 
 export interface CreatePersonPayload {
@@ -31,8 +35,5 @@ export const personService = {
     return api.upload<Person>(`/persons/${id}/avatar`, form);
   },
   deleteOne: (id: number) => api.delete<void>(`/persons/${id}`),
-  getById: (id: number) =>
-    api.get<Person & { responsibilities: { id: number; title: string; dueDate: string; completedAt: string | null; category: string }[] }>(
-      `/persons/${id}`,
-    ),
+  getById: (id: number) => api.get<PersonDetail>(`/persons/${id}`),
 };

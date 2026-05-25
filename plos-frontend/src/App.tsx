@@ -9,6 +9,7 @@ import HealthPage from './pages/HealthPage';
 import HabitsPage from './pages/HabitsPage';
 import TimelinePage from './pages/TimelinePage';
 import PeoplePage from './pages/PeoplePage';
+import PersonDetailPage from './pages/PersonDetailPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import SettingsPage from './pages/SettingsPage';
@@ -29,6 +30,7 @@ export default function App() {
                 <Route path="/insights"         element={<DashboardPage />} />
                 <Route path="/responsibilities" element={<ResponsibilitiesPage />} />
                 <Route path="/people"           element={<PeoplePage />} />
+                <Route path="/people/:id"       element={<PersonDetailPage />} />
                 <Route path="/finance"          element={<FinancePage />} />
                 <Route path="/health"           element={<HealthPage />} />
                 <Route path="/habits"           element={<HabitsPage />} />
