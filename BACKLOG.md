@@ -2,7 +2,7 @@
 
 **Single source of truth for what's not done yet.** Both Claude Code and Cursor read this file at the start of any session that involves picking up new work. Update it as items move.
 
-**Last updated:** 2026-05-23
+**Last updated:** 2026-05-25
 
 ---
 
@@ -10,11 +10,11 @@
 
 These are the highest-leverage things to do next. Each is sized to fit in one focused session.
 
-1. **NIS mobile hamburger** (P0 · `claude`) — phones can't navigate beyond home + /plos. Add a hamburger that opens a drawer with the 6 nav links. ~30 min.
-2. **NIS Sign-in button wiring** (P0 · `claude`) — header button currently does nothing. Point it at `http://localhost:5173/login` (env-driven) or a modal that explains PLOS auth. ~15 min.
-3. **`packages/ui` primitives** (P1 · `either`) — lift `Button`, `Card`, `Badge` out of inline JSX so both apps share one component. Visible polish + reduces duplication. ~1 hr.
-4. **PLOS Person detail page** (P1 · `claude` frontend + `cursor` may extend endpoint) — `/people/:id` route showing that person's responsibilities + activity. Currently the card on `/people` goes nowhere. ~45 min.
-5. **PLOS Search bar wiring** (P1 · split) — topbar search is a placeholder. Cursor: add `GET /search?q=…` endpoint. Claude: wire the autocomplete UI. ~1–2 hrs total.
+1. ~~**NIS mobile hamburger**~~ [in progress · 2026-05-25 · claude] — phones can't navigate beyond home + /plos. Add a hamburger that opens a drawer with the 6 nav links. ~30 min.
+2. ~~**NIS Sign-in button wiring**~~ [in progress · 2026-05-25 · claude] — header button currently does nothing. Point it at `http://localhost:5173/login` (env-driven) or a modal that explains PLOS auth. ~15 min.
+3. ~~**`packages/ui` primitives**~~ [in progress · 2026-05-25 · claude] — lift `Button`, `Card`, `Badge` out of inline JSX so both apps share one component. Visible polish + reduces duplication. ~1 hr.
+4. ~~**PLOS Person detail page**~~ [in progress · 2026-05-25 · claude] — `/people/:id` route showing that person's responsibilities + activity. Currently the card on `/people` goes nowhere. ~45 min.
+5. ~~**PLOS Search bar wiring (frontend)**~~ [in progress · 2026-05-25 · claude] — topbar search is a placeholder. Claude wires autocomplete UI now (with safe client-side fallback if `GET /search?q=…` 404s); Cursor still owns the backend endpoint. ~1–2 hrs total.
 
 After those, the next tier:
 - Real product imagery (Nikita) — Spline hero, Canvas tiles, Shop merch, About portraits
@@ -44,11 +44,11 @@ Everything else is itemized below.
 
 ### P0 — launch blockers
 
-- [ ] **Mobile navigation (hamburger)** — nav links are hidden at ≤720px but there's no replacement; phone users can only reach `/plos` via the Open PLOS button or the footer. **Owner:** `claude`
+- [ ] **Mobile navigation (hamburger)** [in progress · 2026-05-25 · claude] — nav links are hidden at ≤720px but there's no replacement; phone users can only reach `/plos` via the Open PLOS button or the footer. **Owner:** `claude`
 - [ ] **Cart + multi-item checkout flow** — `BuyButton` does single-product Razorpay orders only; need Zustand cart store, cart drawer, multi-item checkout, bundle page. **Owner:** `claude`
 - [ ] **3 more trackers content + files** — SIP / Wedding Budget / Job Application Tracker. Currently listed in catalog but empty. Need the actual `.xlsx` files + detail page copy + feature lists. **Owner:** `human` (content) + `claude` (wiring)
 - [ ] **PLOS waitlist form** on `/plos` pillar page — POST to `app.thenispace.com/api/waitlist`. Backend endpoint also needed. **Owner:** `claude` (frontend) + `cursor` (backend endpoint)
-- [ ] **Sign-in button wiring** — header has a "Sign in" button (visible on desktop) that does nothing. Should link to `app.thenispace.com/login` or open a modal that bounces to PLOS auth. **Owner:** `claude`
+- [ ] **Sign-in button wiring** [in progress · 2026-05-25 · claude] — header has a "Sign in" button (visible on desktop) that does nothing. Should link to `app.thenispace.com/login` or open a modal that bounces to PLOS auth. **Owner:** `claude`
 - [ ] **Razorpay KYC** — 5–7 day approval window, start ASAP. **Owner:** `human`
 - [ ] **Resend domain verification** for `thenispace.com` — transactional email for purchases. **Owner:** `human`
 - [ ] **Supabase project setup** — create project, run `apps/web/supabase/schema.sql`, create `products` storage bucket, upload `.xlsx` files to `products/trackers/<slug>.xlsx`. **Owner:** `human`
@@ -84,9 +84,9 @@ Everything else is itemized below.
 
 ### P1 — visible gaps
 
-- [ ] **Person detail page** — clicking a person card on `/people` should open `/people/:id` with their assigned responsibilities + activity. **Owner:** `claude` (route + component) + `cursor` (endpoint already exists at `personService.getById`, may need expansion)
+- [ ] **Person detail page** [in progress · 2026-05-25 · claude] — clicking a person card on `/people` should open `/people/:id` with their assigned responsibilities + activity. **Owner:** `claude` (route + component) + `cursor` (endpoint already exists at `personService.getById`, may need expansion)
 - [ ] **Responsibility detail page** — `/responsibilities/:id` with full timeline + edit + complete. **Owner:** `claude` (route) + `cursor` (timeline endpoint already exists)
-- [ ] **Search bar in topbar** — placeholder doesn't actually search anything. Needs an autocomplete endpoint `GET /search?q=…` returning responsibilities/people/notes. **Owner:** `cursor` (endpoint) + `claude` (frontend autocomplete)
+- [ ] **Search bar in topbar** [frontend in progress · 2026-05-25 · claude] — placeholder doesn't actually search anything. Needs an autocomplete endpoint `GET /search?q=…` returning responsibilities/people/notes. **Owner:** `cursor` (endpoint) + `claude` (frontend autocomplete)
 - [ ] **`⌘K` command palette** — currently just a visual hint. Wire it to a search modal. **Owner:** `claude`
 - [ ] **WhatsApp reminder pipeline** — Settings marks it "Coming soon"; need Twilio / Meta integration + opt-in flow. **Owner:** `cursor`
 - [ ] **Streaks-at-risk reminder cron** — scheduler should pick streaks ≤1 day from breaking and fire notifications. **Owner:** `cursor`
@@ -113,7 +113,7 @@ Everything else is itemized below.
 
 ### P1
 
-- [ ] **`packages/ui` primitives still empty** — both apps currently inline buttons and cards. Lift `Button`, `Card`, `Badge` (and maybe `Tag`) into `@nis/ui` so PLOS + NIS share a single visual language. **Owner:** `either` — needs PR + Ishank review per `CLAUDE.md`
+- [ ] **`packages/ui` primitives still empty** [in progress · 2026-05-25 · claude] — both apps currently inline buttons and cards. Lift `Button`, `Card`, `Badge` (and maybe `Tag`) into `@nis/ui` so PLOS + NIS share a single visual language. **Owner:** `either` — needs PR + Ishank review per `CLAUDE.md`
 
 ### P2
 
