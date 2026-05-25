@@ -1,10 +1,26 @@
 # Start here
 
-**Updated 2026-05-25 (end of fourth top-5 batch — 20 BACKLOG items shipped today).** Four rounds of "Next session" items closed in 28+ commits on `main`. Batches 3 and 4 included four normally-Cursor-owned backend items (habit history endpoint, notification preferences API, data export endpoints, streaks-at-risk cron) — claude shipped both halves with the user's explicit authority.
+**Updated 2026-05-25 (end of session — 28 BACKLOG items shipped today across 6 batches).** Closed in ~45 commits on `main`. Five of the items were normally-Cursor-owned backend work (habit history endpoint, notification preferences API, data export endpoints, streaks-at-risk cron, `/search` endpoint) — claude shipped both halves with explicit authority.
+
+**Everything still pending is either gated on your Razorpay/Twilio keys, Nikita's content, or a 30-min deploy/setup task you control.** Nothing actively blocks claude from continuing — but the next layer of value sits with you or external services.
 
 > **For pending work and the next session's priorities → [`BACKLOG.md`](./BACKLOG.md)** (top of file has a "Next session, pick from this short list" section)
 >
 > **For AI coordination rules** → [`CLAUDE.md`](./CLAUDE.md) (Claude Code) or [`.cursorrules`](./.cursorrules) (Cursor) — both AIs share `plos-frontend/` now; `BACKLOG.md` is the lock queue
+
+## Session log — what shipped 2026-05-25 (batches 5 + 6)
+
+| Commit | What |
+|---|---|
+| `ae69564` | `docs(repo)` — claimed batches 5+6 |
+| `5cf160c` | `feat(web)` — **Dynamic OG images** (site default + per-tracker via `next/og`). |
+| `da6d837` | `feat(plos-backend)` — **`/search?q=` endpoint** — replaces frontend client-side fallback. Closes PLOS P0. |
+| `27bc77f` | `feat(plos-frontend)` — **/register validation copy** with live strength meter. |
+| `4904a20` | `feat(plos-frontend)` — **Avatar upload preview** next to file input + 2 MB guard. |
+| `af97d3b` | `feat(plos-frontend)` — **PWA manifest + install prompt** — PLOS installable. |
+| `05f07d2` | `feat(plos-frontend)` — **Empty-state illustrations** (`PlosEmptyState` w/ 6 SVG variants). |
+| `d70b3e2` | `test(web)` — **Playwright** smoke + visual regression suite. |
+| `c4eaa9e` | `chore(packages/ui)` — **Ladle stories** for Button/Card/Badge. |
 
 ## Session log — what shipped 2026-05-25 (fourth batch)
 

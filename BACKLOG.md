@@ -8,24 +8,22 @@
 
 ## ▶ Next session — pick from this short list
 
-Batch 5 + 6 in progress (no Razorpay/deploy items — all claude-doable polish).
+Batches 5 + 6 shipped (8 more polish items — 28 total today). Whatever's left needs your action or external credentials.
 
-**Batch 5:**
-1. ~~**NIS OG images (dynamic)**~~ [in progress · 2026-05-25e · claude] — Next.js `opengraph-image` convention.
-2. ~~**PLOS `/search?q=` backend**~~ [in progress · 2026-05-25e · claude] — replace frontend client-side fallback.
-3. ~~**PLOS `/register` validation copy**~~ [in progress · 2026-05-25e · claude] — password length, email format, helper text.
-4. ~~**PLOS avatar upload preview**~~ [in progress · 2026-05-25e · claude] — thumbnail in modal before save.
-5. ~~**PLOS PWA manifest + install prompt**~~ [in progress · 2026-05-25e · claude] — installable on phones.
+**Claude-doable but needs your credentials:**
+1. **PLOS Razorpay billing** (P0) — needs Razorpay test keys in `plos-backend/.env`. ~3 hrs.
+2. **PLOS WhatsApp pipeline** (P1) — needs Twilio or Meta Business creds. ~2 hrs.
 
-**Batch 6:**
-6. ~~**PLOS empty-state illustrations**~~ [in progress · 2026-05-25f · claude] — inline SVGs for People/Habits/Today empty states.
-7. ~~**Visual regression testing (Playwright)**~~ [in progress · 2026-05-25f · claude] — snapshot tests on key NIS routes.
-8. ~~**Storybook for `@nis/ui`**~~ [in progress · 2026-05-25f · claude] — Ladle + stories for Button/Card/Badge.
-
-**Still gated on external accounts / human action:**
-- PLOS Razorpay billing — needs Razorpay test keys
-- PLOS WhatsApp pipeline — needs Twilio/Meta
-- Everything human-content / deploy / KYC (see "Pending — human only" below)
+**Pending — human only:**
+- 3 more tracker contents (you)
+- Razorpay KYC start (5–7 day wait — **start ASAP**)
+- Supabase project setup + run `apps/web/supabase/schema.sql` + apply `plos-backend/prisma/migrations/20260525000000_add_notification_preferences` (you · ~30 min)
+- Resend domain verification for `thenispace.com`
+- Vercel deploy + DNS
+- Nikita: Spline 3D hero / Canvas tiles / Shop SKU imagery / About portraits
+- Lawyer review of legal placeholder copy
+- Branch protection on `main` (GitHub settings)
+- Dependabot/Renovate config
 
 After those, the next tier:
 - 3 more tracker contents (human, P0)
