@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { CartButton } from './CartButton';
 
 const LINKS = [
   { href: '/',         label: 'Home' },
@@ -74,6 +75,7 @@ export function SiteHeader() {
         <div className="nis-header-actions">
           <a className="nis-btn" href={SIGN_IN_HREF}>Sign in</a>
           <Link href="/plos" className="nis-btn nis-btn-primary">Open PLOS</Link>
+          <CartButton />
           <button
             type="button"
             className="nis-hamburger"

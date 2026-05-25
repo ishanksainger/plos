@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ImageSlot } from '@/components/nis/ImageSlot';
+import { TrackerActions } from '@/components/nis/TrackerActions';
 import { fmtINR, type Tracker } from '@/lib/nis-data';
 
 export function TrackerDetailPage({ tracker: t }: { tracker: Tracker }) {
@@ -84,13 +85,8 @@ export function TrackerDetailPage({ tracker: t }: { tracker: Tracker }) {
             </span>
           </div>
 
-          <div style={{ display: 'flex', gap: 12, marginBottom: 32, flexWrap: 'wrap' }}>
-            <button className="nis-btn nis-btn-primary" style={{ padding: '12px 22px', fontSize: 14 }}>
-              Buy with UPI
-            </button>
-            <button className="nis-btn" style={{ padding: '12px 22px', fontSize: 14 }}>
-              Pay with card
-            </button>
+          <div style={{ marginBottom: 32 }}>
+            <TrackerActions slug={t.slug} />
           </div>
 
           <p style={{ color: 'var(--ink-2)', fontSize: 15, lineHeight: 1.55, marginBottom: 24 }}>

@@ -3,12 +3,13 @@
 import { ReactNode } from 'react';
 import { SiteHeader } from './SiteHeader';
 import { SiteFooter } from './SiteFooter';
+import { CartDrawer } from './CartDrawer';
 
 export function NisShell({
   pillar,
   children,
 }: {
-  pillar?: 'trackers' | 'canvas' | 'shop' | 'plos' | 'about';
+  pillar?: 'trackers' | 'canvas' | 'shop' | 'plos' | 'about' | 'legal';
   children: ReactNode;
 }) {
   return (
@@ -19,6 +20,7 @@ export function NisShell({
         {children}
       </main>
       <SiteFooter />
+      <CartDrawer />
     </div>
   );
 }

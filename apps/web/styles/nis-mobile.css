@@ -265,3 +265,263 @@ html, body {
   max-width: 100vw;
   overflow-x: hidden;
 }
+
+/* ───── Cart button (header) ───── */
+.nis-cart-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 10px;
+  border: 1px solid var(--rule);
+  background: var(--bg-card);
+  color: var(--ink-1);
+  cursor: pointer;
+  transition: background 160ms, border-color 160ms;
+}
+.nis-cart-btn:hover { background: var(--bg-card-hover); border-color: var(--rule-strong); }
+.nis-cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--nis-font-mono);
+  line-height: 1;
+}
+
+/* ───── Cart overlay + sheet ───── */
+.nis-cart-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.nis-cart-overlay.open {
+  pointer-events: auto;
+  opacity: 1;
+}
+.nis-cart-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(20, 12, 36, 0.55);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  cursor: pointer;
+}
+.nis-cart-sheet {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  height: 100dvh;
+  width: min(440px, 92vw);
+  background: var(--bg);
+  border-left: 1px solid var(--rule);
+  box-shadow: -16px 0 40px -16px rgba(20, 12, 36, 0.25);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.nis-cart-overlay.open .nis-cart-sheet { transform: translateX(0); }
+.nis-cart-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 24px 24px 12px;
+  border-bottom: 1px solid var(--rule);
+}
+.nis-cart-close {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+  background: var(--bg-card);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background 160ms;
+}
+.nis-cart-close:hover { background: var(--bg-card-hover); color: var(--ink-1); }
+.nis-cart-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 24px;
+}
+.nis-cart-empty {
+  color: var(--ink-3);
+  font-size: 14px;
+}
+.nis-cart-empty a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.nis-cart-lines {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.nis-cart-line {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-template-rows: auto auto;
+  column-gap: 14px;
+  row-gap: 6px;
+  align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--rule);
+}
+.nis-cart-line-main { grid-column: 1; grid-row: 1; min-width: 0; }
+.nis-cart-line-title {
+  font-weight: 600;
+  color: var(--ink-1);
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nis-cart-line-sub {
+  font-size: 11px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-family: var(--nis-font-mono);
+  margin-top: 2px;
+}
+.nis-cart-line-qty {
+  grid-column: 2;
+  grid-row: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--nis-font-mono);
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.nis-cart-line-qty button {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--rule);
+  background: var(--bg-card);
+  color: var(--ink-1);
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+}
+.nis-cart-line-qty button:hover { background: var(--bg-card-hover); }
+.nis-cart-line-price {
+  grid-column: 3;
+  grid-row: 1;
+  font-family: var(--nis-font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-1);
+}
+.nis-cart-line-remove {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  justify-self: start;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: var(--ink-3);
+  font-family: var(--nis-font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+.nis-cart-line-remove:hover { color: var(--accent-danger, #ef4444); }
+.nis-cart-foot {
+  padding: 16px 24px 24px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.nis-cart-subtotal {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.nis-cart-subtotal strong {
+  font-family: var(--nis-font-mono);
+  font-size: 18px;
+  color: var(--ink-1);
+  font-weight: 600;
+}
+.nis-cart-email {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.nis-cart-email span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+  font-family: var(--nis-font-mono);
+}
+.nis-cart-email input {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+  background: var(--bg-card);
+  color: var(--ink-1);
+  font-size: 14px;
+  font-family: inherit;
+}
+.nis-cart-email input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.nis-cart-checkout {
+  justify-content: center;
+  padding: 12px 20px;
+}
+.nis-cart-status {
+  margin: 4px 0 0;
+  font-size: 12px;
+}
+.nis-cart-status.warn { color: var(--accent-warning, #f59e0b); }
+.nis-cart-status.ok { color: var(--accent-success, #10b981); }
+.nis-cart-status.err { color: var(--accent-danger, #ef4444); }
+
+/* Tracker detail "buy now" inline form */
+.nis-tracker-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.nis-tracker-buynow {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--nis-radius-md);
+  border: 1px solid var(--rule);
+  background: var(--bg-card);
+}
