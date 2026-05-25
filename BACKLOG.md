@@ -8,16 +8,24 @@
 
 ## ▶ Next session — pick from this short list
 
-Four back-to-back batches of 5 shipped on 2026-05-25 (20 BACKLOG items closed today). The remaining open items skew toward "needs human" or "needs external credentials." For the next claude-doable batch:
+Batch 5 + 6 in progress (no Razorpay/deploy items — all claude-doable polish).
 
-1. **PLOS Razorpay billing wiring** (P0 · claude) — plan upgrade endpoint + Razorpay subscription create + webhook. Hooks into the existing `Subscription` Prisma model. **Needs:** RAZORPAY test keys in `plos-backend/.env`. ~3 hrs.
-2. **PLOS WhatsApp reminder pipeline** (P1 · claude) — Twilio or Meta Business API integration + opt-in flow (toggle is already persisted). **Needs:** Twilio/Meta account + WHATSAPP_FROM number. ~2 hrs.
-3. **PLOS PWA manifest + install prompt** (P2 · claude) — make PLOS installable on phones. ~45 min.
-4. **PLOS `/register` form validation copy** (P2 · claude) — password length, email format, account-type help text. ~30 min.
-5. **PLOS avatar upload preview** (P2 · claude) — thumbnail in modal before saving. ~30 min.
+**Batch 5:**
+1. ~~**NIS OG images (dynamic)**~~ [in progress · 2026-05-25e · claude] — Next.js `opengraph-image` convention.
+2. ~~**PLOS `/search?q=` backend**~~ [in progress · 2026-05-25e · claude] — replace frontend client-side fallback.
+3. ~~**PLOS `/register` validation copy**~~ [in progress · 2026-05-25e · claude] — password length, email format, helper text.
+4. ~~**PLOS avatar upload preview**~~ [in progress · 2026-05-25e · claude] — thumbnail in modal before save.
+5. ~~**PLOS PWA manifest + install prompt**~~ [in progress · 2026-05-25e · claude] — installable on phones.
 
-Or, in priority order for **human** action (no claude work to unblock):
-- 3 more tracker contents — Razorpay KYC start — Supabase setup + apply migrations — Resend domain — Vercel deploy + DNS — Nikita's Spline/Canvas/Shop imagery — lawyer review of legal placeholder copy.
+**Batch 6:**
+6. ~~**PLOS empty-state illustrations**~~ [in progress · 2026-05-25f · claude] — inline SVGs for People/Habits/Today empty states.
+7. ~~**Visual regression testing (Playwright)**~~ [in progress · 2026-05-25f · claude] — snapshot tests on key NIS routes.
+8. ~~**Storybook for `@nis/ui`**~~ [in progress · 2026-05-25f · claude] — Ladle + stories for Button/Card/Badge.
+
+**Still gated on external accounts / human action:**
+- PLOS Razorpay billing — needs Razorpay test keys
+- PLOS WhatsApp pipeline — needs Twilio/Meta
+- Everything human-content / deploy / KYC (see "Pending — human only" below)
 
 After those, the next tier:
 - 3 more tracker contents (human, P0)
@@ -105,7 +113,7 @@ Everything else is itemized below.
 
 - ~~**Person detail page**~~ → shipped 2026-05-25 in `ffefa9d` (route + UI; existing `GET /persons/:id` endpoint covered the data).
 - ~~**Responsibility detail page**~~ → shipped 2026-05-25 in `ed55d42` (`/responsibilities/:id` with category-tinted hero, at-a-glance card incl. `<Badge tone>`, notes, immutable timeline, Mark complete / Edit / Delete; row titles on `/responsibilities` link through).
-- [ ] **Search bar in topbar** — frontend shipped 2026-05-25 in `27f7dd1` (autocomplete popover, ⌘K shortcut, keyboard nav, client-side fallback). **Still pending:** backend `GET /search?q=…` endpoint — once Cursor ships it, the frontend will start using it automatically (no FE changes needed). **Owner:** `cursor`.
+- [ ] **Search bar in topbar** [backend in progress · 2026-05-25e · claude] — frontend shipped 2026-05-25 in `27f7dd1`. Backend endpoint being shipped by claude with explicit authority. **Owner:** was `cursor`.
 - ~~**`⌘K` command palette**~~ → shipped 2026-05-25 in `d7a5da5` (empty input shows "Jump to" + "Create" actions, typed input fuzzy-matches + runs the search popover; "New responsibility" routes to `/responsibilities?new=1` which auto-opens the create modal).
 - [ ] **WhatsApp reminder pipeline** — Settings marks it "Coming soon"; need Twilio / Meta integration + opt-in flow. **Owner:** `cursor`
 - ~~**Streaks-at-risk reminder cron**~~ → shipped 2026-05-25 in `a79457c` (`SchedulerService.notifyStreaksAtRisk` runs hourly in prod, every 30 min in dev; gates on `streakAtRisk` user pref + post-noon check; idempotent per habit/day; uses existing `NotificationService.createInApp`).
