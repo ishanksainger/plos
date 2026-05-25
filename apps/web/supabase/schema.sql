@@ -87,6 +87,23 @@ create policy products_read_active on commerce.products
 -- No additional policies needed.
 
 -- ----------------------------------------------------------------------------
+-- waitlist: emails captured from /plos for PLOS launch + tracker-coming-soon.
+-- ----------------------------------------------------------------------------
+create schema if not exists marketing;
+
+create table if not exists marketing.waitlist (
+  id            uuid primary key default gen_random_uuid(),
+  email         text not null,
+  source        text not null default 'plos',   -- 'plos' | 'tracker:<slug>' | etc.
+  interested_in text,                           -- optional free-text reason / tracker slug
+  user_agent    text,
+  created_at    timestamptz not null default now(),
+  unique (email, source)
+);
+
+create index if not exists waitlist_created_at_idx on marketing.waitlist (created_at desc);
+
+-- ----------------------------------------------------------------------------
 -- Seed: insert the Freelancer GST Tracker so server-side reads can find it.
 -- ----------------------------------------------------------------------------
 insert into commerce.products (id, type, title, description, price_paise, storage_path)

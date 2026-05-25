@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Reveal, TiltCard } from '@/components/nis/scroll';
 import { ImageSlot } from '@/components/nis/ImageSlot';
 import { StreakChainDemo } from '@/components/nis/StreakChainDemo';
+import { WaitlistForm } from '@/components/nis/WaitlistForm';
 import { NIS_TESTIMONIALS } from '@/lib/nis-data';
 
 const MODULES: [string, string][] = [
@@ -329,6 +330,20 @@ export function PlosPillarPage() {
           >
             Open the live prototype →
           </a>
+        </Reveal>
+      </section>
+
+      <div className="section-divider" />
+
+      <section
+        id="waitlist"
+        className="nis-section"
+        style={{ scrollMarginTop: '80px', paddingTop: 'clamp(48px, 8vw, 96px)' }}
+      >
+        <Reveal>
+          <div className="nis-waitlist-wrap">
+            <WaitlistForm source="plos" />
+          </div>
         </Reveal>
       </section>
     </>

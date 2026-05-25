@@ -510,6 +510,52 @@ html, body {
 .nis-cart-status.ok { color: var(--accent-success, #10b981); }
 .nis-cart-status.err { color: var(--accent-danger, #ef4444); }
 
+/* ───── Waitlist form ───── */
+.nis-waitlist-wrap {
+  max-width: 640px;
+  margin: 0 auto;
+}
+.nis-waitlist {
+  padding: clamp(24px, 4vw, 36px);
+  border-radius: var(--nis-radius-lg);
+  border: 1px solid var(--rule);
+  background: var(--bg-card);
+}
+.nis-waitlist-success { text-align: left; }
+.nis-waitlist-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.nis-waitlist-field {
+  flex: 1 1 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.nis-waitlist-field span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+  font-family: var(--nis-font-mono);
+}
+.nis-waitlist-field input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  color: var(--ink-1);
+  font-size: 14px;
+  font-family: inherit;
+  min-width: 0;
+}
+.nis-waitlist-field input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
 /* Tracker detail "buy now" inline form */
 .nis-tracker-actions {
   display: flex;
