@@ -26,9 +26,8 @@ export default function Page() {
             heading: 'Who we are',
             body: (
               <p>
-                NIS Studio is operated by Ishank Sainger and Nikita (the
-                &ldquo;Studio&rdquo;) from Pune, India. GSTIN
-                <strong> 27AABCN1234F1Z5</strong>. Contact:{' '}
+                NIS is operated by Ishank Sainger as a sole proprietor based in
+                Pune, India. Contact:{' '}
                 <a href="mailto:hello@thenispace.com">hello@thenispace.com</a>.
               </p>
             ),
@@ -51,11 +50,10 @@ export default function Page() {
             body: (
               <>
                 <p>
-                  Tracker prices are shown in INR and are GST-inclusive. Once
-                  you complete checkout via Razorpay, we email a download link
-                  good for 7 days and 5 downloads. Trackers are licensed for
-                  personal or single-business use — please don&rsquo;t redistribute
-                  them.
+                  Tracker prices are shown in INR. Once you complete checkout
+                  via Razorpay, we email a download link good for 7 days and
+                  5 downloads. Trackers are licensed for personal or
+                  single-business use — please don&rsquo;t redistribute them.
                 </p>
                 <p>
                   Refunds are governed by our{' '}

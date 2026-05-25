@@ -24,8 +24,8 @@ export function LegalPage({
       <div className="nis-legal-banner">
         <span className="nis-section-eyebrow">Heads up</span>
         <span>
-          This copy is a placeholder while a lawyer finalises the binding
-          version. For anything urgent, write to{' '}
+          This is our plain-English version, written by us and kept simple.
+          For anything urgent, write to{' '}
           <a href="mailto:hello@thenispace.com">hello@thenispace.com</a>.
         </span>
       </div>

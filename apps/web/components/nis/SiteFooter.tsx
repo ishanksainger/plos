@@ -38,8 +38,6 @@ export function SiteFooter() {
           <h4>Studio</h4>
           <ul>
             <li><Link href="/about">About</Link></li>
-            <li><a>Journal</a></li>
-            <li><a>Press kit</a></li>
             <li><Link href="/refund">Refund policy</Link></li>
             <li><Link href="/privacy">Privacy</Link></li>
             <li><Link href="/terms">Terms</Link></li>
@@ -49,15 +47,13 @@ export function SiteFooter() {
           <h4>Find us</h4>
           <ul>
             <li><a href="mailto:hello@thenispace.com">hello@thenispace.com</a></li>
-            <li><a>Etsy shop</a></li>
-            <li><a>Instagram</a></li>
-            <li><a>Pune · Mumbai</a></li>
+            <li><span>Pune · India</span></li>
           </ul>
         </div>
       </div>
       <div className="nis-footer-legal">
-        <span>© 2026 NIS Studio · made in India</span>
-        <span>GSTIN · 27AABCN1234F1Z5</span>
+        <span>© 2026 NIS · made in India</span>
+        <span>operated by Ishank Sainger · Pune</span>
       </div>
     </footer>
   );
