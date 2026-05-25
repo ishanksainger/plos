@@ -1,11 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-
-const SearchIcon = (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="7" />
-    <path d="m21 21-4.3-4.3" />
-  </svg>
-);
+import { PlosSearchPopover } from '../components/plos/PlosSearchPopover';
 
 const BellIcon = (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -58,22 +52,7 @@ export default function PlosTopbar({
         </svg>
         NIS
       </a>
-      <div className="plos-search">
-        {SearchIcon}
-        <input placeholder="Search responsibilities, people, notes…" />
-        <span
-          className="mono"
-          style={{
-            fontSize: 11,
-            color: 'var(--plos-ink-4)',
-            padding: '2px 6px',
-            border: '1px solid var(--plos-rule)',
-            borderRadius: 6,
-          }}
-        >
-          ⌘K
-        </span>
-      </div>
+      <PlosSearchPopover />
       <div className="plos-topbar-actions">
         <button
           className="plos-icon-btn"
