@@ -114,6 +114,14 @@ values (
   'Logs invoices, GST output/input, TDS deducted, and produces a clean quarterly summary for Indian freelancers.',
   24900,
   'trackers/freelancer-gst.xlsx'
+),
+(
+  'all-trackers-bundle',
+  'bundle',
+  'All-Trackers Bundle',
+  'All four NIS trackers at 25% off. Freelancer GST delivered immediately; the remaining three ship as each tracker goes live.',
+  81450,
+  null
 )
 on conflict (id) do update set
   title = excluded.title,

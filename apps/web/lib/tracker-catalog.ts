@@ -7,6 +7,8 @@
  * soon" badge but their Buy / Add-to-cart buttons are disabled.
  */
 
+export type TrackerKind = 'tracker' | 'bundle';
+
 export type Tracker = {
   slug: string;
   title: string;
@@ -19,6 +21,10 @@ export type Tracker = {
   pages?: number;
   active: boolean;
   badge?: string;
+  /** `'tracker'` (single product) or `'bundle'` (groups other slugs). */
+  kind?: TrackerKind;
+  /** For bundles: slugs of the trackers included. */
+  components?: string[];
 };
 
 export const TRACKERS: Tracker[] = [
@@ -107,13 +113,72 @@ export const TRACKERS: Tracker[] = [
   },
 ];
 
-export function getTracker(slug: string): Tracker | undefined {
-  return TRACKERS.find((t) => t.slug === slug);
+// ──────────────────────────────────────────────────────────────────────────
+// Bundle SKU — kept separate from `TRACKERS` so /trackers doesn't list it
+// (it has its own landing at /trackers/bundle), but the cart still resolves
+// it via getPurchasableTracker(slug).
+// ──────────────────────────────────────────────────────────────────────────
+
+const BUNDLE_DISCOUNT = 0.25; // 25% off the sum of individual prices
+
+const ALL_TRACKER_SLUGS = ['freelancer-gst', 'household', 'wedding', 'small-business'];
+
+function sumComponentPrices(): number {
+  return TRACKERS.filter((t) => ALL_TRACKER_SLUGS.includes(t.slug)).reduce(
+    (sum, t) => sum + t.pricePaise,
+    0,
+  );
 }
 
-/** Trackers eligible for purchase. */
+// Round bundle price down to the nearest 100 paise (₹1) for clean pricing.
+const BUNDLE_PRICE_PAISE = Math.floor((sumComponentPrices() * (1 - BUNDLE_DISCOUNT)) / 100) * 100;
+
+export const BUNDLE: Tracker = {
+  slug: 'all-trackers-bundle',
+  title: 'All-Trackers Bundle',
+  tagline:
+    'Every tracker we ship — one price, one email. 25% off the sum of individual prices.',
+  description:
+    'Pay once for the full library. The Freelancer GST Tracker reaches your inbox immediately; the remaining three (Household Money Planner, Wedding Planner, Small Business Cashflow) arrive as each one ships. Locked-in price even if individual prices rise later.',
+  pricePaise: BUNDLE_PRICE_PAISE,
+  features: [
+    'Freelancer GST Tracker · live now',
+    'Household Money Planner · ships next',
+    'Indian Wedding Planner · in production',
+    'Small Business Cashflow · in production',
+    '25% off the sum of individual prices',
+    'Price locked — future tracker price hikes don\'t apply to you',
+  ],
+  audience: 'Anyone who wants the full library at a discount, even pre-launch.',
+  fileType: 'xlsx',
+  pages: 31,
+  active: true,
+  badge: 'Best value',
+  kind: 'bundle',
+  components: ALL_TRACKER_SLUGS,
+};
+
+export function getBundlePricing() {
+  const totalIndividualPaise = sumComponentPrices();
+  return {
+    bundle: BUNDLE,
+    components: TRACKERS.filter((t) => ALL_TRACKER_SLUGS.includes(t.slug)),
+    totalIndividualPaise,
+    bundlePricePaise: BUNDLE.pricePaise,
+    savingsPaise: totalIndividualPaise - BUNDLE.pricePaise,
+    discountPercent: Math.round(BUNDLE_DISCOUNT * 100),
+  };
+}
+
+const ALL_SKUS: Tracker[] = [...TRACKERS, BUNDLE];
+
+export function getTracker(slug: string): Tracker | undefined {
+  return ALL_SKUS.find((t) => t.slug === slug);
+}
+
+/** Trackers/bundles eligible for purchase. */
 export function getPurchasableTracker(slug: string): Tracker | undefined {
-  return TRACKERS.find((t) => t.slug === slug && t.active);
+  return ALL_SKUS.find((t) => t.slug === slug && t.active);
 }
 
 export function listTrackers(): Tracker[] {
