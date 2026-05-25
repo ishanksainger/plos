@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto, UpdateProfileDto } from './dto/auth.dto';
@@ -35,5 +43,12 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   patchMe(@CurrentUser() user: JwtPayload, @Body() dto: UpdateProfileDto) {
     return this.authService.updateProfile(user.sub, dto);
+  }
+
+  /** Permanently deletes the current user + every record they own. DPDP §11. */
+  @Delete('me')
+  @UseGuards(JwtAuthGuard)
+  deleteMe(@CurrentUser() user: JwtPayload) {
+    return this.authService.deleteAccount(user.sub);
   }
 }

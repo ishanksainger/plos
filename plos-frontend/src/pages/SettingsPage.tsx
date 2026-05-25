@@ -1,4 +1,5 @@
 import { useLayoutEffect, useState, type ReactElement } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Loader, Modal } from '@mantine/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
@@ -13,7 +14,7 @@ import { downloadExport, type ExportFormat } from '../services/export.service';
 import { useAppDispatch as useAppDispatchUi, useAppSelector } from '../store/hooks';
 import { setTheme, type ThemeMode } from '../store/uiSlice';
 import { useAppDispatch } from '../store/hooks';
-import { patchUser } from '../store/authSlice';
+import { patchUser, logout } from '../store/authSlice';
 import { CURRENCY_OPTIONS, TIMEZONE_OPTIONS } from '../constants/preferences';
 import { ACCOUNT_TYPE_OPTIONS, accountTypeChangeWarning } from '../constants/accountType';
 import type { AccountType } from '../types/auth';
@@ -376,6 +377,7 @@ export default function SettingsPage() {
               </div>
             </div>
             <DataExportRow />
+            <DangerZone />
           </>
         )}
       </div>
@@ -461,6 +463,159 @@ function ThemeRow() {
         })}
       </div>
     </div>
+  );
+}
+
+function DangerZone() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const [confirmStep, setConfirmStep] = useState<0 | 1 | 2>(0);
+  const [typed, setTyped] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const close = () => {
+    setConfirmStep(0);
+    setTyped('');
+  };
+
+  const doDelete = async () => {
+    setBusy(true);
+    try {
+      await authService.deleteAccount();
+      notifications.show({
+        title: 'Account deleted',
+        message: 'Everything has been removed. We will miss you.',
+        color: 'teal',
+      });
+      // Wipe the local session so the JWT can't be replayed against another
+      // (unrelated) account.
+      localStorage.removeItem('plos_token');
+      localStorage.removeItem('plos_user');
+      dispatch(logout());
+      navigate('/login', { replace: true });
+    } catch (err) {
+      notifications.show({
+        title: 'Could not delete',
+        message: err instanceof Error ? err.message : 'Try again in a minute.',
+        color: 'red',
+      });
+      setBusy(false);
+    }
+  };
+
+  return (
+    <>
+      <div
+        className="settings-row"
+        style={{
+          marginTop: 24,
+          paddingTop: 24,
+          borderTop: '1px solid var(--plos-rule)',
+        }}
+      >
+        <div>
+          <div className="label" style={{ color: '#ef4444' }}>
+            Delete account
+          </div>
+          <div className="help">
+            Permanently removes your profile, responsibilities, people, and timeline.
+            No undo. Per DPDP §11 we delete server-side within 24 hours.
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setConfirmStep(1)}
+          style={{
+            padding: '8px 16px',
+            borderRadius: 999,
+            border: '1px solid rgba(239, 68, 68, 0.35)',
+            background: 'rgba(239, 68, 68, 0.06)',
+            color: '#ef4444',
+            fontWeight: 600,
+            fontSize: 13,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
+        >
+          Delete account
+        </button>
+      </div>
+
+      <Modal
+        opened={confirmStep > 0}
+        onClose={busy ? () => {} : close}
+        title={confirmStep === 1 ? 'Delete your account?' : 'Final check'}
+        centered
+        radius="md"
+        closeOnClickOutside={!busy}
+        closeOnEscape={!busy}
+      >
+        {confirmStep === 1 && (
+          <>
+            <div style={{ fontSize: 13, color: 'var(--plos-ink-2)', lineHeight: 1.55, marginBottom: 16 }}>
+              This deletes your user profile, every responsibility you've logged,
+              everyone in your circle, your timeline, your notification
+              preferences, your subscription record, and unsubscribes you from
+              emails. <strong>It cannot be undone.</strong>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              <button
+                type="button"
+                className="plos-cta"
+                style={{ background: 'transparent', color: 'var(--plos-ink-2)', boxShadow: 'none' }}
+                onClick={close}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="plos-cta"
+                style={{ background: '#ef4444' }}
+                onClick={() => setConfirmStep(2)}
+              >
+                Continue
+              </button>
+            </div>
+          </>
+        )}
+        {confirmStep === 2 && (
+          <>
+            <div style={{ fontSize: 13, color: 'var(--plos-ink-2)', lineHeight: 1.55, marginBottom: 14 }}>
+              Type <strong>DELETE</strong> to confirm.
+            </div>
+            <input
+              className="input"
+              value={typed}
+              onChange={(e) => setTyped(e.target.value)}
+              placeholder="DELETE"
+              autoFocus
+              disabled={busy}
+              style={{ marginBottom: 16 }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              <button
+                type="button"
+                className="plos-cta"
+                style={{ background: 'transparent', color: 'var(--plos-ink-2)', boxShadow: 'none' }}
+                onClick={close}
+                disabled={busy}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="plos-cta"
+                style={{ background: '#ef4444' }}
+                disabled={typed !== 'DELETE' || busy}
+                onClick={doDelete}
+              >
+                {busy ? 'Deleting…' : 'Delete forever'}
+              </button>
+            </div>
+          </>
+        )}
+      </Modal>
+    </>
   );
 }
 

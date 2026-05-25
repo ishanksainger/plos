@@ -134,6 +134,48 @@ export class AuthService {
     return this.me(userId);
   }
 
+  /**
+   * Permanently deletes the user and every record they own. Used by both
+   * the `DELETE /auth/me` self-service endpoint and DPDP right-of-erasure
+   * requests. Runs inside one transaction so a failure halfway through
+   * doesn't leave orphans.
+   *
+   * Order matters — children before parents to satisfy FK constraints:
+   *   events (per responsibility) → notifications → responsibilities →
+   *   persons → notificationPrefs → subscription → user.
+   */
+  async deleteAccount(userId: number): Promise<{ deleted: true }> {
+    const exists = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true },
+    });
+    if (!exists) throw new UnauthorizedException('No such account');
+
+    await this.prisma.$transaction(async (tx) => {
+      // Pull the responsibility ids first; we need them to scope event deletes.
+      const myResponsibilities = await tx.responsibility.findMany({
+        where: { userId },
+        select: { id: true },
+      });
+      const responsibilityIds = myResponsibilities.map((r) => r.id);
+
+      if (responsibilityIds.length) {
+        await tx.event.deleteMany({
+          where: { responsibilityId: { in: responsibilityIds } },
+        });
+      }
+
+      await tx.notification.deleteMany({ where: { userId } });
+      await tx.responsibility.deleteMany({ where: { userId } });
+      await tx.person.deleteMany({ where: { userId } });
+      await tx.notificationPreferences.deleteMany({ where: { userId } });
+      await tx.subscription.deleteMany({ where: { userId } });
+      await tx.user.delete({ where: { id: userId } });
+    });
+
+    return { deleted: true };
+  }
+
   private toAuthUserPayload(user: {
     id: number;
     email: string;

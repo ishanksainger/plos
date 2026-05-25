@@ -31,4 +31,6 @@ export const authService = {
     api.post<AuthResponse>('/auth/login', { email, password }),
   me: () => api.get<MeResponse>('/auth/me'),
   updateProfile: (body: UpdateProfilePayload) => api.patch<MeResponse>('/auth/me', body),
+  /** Permanently deletes the current user + all their data. No undo. */
+  deleteAccount: () => api.delete<{ deleted: true }>('/auth/me'),
 };
