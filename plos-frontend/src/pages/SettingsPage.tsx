@@ -9,6 +9,7 @@ import {
   type NotificationPrefs,
   type NotificationPrefsPatch,
 } from '../services/notification-prefs.service';
+import { downloadExport, type ExportFormat } from '../services/export.service';
 import { useAppDispatch } from '../store/hooks';
 import { patchUser } from '../store/authSlice';
 import { CURRENCY_OPTIONS, TIMEZONE_OPTIONS } from '../constants/preferences';
@@ -371,20 +372,7 @@ export default function SettingsPage() {
                 </span>
               </div>
             </div>
-            <div className="settings-row">
-              <div>
-                <div className="label">Data export</div>
-                <div className="help">All your responsibilities, people, and timeline as JSON or CSV.</div>
-              </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button type="button" className="input" style={{ width: 'auto', cursor: 'pointer', fontWeight: 600 }}>
-                  Export JSON
-                </button>
-                <button type="button" className="input" style={{ width: 'auto', cursor: 'pointer', fontWeight: 600 }}>
-                  Export CSV
-                </button>
-              </div>
-            </div>
+            <DataExportRow />
           </>
         )}
       </div>
@@ -418,6 +406,69 @@ export default function SettingsPage() {
           </button>
         </div>
       </Modal>
+    </div>
+  );
+}
+
+function DataExportRow() {
+  const [busy, setBusy] = useState<ExportFormat | null>(null);
+
+  const run = async (format: ExportFormat) => {
+    setBusy(format);
+    try {
+      await downloadExport(format);
+      notifications.show({
+        title: `${format.toUpperCase()} export ready`,
+        message: 'Your download has started.',
+        color: 'teal',
+      });
+    } catch (err) {
+      notifications.show({
+        title: 'Export failed',
+        message: err instanceof Error ? err.message : 'Try again in a minute.',
+        color: 'red',
+      });
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <div className="settings-row">
+      <div>
+        <div className="label">Data export</div>
+        <div className="help">All your responsibilities, people, and timeline as JSON; CSV gives you the responsibility rows only.</div>
+      </div>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button
+          type="button"
+          className="input"
+          style={{
+            width: 'auto',
+            cursor: busy ? 'wait' : 'pointer',
+            fontWeight: 600,
+            opacity: busy ? 0.6 : 1,
+          }}
+          disabled={busy !== null}
+          onClick={() => run('json')}
+        >
+          {busy === 'json' ? 'Exporting…' : 'Export JSON'}
+        </button>
+        <button
+          type="button"
+          className="input"
+          style={{
+            width: 'auto',
+            cursor: busy ? 'wait' : 'pointer',
+            fontWeight: 600,
+            opacity: busy ? 0.6 : 1,
+          }}
+          disabled={busy !== null}
+          onClick={() => run('csv')}
+        >
+          {busy === 'csv' ? 'Exporting…' : 'Export CSV'}
+        </button>
+      </div>
     </div>
   );
 }
