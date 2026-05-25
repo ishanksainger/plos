@@ -35,8 +35,37 @@ export default function RegisterPage() {
     }
   }, [showHousehold, householdMembers.length]);
 
+  const trimmedName = name.trim();
+  const trimmedEmail = email.trim();
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail);
+  const nameMissing = trimmedName.length === 0;
+  const passwordTooShort = password.length > 0 && password.length < 8;
+  const passwordMissing = password.length === 0;
+  const canSubmit =
+    !nameMissing && emailValid && !passwordMissing && !passwordTooShort;
+
+  const passwordScore = (() => {
+    if (password.length < 8) return { label: 'Too short', tone: '#ef4444' };
+    let score = 0;
+    if (/[a-z]/.test(password)) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^a-zA-Z0-9]/.test(password)) score++;
+    if (password.length >= 12) score++;
+    if (score <= 2) return { label: 'OK', tone: '#f59e0b' };
+    if (score <= 3) return { label: 'Good', tone: '#22d3ee' };
+    return { label: 'Strong', tone: '#10b981' };
+  })();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canSubmit) {
+      if (nameMissing) setError('Please add your name so PLOS can greet you.');
+      else if (!emailValid) setError('That doesn’t look like a valid email.');
+      else if (passwordMissing) setError('Pick a password (8+ characters).');
+      else if (passwordTooShort) setError('Password must be at least 8 characters.');
+      return;
+    }
     setLoading(true);
     setError(null);
 
@@ -127,8 +156,16 @@ export default function RegisterPage() {
               className="input"
               value={name}
               placeholder="Rohan"
+              autoComplete="given-name"
+              required
+              aria-invalid={nameMissing && error ? 'true' : undefined}
               onChange={(e) => setName(e.target.value)}
             />
+            <div className="help">
+              {nameMissing
+                ? 'PLOS greets you by name on Today and in emails.'
+                : `We'll call you ${trimmedName}.`}
+            </div>
           </div>
 
           <div className="plos-field">
@@ -138,11 +175,26 @@ export default function RegisterPage() {
               className="input"
               type="email"
               autoComplete="email"
+              inputMode="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              aria-invalid={trimmedEmail.length > 0 && !emailValid ? 'true' : undefined}
             />
-            <div className="help">Required — used to sign in and for email notifications.</div>
+            <div
+              className="help"
+              style={
+                trimmedEmail.length > 0 && !emailValid
+                  ? { color: '#ef4444' }
+                  : undefined
+              }
+            >
+              {trimmedEmail.length === 0
+                ? 'Used to sign in and for email notifications.'
+                : emailValid
+                  ? 'Looks good.'
+                  : 'Use the format you@example.com.'}
+            </div>
           </div>
 
           <div className="plos-field">
@@ -152,12 +204,30 @@ export default function RegisterPage() {
               className="input"
               type="password"
               autoComplete="new-password"
-              minLength={6}
+              minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              aria-invalid={passwordTooShort ? 'true' : undefined}
             />
-            <div className="help">At least 6 characters.</div>
+            <div
+              className="help"
+              style={
+                passwordTooShort
+                  ? { color: '#ef4444' }
+                  : password.length >= 8
+                    ? { color: passwordScore.tone }
+                    : undefined
+              }
+            >
+              {password.length === 0
+                ? 'At least 8 characters. Mix in numbers or symbols for a stronger password.'
+                : passwordTooShort
+                  ? `${8 - password.length} more character${
+                      8 - password.length === 1 ? '' : 's'
+                    } to go.`
+                  : `Strength: ${passwordScore.label}.`}
+            </div>
           </div>
 
           <div style={{ marginTop: 18, marginBottom: 18 }}>
@@ -171,7 +241,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             className="plos-cta plos-cta-block"
-            disabled={loading}
+            disabled={loading || !canSubmit}
             style={{ width: '100%', marginTop: 18 }}
           >
             {loading ? 'Creating your account…' : "Get started — it's free"}
