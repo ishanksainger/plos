@@ -1,12 +1,23 @@
 # Start here
 
-**Updated 2026-05-25 (end of next-session top-5 batch).** Closed the highest-leverage items from BACKLOG's "Next session" list in six commits on `main`.
+**Updated 2026-05-25 (end of second top-5 batch — 10 of BACKLOG's top items now shipped today).** Two rounds of "Next session" items closed in 13 commits on `main`.
 
 > **For pending work and the next session's priorities → [`BACKLOG.md`](./BACKLOG.md)** (top of file has a "Next session, pick from this short list" section)
 >
 > **For AI coordination rules** → [`CLAUDE.md`](./CLAUDE.md) (Claude Code) or [`.cursorrules`](./.cursorrules) (Cursor) — both AIs share `plos-frontend/` now; `BACKLOG.md` is the lock queue
 
-## Session log — what shipped 2026-05-25
+## Session log — what shipped 2026-05-25 (second batch)
+
+| Commit | What |
+|---|---|
+| `29c9424` | `docs(repo)` — claimed the second-batch next-session items per §3a |
+| `ed5f612` | `feat(web)` — **NIS cart + multi-item Razorpay checkout.** Zustand store with localStorage persistence, header `CartButton` (count badge), slide-in `CartDrawer` (qty +/-, remove, email, checkout), `TrackerActions` (Add to cart + collapsible Buy-now) on every tracker detail page. New `/api/razorpay/cart-order` + `/api/razorpay/cart-verify`. `tracker-catalog.ts` extended from 1 → 4 trackers (queued ones marked `active: false`). Closes NIS P0. |
+| `4894fa9` | `feat(web)` — **NIS waitlist form on `/plos#waitlist`** + `/api/waitlist` (Supabase upsert when configured; server-log + 200 otherwise). `marketing.waitlist` table added to schema. Closes NIS P0. |
+| `ed55d42` | `feat(plos-frontend)` — **PLOS `/responsibilities/:id` detail page.** Category-tinted hero, at-a-glance card with state badge, notes, immutable timeline, mark-complete/edit/delete. Row titles on `/responsibilities` link through. Closes PLOS P1. |
+| `d7a5da5` | `feat(plos-frontend)` — **PLOS `⌘K` command palette.** Empty input → "Jump to" + "Create" actions; typed input → fuzzy actions + search results. `?new=1` auto-opens the create modal. Responsibility hits now go to the new detail page. Closes PLOS P1. |
+| `9776511` | `feat(web)` — **NIS legal pages.** `LegalPage` template + `/privacy`, `/terms`, `/refund` (TOC, numbered sections, last-updated). Footer's dead `<a>Refund policy</a>` is now a real link, with Privacy + Terms next to it. Closes NIS P1 (scaffold; legal copy still pending). |
+
+## Session log — what shipped 2026-05-25 (first batch)
 
 | Commit | What |
 |---|---|
@@ -15,6 +26,7 @@
 | `d661705` | `feat(packages/ui)` — `<Button>` / `<Card>` / `<Badge>` primitives live; CSS uses brand-token vars so one component renders in NIS dark + PLOS glass. Both apps wired; README updated. Closes cross-cutting P1. |
 | `ffefa9d` | `feat(plos-frontend)` — `/people/:id` Person detail page (avatar, contact, KPI grid, open/recurring/overdue tabs, recently-completed list). `/people` cards are now keyboard-accessible buttons. First @nis/ui adoption inside PLOS. Closes PLOS P1. |
 | `27f7dd1` | `feat(plos-frontend)` — topbar search is a real autocomplete (160ms debounce, ⌘K focus, ↑/↓/Enter nav, grouped sections). Tries `GET /search?q=` first; falls back to client-side filtering so it works before Cursor's backend lands. Closes PLOS P1 frontend half. |
+| `bfd5132` | `fix` — closed mobile drawer gets `inert` so its hidden links aren't tab-focusable; PersonDetailPage memo deps stabilised. |
 
 ## Session log — what shipped 2026-05-23
 
@@ -31,8 +43,9 @@ Six commits, in this order on `main`:
 
 ## Pending (high-level — full list in `BACKLOG.md`)
 
-**NIS P0 still open:** cart + multi-item checkout, 3 more trackers, waitlist form on `/plos`, Razorpay KYC, Resend domain, Supabase setup, Vercel deploy
-**PLOS P0 still open:** per-day habit history endpoint, notification prefs API, data export endpoints, Razorpay billing
+**NIS P0 still open:** 3 more trackers (content), Razorpay KYC, Resend domain, Supabase setup, Vercel deploy
+**PLOS P0 still open:** per-day habit history endpoint, notification prefs API, data export endpoints, Razorpay billing, `GET /search?q=` backend endpoint
+**NIS P1 still open:** bundle page, real Spline 3D embed, real shop SKUs, lawyer-reviewed legal copy, OG images, sitemap/SEO
 **Cross-cutting P1 still open:** branch protection on `main`, Dependabot
 
 ---
@@ -71,7 +84,7 @@ npm run dev:web
 | `/plos` | PLOS pillar page with 42-day StreakChain demo |
 | `/about` | Two-person studio bio |
 
-### PLOS app (`plos-frontend/`) — all 12 routes + Person detail
+### PLOS app (`plos-frontend/`) — all 12 routes + Person & Responsibility detail
 
 | Route | What's there |
 |---|---|
@@ -84,6 +97,7 @@ npm run dev:web
 | `/health` | Module hero (beating heart scene) + KPIs + filtered list |
 | `/people` | Module hero (avatar constellation) + glass person-card grid with next-up + open/overdue/spend (cards click through to detail) |
 | `/people/:id` | Avatar + contact + KPI grid + open/overdue/recurring tabs + recently-completed list. First @nis/ui adoption (uses `<Card>` and `<Badge>`). |
+| `/responsibilities/:id` | Category-tinted module hero + at-a-glance card with state badge + notes + immutable timeline + mark-complete/edit/delete. |
 | `/timeline` | Module hero (twin-ribbon scene) + tl-day / tl-event grouping + All / You / System filter |
 | `/notifications` | Eyebrow + greeting-row + glass list with unread dots + Mark-all-read |
 | `/settings` | 4 tabs (Profile / Account / Notifications / Plan) + 220px label/input rows |
