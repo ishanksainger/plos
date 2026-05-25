@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Loader, Modal, Stack } from '@mantine/core';
+import { Button, Modal, Stack } from '@mantine/core';
+import { SkeletonGrid } from '../components/plos/PlosSkeleton';
+import { PlosErrorRetry } from '../components/plos/PlosErrorRetry';
 import { DateInput } from '@mantine/dates';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
@@ -89,7 +91,7 @@ export default function PeoplePage() {
   const navigate = useNavigate();
   const [addOpen, setAddOpen] = useState(false);
 
-  const { data: persons = [], isLoading, isError, error } = useQuery({
+  const { data: persons = [], isLoading, isError, error, refetch, isFetching } = useQuery({
     queryKey: ['persons'],
     queryFn: personService.getAll,
     staleTime: 30_000,
@@ -147,13 +149,18 @@ export default function PeoplePage() {
       />
 
       {isLoading ? (
-        <div style={{ padding: 48, display: 'flex', justifyContent: 'center' }}>
-          <Loader color="violet" size="sm" type="dots" />
-        </div>
+        <SkeletonGrid
+          count={6}
+          columns="repeat(auto-fit, minmax(240px, 1fr))"
+          cardHeight={140}
+        />
       ) : isError ? (
-        <div style={{ padding: 24, color: '#ef4444', fontSize: 14 }}>
-          Failed to load people.{error instanceof Error && error.message ? ` ${error.message}` : ''}
-        </div>
+        <PlosErrorRetry
+          title="Failed to load people."
+          message={error instanceof Error && error.message ? error.message : undefined}
+          onRetry={() => refetch()}
+          retrying={isFetching}
+        />
       ) : cards.length === 0 ? (
         <div className="glass" style={{ padding: 28, textAlign: 'center' }}>
           <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--plos-ink-1)', marginBottom: 6 }}>

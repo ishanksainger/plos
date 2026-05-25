@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Loader } from '@mantine/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { Badge, Card } from '@nis/ui';
+import { SkeletonBlock, SkeletonCard } from '../components/plos/PlosSkeleton';
+import { PlosErrorRetry } from '../components/plos/PlosErrorRetry';
 import { personService } from '../services/person.service';
 import { responsibilityService } from '../services/responsibility.service';
 import { PlosModuleHero } from '../components/plos/PlosModuleHero';
@@ -43,6 +44,8 @@ export default function PersonDetailPage() {
     isLoading,
     isError,
     error,
+    refetch,
+    isFetching,
   } = useQuery({
     queryKey: ['person', personId],
     queryFn: () => personService.getById(personId),
@@ -119,9 +122,8 @@ export default function PersonDetailPage() {
   if (isLoading) {
     return (
       <div className="plos-page-enter">
-        <div style={{ padding: 64, display: 'flex', justifyContent: 'center' }}>
-          <Loader color="violet" size="sm" type="dots" />
-        </div>
+        <SkeletonBlock width="60%" height={32} radius={8} style={{ marginBottom: 18 }} />
+        <SkeletonCard height={180} />
       </div>
     );
   }
@@ -129,13 +131,17 @@ export default function PersonDetailPage() {
   if (isError || !person) {
     return (
       <div className="plos-page-enter">
-        <div className="glass" style={{ padding: 24 }}>
-          <div style={{ color: '#ef4444', fontSize: 14, marginBottom: 12 }}>
-            Couldn't load this person.
-            {error instanceof Error && error.message ? ` ${error.message}` : ''}
-          </div>
-          <Link to="/people" className="plos-back">← Back to circle</Link>
-        </div>
+        <PlosErrorRetry
+          title="Couldn't load this person."
+          message={
+            <>
+              {error instanceof Error && error.message ? `${error.message} ` : ''}
+              <Link to="/people" className="plos-back">Back to circle</Link>
+            </>
+          }
+          onRetry={() => refetch()}
+          retrying={isFetching}
+        />
       </div>
     );
   }

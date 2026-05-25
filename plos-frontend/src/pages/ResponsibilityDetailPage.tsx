@@ -4,6 +4,8 @@ import { Loader } from '@mantine/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { Badge, Card } from '@nis/ui';
+import { SkeletonBlock, SkeletonCard } from '../components/plos/PlosSkeleton';
+import { PlosErrorRetry } from '../components/plos/PlosErrorRetry';
 import { responsibilityService } from '../services/responsibility.service';
 import type { ResponsibilityState } from '../types/dashboard';
 import { PlosModuleHero } from '../components/plos/PlosModuleHero';
@@ -69,6 +71,8 @@ export default function ResponsibilityDetailPage() {
     isLoading,
     isError,
     error,
+    refetch,
+    isFetching,
   } = useQuery({
     queryKey: ['responsibility', id],
     queryFn: () => responsibilityService.getById(id),
@@ -127,9 +131,8 @@ export default function ResponsibilityDetailPage() {
   if (isLoading) {
     return (
       <div className="plos-page-enter">
-        <div style={{ padding: 64, display: 'flex', justifyContent: 'center' }}>
-          <Loader color="violet" size="sm" type="dots" />
-        </div>
+        <SkeletonBlock width="50%" height={32} radius={8} style={{ marginBottom: 18 }} />
+        <SkeletonCard height={200} />
       </div>
     );
   }
@@ -137,13 +140,17 @@ export default function ResponsibilityDetailPage() {
   if (isError || !r) {
     return (
       <div className="plos-page-enter">
-        <div className="glass" style={{ padding: 24 }}>
-          <div style={{ color: '#ef4444', fontSize: 14, marginBottom: 12 }}>
-            Couldn&rsquo;t load this responsibility.
-            {error instanceof Error && error.message ? ` ${error.message}` : ''}
-          </div>
-          <Link to="/responsibilities" className="plos-back">← Back to responsibilities</Link>
-        </div>
+        <PlosErrorRetry
+          title="Couldn't load this responsibility."
+          message={
+            <>
+              {error instanceof Error && error.message ? `${error.message} ` : ''}
+              <Link to="/responsibilities" className="plos-back">Back to responsibilities</Link>
+            </>
+          }
+          onRetry={() => refetch()}
+          retrying={isFetching}
+        />
       </div>
     );
   }

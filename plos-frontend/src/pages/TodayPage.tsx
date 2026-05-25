@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Loader } from '@mantine/core';
+import { SkeletonGrid } from '../components/plos/PlosSkeleton';
+import { PlosErrorRetry } from '../components/plos/PlosErrorRetry';
 import { useToday } from '../hooks/useToday';
 import CreateResponsibilityModal from '../components/responsibilities/CreateResponsibilityModal';
 import { responsibilityService } from '../services/responsibility.service';
@@ -57,7 +58,7 @@ export default function TodayPage() {
   const navigate = useNavigate();
   const user = useAppSelector((s) => s.auth.user);
   const queryClient = useQueryClient();
-  const { data, isLoading, isError, error } = useToday();
+  const { data, isLoading, isError, error, refetch, isFetching } = useToday();
   const [createOpen, setCreateOpen] = useState(false);
   const [busyId, setBusyId] = useState<number | null>(null);
 
@@ -160,8 +161,9 @@ export default function TodayPage() {
       <div className="plos-page-enter">
         <CreateResponsibilityModal opened={createOpen} onClose={() => setCreateOpen(false)} />
         {headerBlock}
-        <div className="glass" style={{ padding: 48, display: 'flex', justifyContent: 'center' }}>
-          <Loader color="violet" size="sm" type="dots" />
+        <SkeletonGrid count={4} columns="repeat(auto-fit, minmax(160px, 1fr))" cardHeight={110} />
+        <div style={{ marginTop: 20 }}>
+          <SkeletonGrid count={3} columns="repeat(auto-fit, minmax(240px, 1fr))" cardHeight={180} />
         </div>
       </div>
     );
@@ -173,9 +175,12 @@ export default function TodayPage() {
       <div className="plos-page-enter">
         <CreateResponsibilityModal opened={createOpen} onClose={() => setCreateOpen(false)} />
         {headerBlock}
-        <div className="glass" style={{ padding: 24, color: '#ef4444', fontSize: 14 }}>
-          Failed to load Today.{msg ? ` ${msg}` : ''}
-        </div>
+        <PlosErrorRetry
+          title="Failed to load Today."
+          message={msg || undefined}
+          onRetry={() => refetch()}
+          retrying={isFetching}
+        />
       </div>
     );
   }

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Loader } from '@mantine/core';
+import { SkeletonRowList } from '../components/plos/PlosSkeleton';
+import { PlosErrorRetry } from '../components/plos/PlosErrorRetry';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { responsibilityService } from '../services/responsibility.service';
@@ -174,7 +175,7 @@ export default function ResponsibilitiesPage() {
     }
   }, [searchParams, setSearchParams]);
 
-  const { data: rows = [], isLoading, isError, error } = useQuery({
+  const { data: rows = [], isLoading, isError, error, refetch, isFetching } = useQuery({
     queryKey: ['responsibilities'],
     queryFn: () => responsibilityService.getAll(),
     staleTime: 15_000,
@@ -298,12 +299,18 @@ export default function ResponsibilitiesPage() {
 
       <div className="glass" style={{ padding: '8px 22px' }}>
         {isLoading ? (
-          <div style={{ padding: 32, display: 'flex', justifyContent: 'center' }}>
-            <Loader color="violet" size="sm" type="dots" />
+          <div style={{ padding: '8px 0 16px' }}>
+            <SkeletonRowList rows={6} />
           </div>
         ) : isError ? (
-          <div style={{ padding: 20, color: '#ef4444', fontSize: 14 }}>
-            Failed to load responsibilities.{error instanceof Error && error.message ? ` ${error.message}` : ''}
+          <div style={{ padding: '8px 0 16px' }}>
+            <PlosErrorRetry
+              variant="subtle"
+              title="Failed to load responsibilities."
+              message={error instanceof Error && error.message ? error.message : undefined}
+              onRetry={() => refetch()}
+              retrying={isFetching}
+            />
           </div>
         ) : filtered.length === 0 ? (
           <div style={{ padding: '32px 0', textAlign: 'center' }}>

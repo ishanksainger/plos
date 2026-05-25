@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
-import { Loader } from '@mantine/core';
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
+import { SkeletonCard, SkeletonBlock } from '../components/plos/PlosSkeleton';
+import { PlosErrorRetry } from '../components/plos/PlosErrorRetry';
 import { notifications } from '@mantine/notifications';
 import { responsibilityService } from '../services/responsibility.service';
 import type { Responsibility } from '../types/dashboard';
@@ -43,7 +44,7 @@ export default function HabitsPage() {
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
 
-  const { data: rows = [], isLoading } = useQuery({
+  const { data: rows = [], isLoading, isError, error, refetch, isFetching } = useQuery({
     queryKey: ['responsibilities'],
     queryFn: () => responsibilityService.getAll(),
     staleTime: 15_000,
@@ -154,9 +155,21 @@ export default function HabitsPage() {
         </PlosReveal>
       </div>
 
-      {isLoading ? (
-        <div style={{ padding: 48, display: 'flex', justifyContent: 'center' }}>
-          <Loader color="violet" size="sm" type="dots" />
+      {isError ? (
+        <PlosErrorRetry
+          title="Failed to load habits."
+          message={error instanceof Error && error.message ? error.message : undefined}
+          onRetry={() => refetch()}
+          retrying={isFetching}
+        />
+      ) : isLoading ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <SkeletonCard key={i} height={150} padding={24}>
+              <SkeletonBlock width="40%" height={14} />
+              <SkeletonBlock width="100%" height={42} radius={10} style={{ marginTop: 18 }} />
+            </SkeletonCard>
+          ))}
         </div>
       ) : habits.length === 0 ? (
         <div className="glass" style={{ padding: '28px', textAlign: 'center' }}>

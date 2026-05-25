@@ -1,5 +1,6 @@
-import { Loader } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
+import { SkeletonGrid } from '../components/plos/PlosSkeleton';
+import { PlosErrorRetry } from '../components/plos/PlosErrorRetry';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDashboard } from '../services/dashboard.service';
@@ -53,7 +54,7 @@ export default function DashboardPage() {
   const user = useAppSelector((s) => s.auth.user);
   const navigate = useNavigate();
 
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
     queryKey: ['dashboard', user?.id ?? 'anon'],
     queryFn: getDashboard,
     enabled: Boolean(user?.id),
@@ -137,8 +138,9 @@ export default function DashboardPage() {
     return (
       <div className="plos-page-enter">
         {hero}
-        <div className="glass" style={{ padding: 48, display: 'flex', justifyContent: 'center' }}>
-          <Loader color="violet" size="sm" type="dots" />
+        <SkeletonGrid count={4} columns="repeat(auto-fit, minmax(180px, 1fr))" cardHeight={120} />
+        <div style={{ marginTop: 22 }}>
+          <SkeletonGrid count={3} columns="repeat(auto-fit, minmax(280px, 1fr))" cardHeight={240} />
         </div>
       </div>
     );
@@ -149,9 +151,12 @@ export default function DashboardPage() {
     return (
       <div className="plos-page-enter">
         {hero}
-        <div className="glass" style={{ padding: 24, color: '#ef4444', fontSize: 14 }}>
-          Failed to load dashboard.{msg ? ` ${msg}` : ''}
-        </div>
+        <PlosErrorRetry
+          title="Failed to load dashboard."
+          message={msg || undefined}
+          onRetry={() => refetch()}
+          retrying={isFetching}
+        />
       </div>
     );
   }
