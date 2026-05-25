@@ -8,22 +8,13 @@
 
 ## ▶ Next session — pick from this short list
 
-Batches 5 + 6 shipped (8 more polish items — 28 total today). Whatever's left needs your action or external credentials.
+Batch 7 in progress — five dev-only security/UX gaps a solo founder pre-launch genuinely needs.
 
-**Claude-doable but needs your credentials:**
-1. **PLOS Razorpay billing** (P0) — needs Razorpay test keys in `plos-backend/.env`. ~3 hrs.
-2. **PLOS WhatsApp pipeline** (P1) — needs Twilio or Meta Business creds. ~2 hrs.
-
-**Pending — human only:**
-- 3 more tracker contents (you)
-- Razorpay KYC start (5–7 day wait — **start ASAP**)
-- Supabase project setup + run `apps/web/supabase/schema.sql` + apply `plos-backend/prisma/migrations/20260525000000_add_notification_preferences` (you · ~30 min)
-- Resend domain verification for `thenispace.com`
-- Vercel deploy + DNS
-- Nikita: Spline 3D hero / Canvas tiles / Shop SKU imagery / About portraits
-- Lawyer review of legal placeholder copy
-- Branch protection on `main` (GitHub settings)
-- Dependabot/Renovate config
+1. ~~**Supabase RLS policies**~~ [in progress · 2026-05-25g · claude] — schema.sql ships tables with no RLS; close the door.
+2. ~~**Rate limiting on public POST endpoints**~~ [in progress · 2026-05-25g · claude] — waitlist, cart, register, login.
+3. ~~**Account deletion endpoint + Settings UI**~~ [in progress · 2026-05-25g · claude] — DPDP right of erasure + basic user expectation.
+4. ~~**PLOS forgot password flow**~~ [in progress · 2026-05-25g · claude] — no `/forgot-password` exists today.
+5. ~~**PLOS email verification on signup**~~ [in progress · 2026-05-25g · claude] — stops fake email signups.
 
 After those, the next tier:
 - 3 more tracker contents (human, P0)
