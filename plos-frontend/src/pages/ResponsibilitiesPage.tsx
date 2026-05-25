@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { SkeletonRowList } from '../components/plos/PlosSkeleton';
 import { PlosErrorRetry } from '../components/plos/PlosErrorRetry';
+import { PlosEmptyState } from '../components/plos/PlosEmptyState';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { responsibilityService } from '../services/responsibility.service';
@@ -313,22 +314,27 @@ export default function ResponsibilitiesPage() {
             />
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ padding: '32px 0', textAlign: 'center' }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--plos-ink-1)', marginBottom: 6 }}>
-              {stateFilter === 'ALL' && !categoryFilter
-                ? 'No responsibilities yet'
-                : 'No matches for this filter'}
-            </div>
-            <div style={{ fontSize: 13, color: 'var(--plos-ink-3)', marginBottom: 16 }}>
-              {stateFilter === 'ALL' && !categoryFilter
-                ? 'Add your first responsibility to start tracking your life.'
-                : 'Try a different filter or add a new responsibility.'}
-            </div>
-            {stateFilter === 'ALL' && !categoryFilter && (
-              <button type="button" className="plos-cta" onClick={() => setCreateOpen(true)}>
-                <span>Create your first</span>
-              </button>
-            )}
+          <div style={{ padding: '8px 0 16px' }}>
+            <PlosEmptyState
+              kind={stateFilter === 'ALL' && !categoryFilter ? 'responsibilities' : 'filter'}
+              title={
+                stateFilter === 'ALL' && !categoryFilter
+                  ? 'No responsibilities yet'
+                  : 'No matches for this filter'
+              }
+              subtitle={
+                stateFilter === 'ALL' && !categoryFilter
+                  ? 'Add your first responsibility to start tracking your life.'
+                  : 'Try a different state, change the category, or add a new responsibility.'
+              }
+              action={
+                stateFilter === 'ALL' && !categoryFilter ? (
+                  <button type="button" className="plos-cta" onClick={() => setCreateOpen(true)}>
+                    <span>Create your first</span>
+                  </button>
+                ) : undefined
+              }
+            />
           </div>
         ) : (
           filtered.map((r) => (

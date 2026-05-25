@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { SkeletonCard, SkeletonBlock } from '../components/plos/PlosSkeleton';
 import { PlosErrorRetry } from '../components/plos/PlosErrorRetry';
+import { PlosEmptyState } from '../components/plos/PlosEmptyState';
 import { notifications } from '@mantine/notifications';
 import { responsibilityService } from '../services/responsibility.service';
 import type { Responsibility } from '../types/dashboard';
@@ -172,17 +173,16 @@ export default function HabitsPage() {
           ))}
         </div>
       ) : habits.length === 0 ? (
-        <div className="glass" style={{ padding: '28px', textAlign: 'center' }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--plos-ink-1)', marginBottom: 6 }}>
-            No habits yet
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--plos-ink-3)', marginBottom: 16 }}>
-            Add a recurring habit to start tracking your streak chain.
-          </div>
-          <button type="button" className="plos-cta" onClick={() => setCreateOpen(true)}>
-            <span>Add your first habit</span>
-          </button>
-        </div>
+        <PlosEmptyState
+          kind="habits"
+          title="No habits yet"
+          subtitle="Add a recurring habit to start tracking your streak chain."
+          action={
+            <button type="button" className="plos-cta" onClick={() => setCreateOpen(true)}>
+              <span>Add your first habit</span>
+            </button>
+          }
+        />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
           {habits.map((h, i) => {

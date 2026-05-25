@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Modal, Stack } from '@mantine/core';
 import { SkeletonGrid } from '../components/plos/PlosSkeleton';
 import { PlosErrorRetry } from '../components/plos/PlosErrorRetry';
+import { PlosEmptyState } from '../components/plos/PlosEmptyState';
 import { DateInput } from '@mantine/dates';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
@@ -162,17 +163,16 @@ export default function PeoplePage() {
           retrying={isFetching}
         />
       ) : cards.length === 0 ? (
-        <div className="glass" style={{ padding: 28, textAlign: 'center' }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--plos-ink-1)', marginBottom: 6 }}>
-            No people yet
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--plos-ink-3)', marginBottom: 16 }}>
-            Add your first person to start delegating responsibilities.
-          </div>
-          <button type="button" className="plos-cta" onClick={() => setAddOpen(true)}>
-            <span>Add your first person</span>
-          </button>
-        </div>
+        <PlosEmptyState
+          kind="people"
+          title="No people yet"
+          subtitle="Add your first person to start delegating responsibilities."
+          action={
+            <button type="button" className="plos-cta" onClick={() => setAddOpen(true)}>
+              <span>Add your first person</span>
+            </button>
+          }
+        />
       ) : (
         <div className="grid-3">
           {cards.map(({ person, open, overdue, money, next }, i) => {
