@@ -12,6 +12,7 @@ import { PersonModule } from './person/person.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { EventModule } from './event/event.module';
 import { NotificationModule } from './notification/notification.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { NotificationModule } from './notification/notification.module';
     PersonModule,
     SchedulerModule,
     EventModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],
