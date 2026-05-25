@@ -155,6 +155,16 @@ Everything else is itemized below.
 
 ## Recently completed (last 30 days)
 
+**Session 2026-05-25g (batch 7 — five pre-launch dev gaps, 5 commits):**
+- ✅ `docs(repo)` (`db905b6`) — claimed batch 7
+- ✅ `chore(web/supabase)` (`939f994`) — **Tightened RLS posture.** Fixed schema ordering, added RLS on `marketing.waitlist`, explicit revokes on the four server-only tables.
+- ✅ `feat(security)` (`069646e`) — **Rate limiting.** `lib/rate-limit.ts` (in-memory dev / Upstash REST prod) on the three NIS POST endpoints; `@nestjs/throttler` global guard + tight overrides on /auth/register + /auth/login.
+- ✅ `feat(plos)` (`95872ac`) — **Account deletion.** `DELETE /auth/me` cascade + Settings danger-zone two-step modal. DPDP §11.
+- ✅ `feat(plos)` (`b0ae441`) — **Password reset + email verification.** Shared migration adds `User.emailVerifiedAt` + two token tables. `MailerService` (Resend + dev log fallback). 4 new endpoints. New routes: /forgot-password, /reset-password, /verify-email. LoginPage gets "Forgot?" link.
+
+**Session 2026-05-25e+f (batches 5 & 6 — 8 polish items pushed to `main` in 10 commits):**
+- See START_HERE.md for the full table — OG images, /search backend, /register validation, avatar upload preview, PWA manifest, empty-state illustrations, Playwright suite, Ladle stories.
+
 **Session 2026-05-25d (fourth batch of 5 — pushed to `main` in 6 commits):**
 - ✅ `docs(repo)` (`71dfd6e`) — claimed batch 4 per §3a
 - ✅ `feat(web)` (`96145d2`) — **NIS /not-found 404 page** with NIS shell, suggestion rows, contact email fallback.
