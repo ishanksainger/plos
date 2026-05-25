@@ -510,6 +510,68 @@ html, body {
 .nis-cart-status.ok { color: var(--accent-success, #10b981); }
 .nis-cart-status.err { color: var(--accent-danger, #ef4444); }
 
+/* ───── 404 page ───── */
+.nis-404 {
+  max-width: 880px;
+  margin: 0 auto;
+  padding-top: clamp(60px, 10vw, 120px);
+}
+.nis-404-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.nis-404-row {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 18px;
+  align-items: center;
+  padding: 16px 18px;
+  border-radius: var(--nis-radius-md);
+  border: 1px solid var(--rule);
+  background: var(--bg-card);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), border-color 200ms;
+}
+.nis-404-row:hover {
+  transform: translateX(4px);
+  border-color: var(--accent);
+}
+.nis-404-num {
+  font-family: var(--nis-font-mono);
+  font-size: 12px;
+  color: var(--ink-4);
+  letter-spacing: 0.04em;
+}
+.nis-404-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.nis-404-row-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink-1);
+}
+.nis-404-row-hint {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.nis-404-arrow {
+  font-family: var(--nis-font-mono);
+  color: var(--ink-3);
+  font-size: 18px;
+  flex: none;
+}
+.nis-404-row:hover .nis-404-arrow {
+  color: var(--accent);
+}
+
 /* ───── Bundle banner on /trackers ───── */
 .nis-bundle-banner {
   display: flex;
