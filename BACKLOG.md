@@ -8,13 +8,22 @@
 
 ## ▶ Next session — pick from this short list
 
-Batch 7 in progress — five dev-only security/UX gaps a solo founder pre-launch genuinely needs.
+Batch 7 shipped (5 pre-launch dev gaps). The remaining shippable items are:
 
-1. ~~**Supabase RLS policies**~~ [in progress · 2026-05-25g · claude] — schema.sql ships tables with no RLS; close the door.
-2. ~~**Rate limiting on public POST endpoints**~~ [in progress · 2026-05-25g · claude] — waitlist, cart, register, login.
-3. ~~**Account deletion endpoint + Settings UI**~~ [in progress · 2026-05-25g · claude] — DPDP right of erasure + basic user expectation.
-4. ~~**PLOS forgot password flow**~~ [in progress · 2026-05-25g · claude] — no `/forgot-password` exists today.
-5. ~~**PLOS email verification on signup**~~ [in progress · 2026-05-25g · claude] — stops fake email signups.
+**Claude-doable but needs your credentials:**
+1. **PLOS Razorpay billing** (P0) — needs Razorpay test keys.
+2. **PLOS WhatsApp pipeline** (P1) — needs Twilio or Meta Business creds.
+
+**Pending — human only (no claude work blocks):**
+- Razorpay KYC start (5–7 day wait, **biggest single blocker**)
+- Supabase project + run the updated `apps/web/supabase/schema.sql` + apply both Prisma migrations (`20260525000000_add_notification_preferences` + `20260525010000_password_reset_email_verification`)
+- Resend domain verification + grab API key → `RESEND_API_KEY`
+- Vercel deploy + DNS
+- Upstash Redis (optional but recommended) for production rate limiting
+- 3 more tracker `.xlsx` contents
+- Nikita: Spline / Canvas / Shop SKU imagery / About portraits
+- Lawyer review of legal placeholder copy
+- Branch protection on `main` (GitHub settings)
 
 After those, the next tier:
 - 3 more tracker contents (human, P0)
