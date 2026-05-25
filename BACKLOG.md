@@ -8,17 +8,16 @@
 
 ## ▶ Next session — pick from this short list
 
-Three back-to-back batches of 5 shipped on 2026-05-25 (15 BACKLOG items closed). Batch 4 in progress.
+Four back-to-back batches of 5 shipped on 2026-05-25 (20 BACKLOG items closed today). The remaining open items skew toward "needs human" or "needs external credentials." For the next claude-doable batch:
 
-1. ~~**NIS 404 page**~~ [in progress · 2026-05-25d · claude] — currently Next.js default. ~20 min.
-2. ~~**PLOS data export endpoints**~~ [in progress · 2026-05-25d · claude] — `GET /users/export?format=json|csv` + Settings wire. ~1 hr.
-3. ~~**PLOS streaks-at-risk reminder cron**~~ [in progress · 2026-05-25d · claude] — scheduler picks habits ≤1 day from breaking, gated by `streakAtRisk` pref. ~45 min.
-4. ~~**PLOS dark mode toggle**~~ [in progress · 2026-05-25d · claude] — `data-theme="dark"` support already exists; add Settings toggle + persist. ~1.5 hr.
-5. ~~**NIS newsletter footer signup**~~ [in progress · 2026-05-25d · claude] — reuses `/api/waitlist` with `source=newsletter`. ~30 min.
+1. **PLOS Razorpay billing wiring** (P0 · claude) — plan upgrade endpoint + Razorpay subscription create + webhook. Hooks into the existing `Subscription` Prisma model. **Needs:** RAZORPAY test keys in `plos-backend/.env`. ~3 hrs.
+2. **PLOS WhatsApp reminder pipeline** (P1 · claude) — Twilio or Meta Business API integration + opt-in flow (toggle is already persisted). **Needs:** Twilio/Meta account + WHATSAPP_FROM number. ~2 hrs.
+3. **PLOS PWA manifest + install prompt** (P2 · claude) — make PLOS installable on phones. ~45 min.
+4. **PLOS `/register` form validation copy** (P2 · claude) — password length, email format, account-type help text. ~30 min.
+5. **PLOS avatar upload preview** (P2 · claude) — thumbnail in modal before saving. ~30 min.
 
-**Deferred** (need external credentials to test):
-- PLOS Razorpay billing — needs Razorpay sandbox keys
-- PLOS WhatsApp reminder pipeline — needs Twilio / Meta Business API account
+Or, in priority order for **human** action (no claude work to unblock):
+- 3 more tracker contents — Razorpay KYC start — Supabase setup + apply migrations — Resend domain — Vercel deploy + DNS — Nikita's Spline/Canvas/Shop imagery — lawyer review of legal placeholder copy.
 
 After those, the next tier:
 - 3 more tracker contents (human, P0)
@@ -81,13 +80,13 @@ Everything else is itemized below.
 - [ ] **About page team portraits** — Ishank + Nikita photos. **Owner:** `human`
 - [ ] **Real testimonials** in `nis-data.ts` — currently placeholder quotes. **Owner:** `human`
 - ~~**Privacy / Terms / Refund policy pages**~~ → shipped 2026-05-25 in `9776511` (`LegalPage` template + 3 routes with TOC, sections, placeholder banner; footer links wired; copy structured DPDP-shaped for the lawyer to red-line). **Still pending:** the human / lawyer replacing placeholder copy with binding text.
-- [ ] **404 page** [in progress · 2026-05-25d · claude] — Next.js currently shows its default. **Owner:** `claude`
+- ~~**404 page**~~ → shipped 2026-05-25 in `96145d2` (`app/not-found.tsx` with NIS shell, big serif headline, 5 suggestion rows + contact email).
 
 ### P2 — polish
 
 - ~~**SEO**~~ → shipped 2026-05-25 in `f623388` (`app/sitemap.ts` + `app/robots.ts` Next.js convention files; `ProductJsonLd` JSON-LD mounted on /trackers/[slug] and /trackers/bundle with INR currency + availability).
 - ~~**Analytics** — Plausible or GA on every page.~~ → shipped 2026-05-25 in `f623388` (env-gated Plausible `<Script>` in root layout — only renders when NEXT_PUBLIC_PLAUSIBLE_DOMAIN is set; custom CDN supported).
-- [ ] **Newsletter signup** in footer [in progress · 2026-05-25d · claude] — single-email POST to a list. **Owner:** `claude`
+- ~~**Newsletter signup** in footer~~ → shipped 2026-05-25 in `cbeea40` (`NewsletterRow` in `SiteFooter`; reuses `/api/waitlist` with `source=newsletter` so all email captures live in one table; inline loading + success + error states).
 - [ ] **Analytics** — Plausible or GA on every page. **Owner:** `claude`
 - [ ] **OG images** per page — currently no `og:image` for social sharing. **Owner:** `claude` + `human` (designs)
 
@@ -99,7 +98,7 @@ Everything else is itemized below.
 
 - ~~**Per-day habit completion history endpoint**~~ → shipped 2026-05-25 in `48e4d0a` (BE service + controller + migration-friendly query; FE `useQueries` fan-out on `HabitsPage`; deterministic synth removed in favour of real per-day data). Claude handled both halves with explicit authority.
 - ~~**Notification preferences API**~~ → shipped 2026-05-25 in `e2b28cb` (Prisma model + lazy-create getOrCreate + PATCH partial update; Settings tab swaps the display-only chips for live `role="switch"` toggles with optimistic update + rollback). Claude handled both halves with explicit authority.
-- [ ] **Data export endpoints** [in progress · 2026-05-25d · claude] — `GET /users/export?format=json|csv` returning all responsibilities/people/timeline. Settings → Plan buttons are stubs. **Owner:** was `cursor`, claude has authority.
+- ~~**Data export endpoints**~~ → shipped 2026-05-25 in `f80f2e5` (`ExportService` builds full nested JSON or row-oriented CSV in one Prisma query; `GET /users/export?format=json|csv` JwtAuthGuard'd with `Content-Disposition: attachment`; Settings buttons live with toast feedback).
 - [ ] **Razorpay billing wiring** — `subscription.tier/status` exists in `MeResponse` but there's no payment flow. Need plan upgrade endpoint + Razorpay subscription create + webhook. **Owner:** `cursor`
 
 ### P1 — visible gaps
@@ -109,7 +108,7 @@ Everything else is itemized below.
 - [ ] **Search bar in topbar** — frontend shipped 2026-05-25 in `27f7dd1` (autocomplete popover, ⌘K shortcut, keyboard nav, client-side fallback). **Still pending:** backend `GET /search?q=…` endpoint — once Cursor ships it, the frontend will start using it automatically (no FE changes needed). **Owner:** `cursor`.
 - ~~**`⌘K` command palette**~~ → shipped 2026-05-25 in `d7a5da5` (empty input shows "Jump to" + "Create" actions, typed input fuzzy-matches + runs the search popover; "New responsibility" routes to `/responsibilities?new=1` which auto-opens the create modal).
 - [ ] **WhatsApp reminder pipeline** — Settings marks it "Coming soon"; need Twilio / Meta integration + opt-in flow. **Owner:** `cursor`
-- [ ] **Streaks-at-risk reminder cron** [in progress · 2026-05-25d · claude] — scheduler should pick streaks ≤1 day from breaking and fire notifications. **Owner:** was `cursor`, claude has authority.
+- ~~**Streaks-at-risk reminder cron**~~ → shipped 2026-05-25 in `a79457c` (`SchedulerService.notifyStreaksAtRisk` runs hourly in prod, every 30 min in dev; gates on `streakAtRisk` user pref + post-noon check; idempotent per habit/day; uses existing `NotificationService.createInApp`).
 
 ### P2 — polish
 
@@ -118,7 +117,7 @@ Everything else is itemized below.
 - [ ] **Empty-state illustrations** — current empty states are text-only; even small SVG illustrations would warm them up. **Owner:** `claude` + `human` (Nikita illustrations)
 - [ ] **Form validation copy** on `/register` — password length, email format. Currently HTML-default validation. **Owner:** `claude`
 - [ ] **Avatar upload preview** before save — show the file thumbnail in the modal. **Owner:** `claude`
-- [ ] **Dark mode toggle** [in progress · 2026-05-25d · claude] — prototype has `data-theme="dark"` support; `AppLayout` hardcodes `light`. **Owner:** `claude`
+- ~~**Dark mode toggle**~~ → shipped 2026-05-25 in `0d6e853` (`uiSlice` Redux store with localStorage persistence + `prefers-color-scheme` first-visit fallback; `ThemedMantine` wrapper flips MantineProvider; `AppLayout` mirrors `data-theme` to `<html>` + `.plos`; Settings → Profile gets a Light/Dark segmented control).
 - [ ] **PWA manifest + install prompt** — make PLOS installable on phones. **Owner:** `claude`
 
 ### P3 — backend hygiene
@@ -149,6 +148,14 @@ Everything else is itemized below.
 ---
 
 ## Recently completed (last 30 days)
+
+**Session 2026-05-25d (fourth batch of 5 — pushed to `main` in 6 commits):**
+- ✅ `docs(repo)` (`71dfd6e`) — claimed batch 4 per §3a
+- ✅ `feat(web)` (`96145d2`) — **NIS /not-found 404 page** with NIS shell, suggestion rows, contact email fallback.
+- ✅ `feat(plos)` (`f80f2e5`) — **PLOS data export endpoints.** `ExportService` builds one Prisma query covering user + persons + responsibilities (with events) + notifications + prefs; JSON returns nested, CSV flattens to responsibility rows with person joins; `GET /users/export?format=json|csv` with `Content-Disposition: attachment`; Settings buttons trigger token-aware downloads. Closes PLOS P0.
+- ✅ `feat(plos-backend)` (`a79457c`) — **PLOS streaks-at-risk cron.** New `SchedulerService.notifyStreaksAtRisk` runs hourly (prod) / 30 min (dev), gated on `streakAtRisk` user pref + post-noon clock; pulls completion events, computes streaks, emits one in-app reminder per habit per day. Idempotent. Closes PLOS P1.
+- ✅ `feat(plos-frontend)` (`0d6e853`) — **PLOS dark mode toggle.** `uiSlice` Redux store, localStorage persistence, system-preference fallback on first visit; `ThemedMantine` wrapper flips MantineProvider's color scheme; Settings → Profile gets a segmented Light/Dark control. Closes PLOS P2.
+- ✅ `feat(web)` (`cbeea40`) — **NIS newsletter footer signup.** Compact form in `SiteFooter` reusing `/api/waitlist` with `source=newsletter` (one table for every captured email). Closes NIS P2.
 
 **Session 2026-05-25c (third batch of 5 — claude on both backend + frontend with explicit authority):**
 - ✅ `docs(repo)` (`41af317`) — claimed batch 3 per §3a

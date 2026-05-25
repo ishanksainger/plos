@@ -1,10 +1,21 @@
 # Start here
 
-**Updated 2026-05-25 (end of third top-5 batch — 15 of BACKLOG's top items now shipped today).** Three rounds of "Next session" items closed in 20+ commits on `main`. Batch 3 included two normally-Cursor-owned backend items (habit history endpoint + notification preferences API) — claude shipped both halves with the user's explicit authority.
+**Updated 2026-05-25 (end of fourth top-5 batch — 20 BACKLOG items shipped today).** Four rounds of "Next session" items closed in 28+ commits on `main`. Batches 3 and 4 included four normally-Cursor-owned backend items (habit history endpoint, notification preferences API, data export endpoints, streaks-at-risk cron) — claude shipped both halves with the user's explicit authority.
 
 > **For pending work and the next session's priorities → [`BACKLOG.md`](./BACKLOG.md)** (top of file has a "Next session, pick from this short list" section)
 >
 > **For AI coordination rules** → [`CLAUDE.md`](./CLAUDE.md) (Claude Code) or [`.cursorrules`](./.cursorrules) (Cursor) — both AIs share `plos-frontend/` now; `BACKLOG.md` is the lock queue
+
+## Session log — what shipped 2026-05-25 (fourth batch)
+
+| Commit | What |
+|---|---|
+| `71dfd6e` | `docs(repo)` — claimed batch 4 per §3a |
+| `96145d2` | `feat(web)` — **/not-found 404 page** with NIS shell, suggestion rows, contact email fallback. Closes NIS P1. |
+| `f80f2e5` | `feat(plos)` — **Data export endpoints.** `ExportService` builds JSON or row-oriented CSV in one Prisma query; `GET /users/export?format=json\|csv` with `Content-Disposition: attachment`; Settings buttons trigger downloads with bearer auth. Closes PLOS P0. |
+| `a79457c` | `feat(plos-backend)` — **Streaks-at-risk reminder cron.** Hourly job in `SchedulerService`, gated on `streakAtRisk` pref + post-noon clock; emits one in-app reminder per habit per day; idempotent. Closes PLOS P1. |
+| `0d6e853` | `feat(plos-frontend)` — **Dark mode toggle.** `uiSlice` Redux store, localStorage + system-preference first-visit fallback; `ThemedMantine` flips Mantine color scheme; Settings → Profile gets a Light/Dark segmented control. Closes PLOS P2. |
+| `cbeea40` | `feat(web)` — **Newsletter footer signup** reusing `/api/waitlist` with `source=newsletter`. Closes NIS P2. |
 
 ## Session log — what shipped 2026-05-25 (third batch)
 
@@ -54,10 +65,10 @@ Six commits, in this order on `main`:
 
 ## Pending (high-level — full list in `BACKLOG.md`)
 
-**NIS P0 still open:** 3 more tracker contents (human), Razorpay KYC (human · 5–7 day wait), Resend domain verification, Supabase project setup, Vercel deploy + DNS
-**PLOS P0 still open:** data export endpoints, Razorpay billing wiring, `GET /search?q=` backend endpoint
-**NIS P1 still open:** real Spline 3D embed (Nikita), real shop SKUs (Nikita), about portraits (Nikita), real testimonials, 404 page, lawyer review of legal placeholder copy
-**PLOS P1 still open:** WhatsApp reminder pipeline, streaks-at-risk reminder cron
+**NIS P0 still open (all human):** 3 more tracker contents, Razorpay KYC (5–7 day wait, **start ASAP**), Resend domain verification, Supabase project setup + run schema, Vercel deploy + DNS
+**PLOS P0 still open:** Razorpay billing wiring (needs RZP keys), `GET /search?q=` backend endpoint
+**PLOS P1 still open:** WhatsApp reminder pipeline (needs Twilio/Meta), avatar upload preview, /register validation copy, PWA manifest
+**NIS P1 still open (mostly Nikita):** real Spline 3D embed, real shop SKUs, about portraits, real testimonials, lawyer review of legal placeholder copy
 **Cross-cutting still open:** branch protection on `main` (human · GitHub settings), Dependabot, visual regression testing, Storybook for `@nis/ui`
 
 ---
