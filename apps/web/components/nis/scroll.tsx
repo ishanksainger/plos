@@ -142,7 +142,7 @@ const mixHex = (a: string, b: string, t: number) => {
 /* ============================================================
    Scene 0 — Nest
 ============================================================ */
-function NestScene({ opacity, phase }: { opacity: number; phase: number }) {
+export function NestScene({ opacity, phase }: { opacity: number; phase: number }) {
   const wobble = phase * 4;
   return (
     <svg className="scene-svg" viewBox="-110 -110 220 220" style={{ opacity }}>
@@ -206,7 +206,7 @@ function NestScene({ opacity, phase }: { opacity: number; phase: number }) {
 /* ============================================================
    Scene 1 — Sheets
 ============================================================ */
-function SheetsScene({ opacity, phase }: { opacity: number; phase: number }) {
+export function SheetsScene({ opacity, phase }: { opacity: number; phase: number }) {
   const tilt = 2 + phase * 0.5;
   return (
     <svg className="scene-svg" viewBox="-110 -110 220 220" style={{ opacity }}>
@@ -263,7 +263,7 @@ function SheetsScene({ opacity, phase }: { opacity: number; phase: number }) {
 /* ============================================================
    Scene 2 — Iridescent blob (CSS-driven)
 ============================================================ */
-function IridescentBlob({ opacity }: { opacity: number }) {
+export function IridescentBlob({ opacity }: { opacity: number }) {
   return (
     <div className="iri-wrap" style={{ opacity }}>
       <div className="iri-halo" />
@@ -281,7 +281,7 @@ function IridescentBlob({ opacity }: { opacity: number }) {
 /* ============================================================
    Scene 3 — Shop stack
 ============================================================ */
-function ShopStack({ opacity }: { opacity: number }) {
+export function ShopStack({ opacity }: { opacity: number }) {
   return (
     <svg className="scene-svg" viewBox="-110 -110 220 220" style={{ opacity }}>
       <defs>
@@ -335,7 +335,7 @@ function ShopStack({ opacity }: { opacity: number }) {
 /* ============================================================
    Scene 4 — PLOS pearl + heartbeat orbit
 ============================================================ */
-function PlosOrbit({ opacity }: { opacity: number }) {
+export function PlosOrbit({ opacity }: { opacity: number }) {
   const beatPath =
     'M 0,0 L 18,0 L 22,-12 L 28,16 L 34,-22 L 40,22 L 46,-6 L 52,0 L 70,0';
   return (

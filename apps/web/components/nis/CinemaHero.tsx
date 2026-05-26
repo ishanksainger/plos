@@ -1,8 +1,13 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ScrollScene, useMousePerspective, useSectionProgress } from './scroll';
+import {
+  NestScene,
+  SheetsScene,
+  IridescentBlob,
+  ShopStack,
+  PlosOrbit,
+} from './scroll';
 
 type Stage = {
   num: string;
@@ -18,6 +23,7 @@ type Stage = {
   mesh3: string;
   mesh4: string;
   edge: string;
+  scene: 'nest' | 'sheets' | 'iri' | 'shop' | 'plos';
 };
 
 const STAGES: Stage[] = [
@@ -33,6 +39,7 @@ const STAGES: Stage[] = [
     mesh3: 'rgba(122, 58, 58, 0.28)',
     mesh4: 'rgba(253, 232, 200, 0.20)',
     edge:  'rgba(20, 9, 4, 0.45)',
+    scene: 'nest',
   },
   {
     num: '01', label: 'Trackers',
@@ -46,6 +53,7 @@ const STAGES: Stage[] = [
     mesh3: 'rgba(16, 26, 74, 0.40)',
     mesh4: 'rgba(220, 232, 255, 0.18)',
     edge:  'rgba(6, 10, 30, 0.55)',
+    scene: 'sheets',
   },
   {
     num: '02', label: 'Canvas',
@@ -59,6 +67,7 @@ const STAGES: Stage[] = [
     mesh3: 'rgba(167, 139, 250, 0.28)',
     mesh4: 'rgba(34, 211, 238, 0.18)',
     edge:  'rgba(40, 8, 36, 0.5)',
+    scene: 'iri',
   },
   {
     num: '03', label: 'Shop',
@@ -72,6 +81,7 @@ const STAGES: Stage[] = [
     mesh3: 'rgba(42, 58, 34, 0.32)',
     mesh4: 'rgba(243, 234, 212, 0.22)',
     edge:  'rgba(14, 22, 10, 0.5)',
+    scene: 'shop',
   },
   {
     num: '04', label: 'PLOS',
@@ -85,6 +95,7 @@ const STAGES: Stage[] = [
     mesh3: 'rgba(124, 78, 216, 0.32)',
     mesh4: 'rgba(236, 220, 255, 0.20)',
     edge:  'rgba(16, 8, 36, 0.55)',
+    scene: 'plos',
   },
 ];
 
@@ -95,94 +106,81 @@ function renderHeadline(lines: string[], accent: string) {
   });
 }
 
+function StageScene({ kind, phaseIdx }: { kind: Stage['scene']; phaseIdx: number }) {
+  // Each scene takes an `opacity` prop; we pass 1 so the section's scene
+  // is always fully visible. `phase` on Nest/Sheets is just used internally
+  // for animation seeding — passing the stage index is fine.
+  switch (kind) {
+    case 'nest':   return <NestScene opacity={1} phase={phaseIdx} />;
+    case 'sheets': return <SheetsScene opacity={1} phase={phaseIdx} />;
+    case 'iri':    return <IridescentBlob opacity={1} />;
+    case 'shop':   return <ShopStack opacity={1} />;
+    case 'plos':   return <PlosOrbit opacity={1} />;
+  }
+}
+
 export function CinemaHero() {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const progress = useSectionProgress(wrapRef);
-  const { mx, my } = useMousePerspective(1);
-
-  const totalStages = STAGES.length;
-  // Phase is the continuous scroll value across stages. activeIndex snaps
-  // to the nearest integer stage — text + scenes show that stage at full
-  // opacity, no fade-to-dim between stages.
-  const phase = progress * (totalStages - 1);
-  const activeIndex = Math.max(0, Math.min(totalStages - 1, Math.round(phase)));
-  const stage = STAGES[activeIndex];
-
-  useEffect(() => {
-    const bg = wrapRef.current?.querySelector<HTMLDivElement>('.nis-cinema-bg');
-    if (!bg) return;
-    bg.style.setProperty('--bg-x', stage.bgX);
-    bg.style.setProperty('--bg-y', stage.bgY);
-    bg.style.setProperty('--mesh-1', stage.mesh1);
-    bg.style.setProperty('--mesh-2', stage.mesh2);
-    bg.style.setProperty('--mesh-3', stage.mesh3);
-    bg.style.setProperty('--mesh-4', stage.mesh4);
-    bg.style.setProperty('--mesh-edge', stage.edge);
-  }, [stage]);
-
-  const jumpTo = (i: number) => {
-    const el = wrapRef.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const start = window.scrollY + r.top;
-    const total = el.offsetHeight - window.innerHeight;
-    const targetProgress = i / (totalStages - 1);
-    window.scrollTo({ top: start + total * targetProgress, behavior: 'smooth' });
-  };
-
   return (
-    <div ref={wrapRef} className="nis-cinema">
-      <div className="nis-cinema-bg" />
-      <div className="nis-cinema-pin">
-        <div key={activeIndex} className="nis-cinema-text nis-cinema-text--enter">
-          <div className="nis-cinema-stage-num">
-            <span>{stage.num} · {stage.label}</span>
-            <span
-              className="bar"
-              style={{ '--bar': `${(activeIndex / (totalStages - 1)) * 100}%` } as React.CSSProperties}
-            />
-            <span>
-              {String(activeIndex + 1).padStart(2, '0')} / {String(totalStages).padStart(2, '0')}
-            </span>
+    <div className="nis-hero-stack">
+      {STAGES.map((stage, i) => (
+        <section
+          key={i}
+          className="nis-hero-stage"
+          style={
+            {
+              '--stage-accent': stage.accent,
+              '--stage-mesh-1': stage.mesh1,
+              '--stage-mesh-2': stage.mesh2,
+              '--stage-mesh-3': stage.mesh3,
+              '--stage-mesh-4': stage.mesh4,
+              '--stage-mesh-edge': stage.edge,
+              '--stage-bg-x': stage.bgX,
+              '--stage-bg-y': stage.bgY,
+            } as React.CSSProperties
+          }
+        >
+          <div className="nis-hero-stage-bg" aria-hidden />
+          <div className="nis-hero-stage-inner">
+            <div className="nis-hero-stage-copy">
+              <div className="nis-hero-stage-meta">
+                <span>{stage.num} · {stage.label}</span>
+                <span className="nis-hero-stage-meta-bar">
+                  <span style={{ width: `${((i + 1) / STAGES.length) * 100}%` }} />
+                </span>
+                <span>
+                  {String(i + 1).padStart(2, '0')} / {String(STAGES.length).padStart(2, '0')}
+                </span>
+              </div>
+              <h1 className="nis-hero-stage-headline">
+                {renderHeadline(stage.headline, stage.accent)}
+              </h1>
+              <p className="nis-hero-stage-sub">{stage.sub}</p>
+              <div className="nis-hero-stage-cta">
+                <Link
+                  href={stage.cta.href}
+                  className="nis-btn nis-btn-primary"
+                  style={{ background: stage.accent, borderColor: stage.accent }}
+                >
+                  {stage.cta.text}
+                  <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden>
+                    <path d="M1 5h12m0 0L9 1m4 4L9 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </Link>
+                {i === 0 && (
+                  <Link href="/plos" className="nis-btn">Open PLOS</Link>
+                )}
+              </div>
+            </div>
+            <div className="nis-hero-stage-scene">
+              <div className="scene-wrap">
+                <div className="scene-stage-2">
+                  <StageScene kind={stage.scene} phaseIdx={i} />
+                </div>
+              </div>
+            </div>
           </div>
-          <h1 className="nis-cinema-headline">{renderHeadline(stage.headline, stage.accent)}</h1>
-          <p className="nis-cinema-sub">{stage.sub}</p>
-          <div className="nis-cinema-cta">
-            <Link
-              href={stage.cta.href}
-              className="nis-btn nis-btn-primary"
-              style={{ background: stage.accent, borderColor: stage.accent }}
-            >
-              {stage.cta.text}
-              <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden>
-                <path d="M1 5h12m0 0L9 1m4 4L9 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </Link>
-            {activeIndex === 0 && (
-              <Link href="/plos" className="nis-btn">Open PLOS</Link>
-            )}
-          </div>
-        </div>
-        <div className="nis-cinema-scene">
-          {/* Pass activeIndex (integer) as phase so scenes snap to the
-              current stage without overlapping ghost SVGs in between. */}
-          <ScrollScene phase={activeIndex} mx={mx} my={my} />
-        </div>
-        {activeIndex === 0 && <div className="scroll-hint">Scroll to enter</div>}
-      </div>
-
-      <div className="nis-cinema-indicator">
-        {STAGES.map((s, i) => (
-          <button
-            key={i}
-            type="button"
-            className={`dot ${i === activeIndex ? 'active' : ''}`}
-            data-label={s.label}
-            onClick={() => jumpTo(i)}
-            aria-label={`Jump to ${s.label}`}
-          />
-        ))}
-      </div>
+        </section>
+      ))}
     </div>
   );
 }
