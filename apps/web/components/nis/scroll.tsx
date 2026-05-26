@@ -119,8 +119,14 @@ const SCENE_PALETTES = [
 
 function opacityFor(phase: number, i: number) {
   const d = Math.abs(phase - i);
-  if (d >= 1) return 0;
-  return Math.pow(1 - d, 1.4);
+  // Plateau model: each scene stays at full opacity for most of its
+  // scroll range, then crossfades only across a narrow boundary zone
+  // near the midpoint between two stages. Avoids the "ghostly two
+  // illustrations overlapping" look the old Math.pow(1-d,1.4) curve
+  // produced in the 0.2–0.6 d range.
+  if (d <= 0.35) return 1;
+  if (d >= 0.65) return 0;
+  return 1 - (d - 0.35) / 0.3;
 }
 
 const mixHex = (a: string, b: string, t: number) => {

@@ -105,9 +105,12 @@ export function CinemaHero() {
   const activeIndex = Math.round(phase);
   const stage = STAGES[Math.max(0, Math.min(totalStages - 1, activeIndex))];
 
-  const subPhase = phase - Math.floor(phase);
-  const showOpacity = Math.abs(subPhase - 0.5) * 2;
-  const textOpacity = 0.25 + 0.75 * Math.min(1, showOpacity * 1.5);
+  // Text content stays fully legible at every scroll position. The
+  // headline / sub / CTA snap to the new stage's copy when activeIndex
+  // (Math.round(phase)) flips at the midpoint — no opacity drop, no
+  // empty mid-scroll states. Scene illustrations still crossfade via
+  // opacityFor in scroll.tsx so the visual transition is preserved.
+  const textOpacity = 1;
 
   useEffect(() => {
     const bg = document.querySelector<HTMLDivElement>('.nis-cinema-bg');
