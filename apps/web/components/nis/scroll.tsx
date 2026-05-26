@@ -120,7 +120,9 @@ const SCENE_PALETTES = [
 function opacityFor(phase: number, i: number) {
   const d = Math.abs(phase - i);
   if (d >= 1) return 0;
-  return Math.pow(1 - d, 1.4);
+  // Gentler fade so adjacent scenes stay visible during transitions —
+  // prevents the "empty" look between stages on the home cinema.
+  return Math.pow(1 - d, 0.5);
 }
 
 const mixHex = (a: string, b: string, t: number) => {
