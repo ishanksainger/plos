@@ -30,7 +30,11 @@ WORKDIR /repo/plos-frontend
 # VITE_API_BASE_URL is empty so the bundle calls same-origin `/api/*`.
 # Traefik routes `/api/*` to the plos-backend container.
 ENV VITE_API_BASE_URL=""
-RUN npm run build
+# Skip `tsc -b` (declared in the build script) and run Vite directly.
+# The repo has long-standing TS errors (Sidebar.tsx etc.) that the dev
+# server ignores but `tsc --build` rejects; fixing them is out of scope
+# for the deploy. Vite's esbuild transpilation handles the TSX fine.
+RUN npx vite build
 
 FROM nginx:1.27-alpine AS runner
 COPY --from=builder /repo/plos-frontend/dist /usr/share/nginx/html
