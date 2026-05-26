@@ -9,6 +9,9 @@ FROM node:20-bookworm-slim AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# prisma.config.ts dereferences DATABASE_URL at load time. `prisma generate`
+# doesn't actually connect, so a dummy value satisfies the config check.
+ENV DATABASE_URL=postgresql://build:build@localhost:5432/build
 RUN npx prisma generate && npm run build
 
 FROM node:20-bookworm-slim AS runner
