@@ -10,13 +10,22 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Patch schema.prisma to read url from env(), and remove prisma.config.ts
-# so the standard Prisma flow (schema-only datasource) is used. The
-# prisma.config.ts that ships in the repo reads DATABASE_URL via dotenv
-# only — it ignores docker-compose env vars — which broke migrate at
-# container boot.
-RUN sed -i 's|^\s*provider = "postgresql"|  provider = "postgresql"\n  url      = env("DATABASE_URL")|' prisma/schema.prisma \
- && rm -f prisma.config.ts
+# Replace the repo's prisma.config.ts with a slimmed version that reads
+# DATABASE_URL straight from process.env. The original imports
+# 'dotenv/config' which only reads from a .env file — process.env values
+# set by docker-compose are invisible to it. Prisma 7 deprecated `url`
+# in schema.prisma so the config file is the only place it can live.
+RUN cat > prisma.config.ts <<'EOF'
+import { defineConfig } from 'prisma/config'
+
+export default defineConfig({
+  schema: 'prisma/schema.prisma',
+  migrations: { path: 'prisma/migrations' },
+  datasource: {
+    url: process.env.DATABASE_URL ?? 'postgresql://placeholder:placeholder@localhost:5432/placeholder',
+  },
+})
+EOF
 
 # prisma generate doesn't connect; dummy URL is enough.
 ENV DATABASE_URL=postgresql://build:build@localhost:5432/build
