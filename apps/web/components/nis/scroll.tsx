@@ -120,9 +120,7 @@ const SCENE_PALETTES = [
 function opacityFor(phase: number, i: number) {
   const d = Math.abs(phase - i);
   if (d >= 1) return 0;
-  // Gentler fade so adjacent scenes stay visible during transitions —
-  // prevents the "empty" look between stages on the home cinema.
-  return Math.pow(1 - d, 0.5);
+  return Math.pow(1 - d, 1.4);
 }
 
 const mixHex = (a: string, b: string, t: number) => {
@@ -142,7 +140,7 @@ const mixHex = (a: string, b: string, t: number) => {
 /* ============================================================
    Scene 0 — Nest
 ============================================================ */
-export function NestScene({ opacity, phase }: { opacity: number; phase: number }) {
+function NestScene({ opacity, phase }: { opacity: number; phase: number }) {
   const wobble = phase * 4;
   return (
     <svg className="scene-svg" viewBox="-110 -110 220 220" style={{ opacity }}>
@@ -206,7 +204,7 @@ export function NestScene({ opacity, phase }: { opacity: number; phase: number }
 /* ============================================================
    Scene 1 — Sheets
 ============================================================ */
-export function SheetsScene({ opacity, phase }: { opacity: number; phase: number }) {
+function SheetsScene({ opacity, phase }: { opacity: number; phase: number }) {
   const tilt = 2 + phase * 0.5;
   return (
     <svg className="scene-svg" viewBox="-110 -110 220 220" style={{ opacity }}>
@@ -263,7 +261,7 @@ export function SheetsScene({ opacity, phase }: { opacity: number; phase: number
 /* ============================================================
    Scene 2 — Iridescent blob (CSS-driven)
 ============================================================ */
-export function IridescentBlob({ opacity }: { opacity: number }) {
+function IridescentBlob({ opacity }: { opacity: number }) {
   return (
     <div className="iri-wrap" style={{ opacity }}>
       <div className="iri-halo" />
@@ -281,7 +279,7 @@ export function IridescentBlob({ opacity }: { opacity: number }) {
 /* ============================================================
    Scene 3 — Shop stack
 ============================================================ */
-export function ShopStack({ opacity }: { opacity: number }) {
+function ShopStack({ opacity }: { opacity: number }) {
   return (
     <svg className="scene-svg" viewBox="-110 -110 220 220" style={{ opacity }}>
       <defs>
@@ -335,7 +333,7 @@ export function ShopStack({ opacity }: { opacity: number }) {
 /* ============================================================
    Scene 4 — PLOS pearl + heartbeat orbit
 ============================================================ */
-export function PlosOrbit({ opacity }: { opacity: number }) {
+function PlosOrbit({ opacity }: { opacity: number }) {
   const beatPath =
     'M 0,0 L 18,0 L 22,-12 L 28,16 L 34,-22 L 40,22 L 46,-6 L 52,0 L 70,0';
   return (
