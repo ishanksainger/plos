@@ -28,7 +28,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=n8n_default
-      - traefik.http.routers.nis-web.rule=Host(`thenispace.com`) || Host(`www.thenispace.com`)
+      - traefik.http.routers.nis-web.rule=Host(`thenispace.com`) || Host(`www.thenispace.com`) || Host(`app.thenispace.com`)
       - traefik.http.routers.nis-web.tls=true
       - traefik.http.routers.nis-web.entrypoints=web,websecure
       - traefik.http.routers.nis-web.tls.certresolver=mytlschallenge
