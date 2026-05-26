@@ -6,7 +6,9 @@ This file is read automatically by Claude Code at the start of every session. Cu
 
 **Before starting any task, read `BACKLOG.md` at the repo root** — it's the single source of truth for what's still pending and who's expected to do it.
 
-**Last updated:** 2026-05-23
+**Claude Code — at the START of every session in this project, read ALL files in `/Users/ishanksainger/.claude/projects/-Volumes-DevSSD-dev-projects-ishank-plos/memory/` BEFORE responding to the first user message.** Especially `user_working_pattern.md` and `feedback_collaboration_style.md` — they describe how the user wants to be collaborated with. Don't claim "I don't remember" without reading these first.
+
+**Last updated:** 2026-05-26
 
 ---
 
