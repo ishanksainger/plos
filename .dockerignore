@@ -1,0 +1,40 @@
+# Local dev artefacts — never copied into image
+node_modules
+**/node_modules
+.next
+**/.next
+.git
+.gitignore
+.gitattributes
+**/.DS_Store
+
+# Other apps (we only build apps/web here)
+plos-backend
+plos-frontend
+
+# Docs / planning / agent metadata
+docs
+graphify-out
+.claude
+.cursor
+.cursorrules
+.github
+.vscode
+.idea
+*.md
+!apps/web/README.md
+
+# Tests
+playwright-report
+test-results
+**/tests
+**/*.spec.ts
+
+# Local env files (never bake secrets into images)
+.env
+.env.local
+**/.env
+**/.env.local
+
+# Build cache
+**/tsconfig.tsbuildinfo
