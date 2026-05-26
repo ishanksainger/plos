@@ -13,6 +13,9 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_SITE_URL: https://thenispace.com
+        NEXT_PUBLIC_PLOS_URL: https://app.thenispace.com
     image: nis-web:latest
     container_name: nis-web
     restart: always

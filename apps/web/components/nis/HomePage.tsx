@@ -8,6 +8,8 @@ import { Marquee } from './Marquee';
 import { ImageSlot } from './ImageSlot';
 import { NIS_STATS, NIS_TRACKERS, NIS_TESTIMONIALS } from '@/lib/nis-data';
 
+const PLOS_URL = process.env.NEXT_PUBLIC_PLOS_URL ?? 'http://localhost:5173';
+
 export function HomePage() {
   return (
     <>
@@ -125,7 +127,7 @@ export function HomePage() {
                 </p>
                 <div style={{ display: 'flex', gap: 12 }}>
                   <Link href="/plos" className="nis-btn nis-btn-primary">See the PLOS pillar</Link>
-                  <a className="nis-btn" href="http://localhost:5173" target="_blank" rel="noreferrer">
+                  <a className="nis-btn" href={PLOS_URL} target="_blank" rel="noreferrer">
                     Open the prototype
                   </a>
                 </div>

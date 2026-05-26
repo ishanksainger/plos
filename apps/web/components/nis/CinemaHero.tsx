@@ -107,7 +107,7 @@ export function CinemaHero() {
 
   const subPhase = phase - Math.floor(phase);
   const showOpacity = Math.abs(subPhase - 0.5) * 2;
-  const textOpacity = 0.25 + 0.75 * Math.min(1, showOpacity * 1.5);
+  const textOpacity = 0.7 + 0.3 * Math.min(1, showOpacity * 1.5);
 
   useEffect(() => {
     const bg = document.querySelector<HTMLDivElement>('.nis-cinema-bg');

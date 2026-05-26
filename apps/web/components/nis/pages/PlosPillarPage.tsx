@@ -7,6 +7,8 @@ import { StreakChainDemo } from '@/components/nis/StreakChainDemo';
 import { WaitlistForm } from '@/components/nis/WaitlistForm';
 import { NIS_TESTIMONIALS } from '@/lib/nis-data';
 
+const PLOS_URL = process.env.NEXT_PUBLIC_PLOS_URL ?? 'http://localhost:5173';
+
 const MODULES: [string, string][] = [
   ['Today', 'Priorities at the top. Overdue, due, upcoming. A diary feed below.'],
   ['Insights', 'A week-at-a-glance dashboard — money pressure, habit completion, people load.'],
@@ -74,7 +76,7 @@ export function PlosPillarPage() {
           <div style={{ display: 'flex', gap: 12, marginTop: 40, flexWrap: 'wrap' }}>
             <a
               className="nis-btn nis-btn-primary"
-              href="http://localhost:5173"
+              href={PLOS_URL}
               target="_blank"
               rel="noreferrer"
               style={{ textDecoration: 'none' }}
@@ -324,7 +326,7 @@ export function PlosPillarPage() {
           <a
             className="nis-btn nis-btn-primary"
             style={{ padding: '14px 28px', fontSize: 15, textDecoration: 'none' }}
-            href="http://localhost:5173"
+            href={PLOS_URL}
             target="_blank"
             rel="noreferrer"
           >
