@@ -28,5 +28,8 @@ COPY --from=builder /app/package.json ./package.json
 RUN mkdir -p /app/uploads
 
 EXPOSE 3001
-# Apply pending migrations on each boot, then start.
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
+# prisma.config.ts uses `import 'dotenv/config'` and `env('DATABASE_URL')`,
+# which reads only from a `.env` file — process.env values set by the
+# container runtime aren't visible at config evaluation. Write one from
+# the live env vars before running migrate + start.
+CMD ["sh", "-c", "printf 'DATABASE_URL=%s\\nJWT_SECRET=%s\\nJWT_EXPIRES_IN=%s\\nPLOS_APP_URL=%s\\nPORT=%s\\nNODE_ENV=%s\\n' \"$DATABASE_URL\" \"$JWT_SECRET\" \"$JWT_EXPIRES_IN\" \"$PLOS_APP_URL\" \"$PORT\" \"$NODE_ENV\" > .env && npx prisma migrate deploy && node dist/main"]
