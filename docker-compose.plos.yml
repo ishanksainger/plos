@@ -1,0 +1,108 @@
+# PLOS app stack — Postgres + NestJS API + Vite SPA — deployed alongside
+# the marketing site on the same VPS. Joins the external `n8n_default`
+# network so the existing Traefik (in /docker/n8n) discovers and routes
+# to these containers via their labels.
+#
+# Domain layout:
+#   app.thenispace.com           → plos-frontend (SPA)
+#   app.thenispace.com/api/...   → plos-backend  (NestJS, /api stripped)
+#   app.thenispace.com/uploads/* → plos-backend  (user-uploaded files)
+#
+# Deploy:
+#   docker compose -f docker-compose.plos.yml up -d --build
+#
+# Update after git pull:
+#   docker compose -f docker-compose.plos.yml up -d --build
+
+services:
+  plos-db:
+    image: postgres:16-alpine
+    container_name: plos-db
+    restart: always
+    environment:
+      POSTGRES_USER: plos
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: plos
+    volumes:
+      - plos_db_data:/var/lib/postgresql/data
+    networks:
+      - n8n_default
+    # Healthcheck so plos-backend can wait for the DB to be ready before
+    # starting (migrations will fail if it tries to connect too early).
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U plos -d plos"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  plos-backend:
+    build:
+      context: ./plos-backend
+      dockerfile: Dockerfile
+    image: plos-backend:latest
+    container_name: plos-backend
+    restart: always
+    depends_on:
+      plos-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://plos:${POSTGRES_PASSWORD}@plos-db:5432/plos
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: 7d
+      NODE_ENV: production
+      PORT: 3001
+      PLOS_APP_URL: https://app.thenispace.com
+    volumes:
+      - plos_uploads:/app/uploads
+    networks:
+      - n8n_default
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=n8n_default
+      # API requests: strip the leading `/api` so backend routes (e.g.
+      # `/auth/login`) match — mirrors how Vite's dev proxy works.
+      - traefik.http.routers.plos-backend-api.rule=Host(`app.thenispace.com`) && PathPrefix(`/api`)
+      - traefik.http.routers.plos-backend-api.tls=true
+      - traefik.http.routers.plos-backend-api.entrypoints=web,websecure
+      - traefik.http.routers.plos-backend-api.tls.certresolver=mytlschallenge
+      - traefik.http.routers.plos-backend-api.priority=20
+      - traefik.http.routers.plos-backend-api.middlewares=plos-strip-api
+      - traefik.http.middlewares.plos-strip-api.stripprefix.prefixes=/api
+      # User-uploaded files: keep the `/uploads` prefix as-is so NestJS
+      # serves them from its static handler.
+      - traefik.http.routers.plos-backend-uploads.rule=Host(`app.thenispace.com`) && PathPrefix(`/uploads`)
+      - traefik.http.routers.plos-backend-uploads.tls=true
+      - traefik.http.routers.plos-backend-uploads.entrypoints=web,websecure
+      - traefik.http.routers.plos-backend-uploads.tls.certresolver=mytlschallenge
+      - traefik.http.routers.plos-backend-uploads.priority=15
+      - traefik.http.services.plos-backend.loadbalancer.server.port=3001
+
+  plos-frontend:
+    build:
+      context: .
+      dockerfile: plos-frontend/Dockerfile
+    image: plos-frontend:latest
+    container_name: plos-frontend
+    restart: always
+    networks:
+      - n8n_default
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=n8n_default
+      # SPA catch-all (lower priority than backend routes so /api and
+      # /uploads land at the API container instead of falling through
+      # to the SPA's nginx).
+      - traefik.http.routers.plos-frontend.rule=Host(`app.thenispace.com`)
+      - traefik.http.routers.plos-frontend.tls=true
+      - traefik.http.routers.plos-frontend.entrypoints=web,websecure
+      - traefik.http.routers.plos-frontend.tls.certresolver=mytlschallenge
+      - traefik.http.routers.plos-frontend.priority=1
+      - traefik.http.services.plos-frontend.loadbalancer.server.port=80
+
+volumes:
+  plos_db_data:
+  plos_uploads:
+
+networks:
+  n8n_default:
+    external: true

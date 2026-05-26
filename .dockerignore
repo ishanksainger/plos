@@ -8,9 +8,11 @@ node_modules
 .gitattributes
 **/.DS_Store
 
-# Other apps (we only build apps/web here)
-plos-backend
-plos-frontend
+# NOTE: plos-backend and plos-frontend are NOT excluded — the plos-frontend
+# image needs them (and their workspace deps) in its build context, and
+# plos-backend uses its own ./plos-backend context. The nis-web Dockerfile
+# only COPYs apps/web + packages/*, so leaving these dirs in the context
+# is fine (a small unused build-context cost; not copied into the image).
 
 # Docs / planning / agent metadata
 docs
