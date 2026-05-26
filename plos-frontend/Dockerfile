@@ -1,38 +1,34 @@
 # PLOS frontend — Vite + Mantine SPA, served by nginx.
-# Built from the monorepo root so the @nis/ui workspace dep resolves.
-# NOTE: plos-frontend lives next to apps/* but is NOT in the root npm
-# workspaces glob, so we install workspace deps (for @nis/ui resolution)
-# then npm-install plos-frontend's own deps separately.
+# Built from the monorepo root so the @nis/* workspace deps resolve.
+#
+# plos-frontend lives next to apps/* and packages/* but is NOT in the
+# root package.json workspaces glob. We patch the workspaces array in
+# the build image only (NOT committed to the repo) so a single
+# `npm install` at root picks up plos-frontend's deps via npm
+# workspaces — which is the only way `"@nis/ui": "*"` resolves without
+# hitting the public registry.
 FROM node:20-bookworm-slim AS builder
 WORKDIR /repo
 
-# Root + workspace manifests for cacheable workspace install.
+# Source files needed by `npm install` (manifests + workspace package
+# sources, since @nis/ui resolves to packages/ui via workspaces).
 COPY package.json package-lock.json ./
-COPY packages/brand-tokens/package.json ./packages/brand-tokens/
-COPY packages/ui/package.json ./packages/ui/
-COPY packages/razorpay-sdk/package.json ./packages/razorpay-sdk/
 COPY apps/web/package.json ./apps/web/
-
-RUN npm install
-
-# Workspace package sources (so @nis/ui has files to resolve to).
 COPY packages ./packages
-
-# Now install plos-frontend's own deps. Symlink the workspace packages
-# into plos-frontend/node_modules so its imports of @nis/ui resolve.
 COPY plos-frontend/package.json ./plos-frontend/
-WORKDIR /repo/plos-frontend
-RUN npm install \
- && mkdir -p node_modules/@nis \
- && ln -sf /repo/packages/ui          node_modules/@nis/ui \
- && ln -sf /repo/packages/brand-tokens node_modules/@nis/brand-tokens
 
-# Now copy plos-frontend source and build.
-COPY plos-frontend ./
+# Patch the root manifest to include plos-frontend in workspaces, then
+# do a fresh install (no lockfile so workspace topology changes are OK).
+RUN node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json'));p.workspaces=Array.from(new Set([...(p.workspaces||[]),'plos-frontend']));fs.writeFileSync('package.json',JSON.stringify(p,null,2));" \
+ && rm -f package-lock.json \
+ && npm install --no-audit --no-fund
+
+# Copy plos-frontend source and build.
+COPY plos-frontend ./plos-frontend
+WORKDIR /repo/plos-frontend
 
 # VITE_API_BASE_URL is empty so the bundle calls same-origin `/api/*`.
-# Traefik (in docker-compose.plos.yml) routes `/api/*` to the
-# plos-backend container at port 3001.
+# Traefik routes `/api/*` to the plos-backend container.
 ENV VITE_API_BASE_URL=""
 RUN npm run build
 
