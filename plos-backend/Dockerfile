@@ -9,8 +9,16 @@ FROM node:20-bookworm-slim AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# prisma.config.ts dereferences DATABASE_URL at load time. `prisma generate`
-# doesn't actually connect, so a dummy value satisfies the config check.
+
+# Patch schema.prisma to read url from env(), and remove prisma.config.ts
+# so the standard Prisma flow (schema-only datasource) is used. The
+# prisma.config.ts that ships in the repo reads DATABASE_URL via dotenv
+# only — it ignores docker-compose env vars — which broke migrate at
+# container boot.
+RUN sed -i 's|^\s*provider = "postgresql"|  provider = "postgresql"\n  url      = env("DATABASE_URL")|' prisma/schema.prisma \
+ && rm -f prisma.config.ts
+
+# prisma generate doesn't connect; dummy URL is enough.
 ENV DATABASE_URL=postgresql://build:build@localhost:5432/build
 RUN npx prisma generate && npm run build
 
@@ -28,8 +36,6 @@ COPY --from=builder /app/package.json ./package.json
 RUN mkdir -p /app/uploads
 
 EXPOSE 3001
-# prisma.config.ts uses `import 'dotenv/config'` and `env('DATABASE_URL')`,
-# which reads only from a `.env` file — process.env values set by the
-# container runtime aren't visible at config evaluation. Write one from
-# the live env vars before running migrate + start.
-CMD ["sh", "-c", "printf 'DATABASE_URL=%s\\nJWT_SECRET=%s\\nJWT_EXPIRES_IN=%s\\nPLOS_APP_URL=%s\\nPORT=%s\\nNODE_ENV=%s\\n' \"$DATABASE_URL\" \"$JWT_SECRET\" \"$JWT_EXPIRES_IN\" \"$PLOS_APP_URL\" \"$PORT\" \"$NODE_ENV\" > .env && npx prisma migrate deploy && node dist/main"]
+# With prisma.config.ts removed and schema.prisma reading env("DATABASE_URL"),
+# the standard Prisma flow picks up DATABASE_URL from process.env on its own.
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
