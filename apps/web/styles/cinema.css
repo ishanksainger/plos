@@ -207,7 +207,11 @@ html { scroll-behavior: smooth; }
 /* ---------- Cinematic hero (scroll-pinned) ---------- */
 .nis-cinema {
   position: relative;
-  height: 460vh; /* enough scroll room for 5 phase stops */
+  /* 5 stages × ~70vh of scroll each + 100vh viewport. Short enough that
+     a Razorpay reviewer or new visitor reaches the marketing content
+     below within a few flicks of the wheel; long enough that each stage
+     gets its own breathing room before snapping to the next. */
+  height: 350vh;
 }
 .nis-cinema-bg {
   position: fixed; inset: 0;
@@ -243,31 +247,19 @@ html { scroll-behavior: smooth; }
 }
 @media (max-width: 880px) {
   .nis-cinema-pin { grid-template-columns: 1fr; padding: 60px 24px; gap: 24px; }
-  .nis-cinema { height: 480vh; }
+  .nis-cinema { height: 350vh; }
 }
 
-/* ───── Auto-advancing carousel variant ─────
-   Used by the new CinemaHero (no scroll-driven phase). The cinema
-   container is a normal 100vh hero; the bg + indicator are absolutely
-   positioned within it instead of fixed to the viewport, so they don't
-   bleed into sections below. */
-.nis-cinema--carousel { height: 100vh; overflow: hidden; }
-.nis-cinema--carousel .nis-cinema-bg { position: absolute; }
-.nis-cinema--carousel .nis-cinema-pin { position: relative; }
-.nis-cinema--carousel .nis-cinema-indicator { position: absolute; }
-
-@media (max-width: 880px) {
-  .nis-cinema--carousel { height: auto; min-height: 100vh; }
-}
-
-/* Text crossfade on stage change. The `key={activeIndex}` in the React
-   tree forces a remount, so this keyframe runs each time. */
+/* Text fade-in when the stage changes. The `key={activeIndex}` in the
+   React tree forces a remount on each scroll-driven stage switch, so
+   this keyframe re-fires every time — gives a polished feel without
+   the empty mid-scroll states the earlier fading model produced. */
 @keyframes nis-cinema-text-enter {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .nis-cinema-text--enter {
-  animation: nis-cinema-text-enter 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: nis-cinema-text-enter 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .nis-cinema-text {

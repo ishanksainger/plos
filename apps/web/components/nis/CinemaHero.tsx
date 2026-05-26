@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ScrollScene, useMousePerspective } from './scroll';
+import { ScrollScene, useMousePerspective, useSectionProgress } from './scroll';
 
 type Stage = {
   num: string;
@@ -88,10 +88,6 @@ const STAGES: Stage[] = [
   },
 ];
 
-const AUTO_ADVANCE_MS = 6000;
-const MANUAL_PAUSE_MS = 12000;
-const SCENE_TRANSITION_MS = 900;
-
 function renderHeadline(lines: string[], accent: string) {
   return lines.map((line, i) => {
     const html = line.replace(/_([^_]+)_/g, (_, w) => `<em style="color:${accent}">${w}</em>`);
@@ -101,48 +97,17 @@ function renderHeadline(lines: string[], accent: string) {
 
 export function CinemaHero() {
   const wrapRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [phase, setPhase] = useState(0);
-  const pausedUntilRef = useRef(0);
-  const hoverRef = useRef(false);
+  const progress = useSectionProgress(wrapRef);
   const { mx, my } = useMousePerspective(1);
 
   const totalStages = STAGES.length;
+  // Phase is the continuous scroll value across stages. activeIndex snaps
+  // to the nearest integer stage — text + scenes show that stage at full
+  // opacity, no fade-to-dim between stages.
+  const phase = progress * (totalStages - 1);
+  const activeIndex = Math.max(0, Math.min(totalStages - 1, Math.round(phase)));
   const stage = STAGES[activeIndex];
 
-  // Smoothly animate `phase` toward `activeIndex` so scenes can crossfade.
-  useEffect(() => {
-    let rafId = 0;
-    const startTime = performance.now();
-    const startPhase = phase;
-    const endPhase = activeIndex;
-    if (Math.abs(endPhase - startPhase) < 0.001) return;
-
-    const tick = (now: number) => {
-      const elapsed = now - startTime;
-      const t = Math.min(1, elapsed / SCENE_TRANSITION_MS);
-      // Ease in-out cubic.
-      const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      setPhase(startPhase + (endPhase - startPhase) * eased);
-      if (t < 1) rafId = requestAnimationFrame(tick);
-    };
-    rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeIndex]);
-
-  // Auto-advance every AUTO_ADVANCE_MS, paused on hover or after a manual click.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (hoverRef.current) return;
-      if (Date.now() < pausedUntilRef.current) return;
-      setActiveIndex((prev) => (prev + 1) % totalStages);
-    }, AUTO_ADVANCE_MS);
-    return () => clearInterval(interval);
-  }, [totalStages]);
-
-  // Push the stage's mesh colours into CSS custom properties on the bg layer.
-  // The bg has a CSS `transition` so the gradient crossfades smoothly.
   useEffect(() => {
     const bg = wrapRef.current?.querySelector<HTMLDivElement>('.nis-cinema-bg');
     if (!bg) return;
@@ -155,18 +120,18 @@ export function CinemaHero() {
     bg.style.setProperty('--mesh-edge', stage.edge);
   }, [stage]);
 
-  const jumpTo = useCallback((i: number) => {
-    setActiveIndex(i);
-    pausedUntilRef.current = Date.now() + MANUAL_PAUSE_MS;
-  }, []);
+  const jumpTo = (i: number) => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const start = window.scrollY + r.top;
+    const total = el.offsetHeight - window.innerHeight;
+    const targetProgress = i / (totalStages - 1);
+    window.scrollTo({ top: start + total * targetProgress, behavior: 'smooth' });
+  };
 
   return (
-    <div
-      ref={wrapRef}
-      className="nis-cinema nis-cinema--carousel"
-      onMouseEnter={() => { hoverRef.current = true; }}
-      onMouseLeave={() => { hoverRef.current = false; }}
-    >
+    <div ref={wrapRef} className="nis-cinema">
       <div className="nis-cinema-bg" />
       <div className="nis-cinema-pin">
         <div key={activeIndex} className="nis-cinema-text nis-cinema-text--enter">
@@ -199,8 +164,11 @@ export function CinemaHero() {
           </div>
         </div>
         <div className="nis-cinema-scene">
-          <ScrollScene phase={phase} mx={mx} my={my} />
+          {/* Pass activeIndex (integer) as phase so scenes snap to the
+              current stage without overlapping ghost SVGs in between. */}
+          <ScrollScene phase={activeIndex} mx={mx} my={my} />
         </div>
+        {activeIndex === 0 && <div className="scroll-hint">Scroll to enter</div>}
       </div>
 
       <div className="nis-cinema-indicator">
@@ -211,7 +179,7 @@ export function CinemaHero() {
             className={`dot ${i === activeIndex ? 'active' : ''}`}
             data-label={s.label}
             onClick={() => jumpTo(i)}
-            aria-label={`Show ${s.label} stage`}
+            aria-label={`Jump to ${s.label}`}
           />
         ))}
       </div>
