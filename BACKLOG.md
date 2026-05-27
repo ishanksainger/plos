@@ -2,50 +2,87 @@
 
 **Single source of truth for what's not done yet.** Both Claude Code and Cursor read this file at the start of any session that involves picking up new work. Update it as items move.
 
-**Last updated:** 2026-05-25
+**Last updated:** 2026-05-28
 
 ---
 
-## ▶ Next session — pick from this short list
+## ▶ Next session — current truth (updated 2026-05-28)
 
-Batch 7 shipped (5 pre-launch dev gaps). The remaining shippable items are:
+**Major wins from the 2026-05-27/28 marathon shipping session:**
+- ✅ Razorpay merchant account approved (24hr KYC turnaround) — Live keys deployed to VPS
+- ✅ thenispace.com live on Hostinger VPS (NOT Vercel — using existing infra)
+- ✅ app.thenispace.com live (full PLOS stack: Postgres + NestJS + Vite SPA)
+- ✅ Cinema-pin bug fixed (`overflow-x: clip` not `hidden` — see deployment-state memory)
+- ✅ SSH key from Mac to VPS — Claude can deploy directly
+- ✅ POD partner decision locked: **Qikink** (qikink.com, Open API, India-wide)
+- ✅ POD integration mode decision: **Option 1 — full e-commerce on NIS** (not link-out, not subdomain)
+- ✅ GST strategy reframed: defer until ~₹10L/yr (NOT "avoid forever") — see `project_launch_legal_posture.md` memory
 
-**Claude-doable but needs your credentials:**
-1. **PLOS Razorpay billing** (P0) — needs Razorpay test keys.
-2. **PLOS WhatsApp pipeline** (P1) — needs Twilio or Meta Business creds.
+**Immediate next actions (in order):**
 
-**Pending — human only (no claude work blocks):**
-- Razorpay KYC start (5–7 day wait, **biggest single blocker**)
-- Supabase project + run the updated `apps/web/supabase/schema.sql` + apply both Prisma migrations (`20260525000000_add_notification_preferences` + `20260525010000_password_reset_email_verification`)
-- Resend domain verification + grab API key → `RESEND_API_KEY`
-- Vercel deploy + DNS
-- Upstash Redis (optional but recommended) for production rate limiting
-- 3 more tracker `.xlsx` contents
-- Nikita: Spline / Canvas / Shop SKU imagery / About portraits
-- Lawyer review of legal placeholder copy
-- Branch protection on `main` (GitHub settings)
+### Phase 1 — Digital tracker delivery (blocks first tracker sale)
 
-After those, the next tier:
-- 3 more tracker contents (human, P0)
-- Razorpay KYC (human · 5–7 day wait — **start ASAP**)
-- Resend domain verification for `thenispace.com`
-- Supabase project + schema execution + storage bucket
-- Vercel deploy + DNS
-- Lawyer review of legal placeholder copy
+1. [ ] **Tracker #1 .xlsx file** — Ishank is building in Canva during night shifts (P0, blocker)
+2. [ ] **Resend account + DNS verification** for `thenispace.com` sending domain (human, 15 min + propagation)
+3. [ ] **Supabase project + schema + storage bucket** — run `apps/web/supabase/schema.sql`, create `products` bucket (human/claude, 30 min)
+4. [ ] **Wire RESEND_API_KEY + Supabase vars** into `/docker/nis-web/.env` on VPS, rebuild (claude, 5 min)
+5. [ ] **Upload tracker #1** to Supabase bucket, update `tracker-catalog.ts` with file key (claude, 5 min)
+6. [ ] **Live ₹249 payment self-test** via UPI, refund from Razorpay dashboard (human, 10 min)
 
-After those, the next tier:
-- 3 more trackers content + files (human)
-- Razorpay KYC (human · 5–7 day wait — **start ASAP**)
-- Resend domain verification for `thenispace.com`
-- Supabase project setup + schema execution + storage bucket
-- Vercel deploy + DNS
+### Phase 2 — Qikink POD storefront (Option 1, full e-commerce on NIS)
 
-After those, the next tier:
-- Real product imagery (Nikita) — Spline hero, Canvas tiles, Shop merch, About portraits
-- 3 more trackers content (human)
-- Razorpay KYC (human, 5–7 day wait — start ASAP)
+See `memory/project_build_plan_qikink_storefront.md` for the sequenced detail. Top-level:
 
-Everything else is itemized below.
+7. [ ] **Qikink account + API credentials** (human, 15 min)
+8. [ ] **`packages/qikink-sdk/`** — server-side typed wrappers, mirror @nis/razorpay-sdk shape (claude, 1 hr)
+9. [ ] **Merch catalog + variants** in `apps/web/lib/merch-catalog.ts` (claude, 30 min)
+10. [ ] **/shop/merch + /shop/merch/[slug]** pages with size/colour picker (claude, 3 hr)
+11. [ ] **Extend cart drawer** for physical goods (qty, variant display, shipping) (claude, 2 hr)
+12. [ ] **Checkout page** with address form + Qikink pincode validation (claude, 2 hr)
+13. [ ] **`/api/qikink/shipping-quote`** route — pincode → shipping cost (claude, 1 hr)
+14. [ ] **`/api/razorpay/merch-order` + `merch-verify`** routes (parallel to existing tracker routes) (claude, 2 hr)
+15. [ ] **Extend webhook** to call Qikink for merch fulfilment on `payment.captured` (claude, 30 min)
+16. [ ] **Order status page `/orders/[id]`** with Qikink tracking number (claude, 1 hr)
+17. [ ] **Update Shipping + Return + Privacy policy pages** for physical goods (claude/human, 1 hr)
+18. [ ] **Test order — real ₹599 t-shirt to Ishank's own address** (human, 15 min + 2-5 day delivery)
+
+**Phase 2 total dev time:** ~15-18 hrs of focused coding. On side-hustle pace = 2-3 weeks.
+
+### Phase 3 — Operational (post-launch polish)
+
+19. [ ] **`/admin/orders` dashboard** (auth-gated) for daily monitoring (claude, 2 hr)
+20. [ ] **Plausible analytics** self-hosted on VPS (claude, 1 hr)
+21. [ ] **COD enablement decision** + wiring (Ishank decides; Qikink supports it)
+22. [ ] **support@thenispace.com** Gmail forwarding (human, 30 min)
+
+### Phase 4 — Deferred until ₹50K+/mo revenue OR explicit trigger
+
+- PLOS Pro subscription flow (trigger: PLOS has 10-20 active free users)
+- International shipping
+- GST registration + CA hire (trigger: ~₹15-18L/yr revenue)
+- Pvt Ltd / LLP incorporation (trigger: investor talks or liability exposure)
+- Marketplace channels: Amazon/Flipkart/Etsy/Meesho (requires GSTIN)
+- Influencer collabs / paid ads
+- Custom packaging beyond Qikink defaults
+- Brand trademark filing
+
+**For full strategic context see memory files:**
+- `project_pod_partnership.md` — Qikink details, unit economics, integration model
+- `project_build_plan_qikink_storefront.md` — sequenced concrete task list
+- `project_launch_legal_posture.md` — GST inflection at ₹10L/yr
+- `project_deployment_state.md` — what's live, how to deploy, secrets location
+
+---
+
+## Stale items to clean up (deferred or superseded)
+
+These were in the prior pick-list but are now obsolete:
+- ~~**Vercel deploy + DNS**~~ → never doing this; we use Hostinger VPS instead
+- ~~**Razorpay KYC start**~~ → done 2026-05-27, live keys deployed
+- ~~**Razorpay PLOS billing**~~ → deferred to Phase 4 (subscription model)
+- ~~**Upstash Redis**~~ → defer; current in-memory rate limit fine until traffic justifies
+
+Everything else from the older pick-list is itemized below.
 
 ---
 
