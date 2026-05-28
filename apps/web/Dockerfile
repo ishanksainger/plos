@@ -22,8 +22,12 @@ COPY tsconfig*.json ./
 # NEXT_PUBLIC_* env vars are baked at build time, not runtime — accept as build args.
 ARG NEXT_PUBLIC_SITE_URL=https://thenispace.com
 ARG NEXT_PUBLIC_PLOS_URL=https://app.thenispace.com
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_PLOS_URL=$NEXT_PUBLIC_PLOS_URL
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 # Build Next.js production bundle.
 RUN npm run build --workspace=apps/web

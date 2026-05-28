@@ -16,6 +16,8 @@ services:
       args:
         NEXT_PUBLIC_SITE_URL: https://thenispace.com
         NEXT_PUBLIC_PLOS_URL: https://app.thenispace.com
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
     image: nis-web:latest
     container_name: nis-web
     restart: always
@@ -23,9 +25,15 @@ services:
       - NODE_ENV=production
       - NEXT_PUBLIC_SITE_URL=https://thenispace.com
       - NEXT_PUBLIC_PLOS_URL=https://app.thenispace.com
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SUPABASE_PRODUCTS_BUCKET=products
       - RAZORPAY_KEY_ID=${RAZORPAY_KEY_ID}
       - RAZORPAY_KEY_SECRET=${RAZORPAY_KEY_SECRET}
       - RAZORPAY_WEBHOOK_SECRET=${RAZORPAY_WEBHOOK_SECRET}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-NIS <notifications@thenispace.com>}
     networks:
       - n8n_default
     labels:
