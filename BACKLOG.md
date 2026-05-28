@@ -18,16 +18,23 @@
 - ✅ POD integration mode decision: **Option 1 — full e-commerce on NIS** (not link-out, not subdomain)
 - ✅ GST strategy reframed: defer until ~₹10L/yr (NOT "avoid forever") — see `project_launch_legal_posture.md` memory
 
+**Major wins from the 2026-05-28 session (Phase 1 plumbing):**
+- ✅ Resend account + API key + DNS records (DKIM/SPF MX/SPF TXT) added via Hostinger API
+- ✅ Hostinger MCP server registered for future sessions
+- ✅ Supabase `nis-prod` project (Mumbai ap-south-1)
+- ✅ Schema applied (commerce + marketing + RLS + products bucket + 2 seed products)
+- ✅ Schemas exposed in Data API settings; GRANT USAGE applied to api roles
+- ✅ All env vars (Supabase URL/anon/service-role/bucket + Resend api-key/from-email) wired into `/docker/nis-web/.env` and the rebuilt `nis-web` container
+- ✅ Live smoke test passed: waitlist endpoint writes to Supabase, products listable via REST
+
 **Immediate next actions (in order):**
 
 ### Phase 1 — Digital tracker delivery (blocks first tracker sale)
 
-1. [ ] **Tracker #1 .xlsx file** — Ishank is building in Canva during night shifts (P0, blocker)
-2. [ ] **Resend account + DNS verification** for `thenispace.com` sending domain (human, 15 min + propagation)
-3. [ ] **Supabase project + schema + storage bucket** — run `apps/web/supabase/schema.sql`, create `products` bucket (human/claude, 30 min)
-4. [ ] **Wire RESEND_API_KEY + Supabase vars** into `/docker/nis-web/.env` on VPS, rebuild (claude, 5 min)
-5. [ ] **Upload tracker #1** to Supabase bucket, update `tracker-catalog.ts` with file key (claude, 5 min)
-6. [ ] **Live ₹249 payment self-test** via UPI, refund from Razorpay dashboard (human, 10 min)
+1. [ ] **Tracker #1 .xlsx file** — Ishank is building in Canva during night shifts (P0, sole blocker)
+2. ⏳ **Resend domain verification flips to "verified"** — DNS records correct + propagated; Resend's first-time verifier is slow. Background, no action needed.
+3. [ ] **Upload tracker #1** to Supabase `products` bucket at path `trackers/freelancer-gst.xlsx` (claude, 2 min — already seeded in DB)
+4. [ ] **Live ₹249 payment self-test** via UPI, refund from Razorpay dashboard (human, 10 min)
 
 ### Phase 2 — Qikink POD storefront (Option 1, full e-commerce on NIS)
 
