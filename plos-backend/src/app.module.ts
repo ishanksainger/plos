@@ -15,6 +15,7 @@ import { SchedulerModule } from './scheduler/scheduler.module';
 import { EventModule } from './event/event.module';
 import { NotificationModule } from './notification/notification.module';
 import { SearchModule } from './search/search.module';
+import { PlanModule } from './plan/plan.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { SearchModule } from './search/search.module';
       { name: 'long',   ttl: 60_000, limit: 120 }, // 120 / 60s  — ceiling
     ]),
     PrismaModule,
+    PlanModule,
     NotificationModule,
     AuthModule,
     ResponsibilityModule,
