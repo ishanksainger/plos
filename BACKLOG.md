@@ -127,6 +127,11 @@ Everything else from the older pick-list is itemized below.
 - ✅ **Nightly PLOS DB backups** — `/docker/backups/plos-backup.sh` via cron (04:00 IST), keeps 14 days, logs to `backup.log`. See deployment-state memory.
 - [ ] **Off-box backup copy** — current dumps sit on the same VPS disk (protects logical loss, not full-disk disaster). Add a Hostinger VPS snapshot schedule OR push dumps to object storage. **Owner:** `claude` (P2)
 
+### CI health — `main` is red independent of any feature work (found 2026-06-03)
+Discovered while running the billing-readiness branch. None of these are caused by feature PRs; they need a dedicated cleanup pass.
+- [ ] **`prisma migrate diff` CI step is broken** — `.github/workflows/ci.yml` calls `--to-schema-datamodel` (removed in Prisma 7) and the backend job has **no Postgres service**, so `--from-migrations` has no shadow DB to replay into. Fix: update flag to `--to-schema` + add a `postgres` service (or rework the drift check). **Owner:** `cursor/either` (P1 — CI is a no-op gate until fixed). Note: `prisma validate` passes; schema↔migrations are consistent (verified locally via `migrate deploy`).
+- [ ] **Repo-wide lint debt fails `npm run lint`** — both `plos-backend` and `plos-frontend` lint jobs are red on `main` from pre-existing prettier/rule violations (e.g. `user/export.service.ts`, `main.tsx` react-refresh, `SettingsPage` set-state-in-effect). Net-new billing/import files were kept clean; the backlog here is the *existing* files. Fix: `npm run format` per package + manual rule fixes, in its own PR. **Owner:** `cursor/either` (P2)
+
 ### PLOS sell-readiness (assessed 2026-06-02 — see `docs/plos-pricing-tiers.md`)
 Core app works end-to-end in prod (live-tested: register/login/me/delete ✅). Pricing specced. Verdict: **ready to launch FREE after the quick wins below; NOT ready to charge until the retention engine + billing + real legal copy land** (and per plan, shouldn't charge pre-retention).
 
