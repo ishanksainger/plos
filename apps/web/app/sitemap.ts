@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { NIS_TRACKERS } from '@/lib/nis-data';
+import { listEbooks } from '@/lib/ebook-catalog';
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://thenispace.com').replace(/\/+$/, '');
 
@@ -11,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/`,         lastModified, changeFrequency: 'weekly',  priority: 1.0 },
     { url: `${SITE_URL}/trackers`, lastModified, changeFrequency: 'weekly',  priority: 0.9 },
     { url: `${SITE_URL}/trackers/bundle`, lastModified, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${SITE_URL}/ebooks`,   lastModified, changeFrequency: 'weekly',  priority: 0.8 },
     { url: `${SITE_URL}/canvas`,   lastModified, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${SITE_URL}/shop`,     lastModified, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${SITE_URL}/plos`,     lastModified, changeFrequency: 'weekly',  priority: 0.9 },
@@ -27,5 +29,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticRoutes, ...trackerRoutes];
+  const ebookRoutes: MetadataRoute.Sitemap = listEbooks().map((e) => ({
+    url: `${SITE_URL}/ebooks/${e.slug}`,
+    lastModified,
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }));
+
+  return [...staticRoutes, ...trackerRoutes, ...ebookRoutes];
 }

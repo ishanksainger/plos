@@ -7,7 +7,9 @@
  * soon" badge but their Buy / Add-to-cart buttons are disabled.
  */
 
-export type TrackerKind = 'tracker' | 'bundle';
+import { EBOOKS } from './ebook-catalog';
+
+export type TrackerKind = 'tracker' | 'bundle' | 'ebook';
 
 export type Tracker = {
   slug: string;
@@ -17,11 +19,11 @@ export type Tracker = {
   pricePaise: number;
   features: string[];
   audience: string;
-  fileType: 'xlsx' | 'gsheet' | 'pdf';
+  fileType: 'xlsx' | 'gsheet' | 'pdf' | 'epub';
   pages?: number;
   active: boolean;
   badge?: string;
-  /** `'tracker'` (single product) or `'bundle'` (groups other slugs). */
+  /** `'tracker'` (single product), `'bundle'` (groups other slugs), or `'ebook'`. */
   kind?: TrackerKind;
   /** For bundles: slugs of the trackers included. */
   components?: string[];
@@ -170,7 +172,10 @@ export function getBundlePricing() {
   };
 }
 
-const ALL_SKUS: Tracker[] = [...TRACKERS, BUNDLE];
+// Every purchasable SKU the commerce pipeline can resolve by slug. E-books are
+// spread in here so /api/razorpay/* + fulfillment + /api/download work for them
+// with no per-route changes (they all call getTracker / getPurchasableTracker).
+const ALL_SKUS: Tracker[] = [...TRACKERS, BUNDLE, ...EBOOKS];
 
 export function getTracker(slug: string): Tracker | undefined {
   return ALL_SKUS.find((t) => t.slug === slug);

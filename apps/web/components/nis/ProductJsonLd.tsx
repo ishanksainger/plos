@@ -9,16 +9,25 @@ interface Props {
   description: string;
   pricePaise: number;
   isAvailable: boolean;
+  /** URL section the product lives under. Defaults to `trackers`. */
+  pathPrefix?: 'trackers' | 'ebooks';
   /** Optional catalog reference to pull extra fields (sku, gtin, etc) in future. */
   catalogEntry?: CatalogTracker;
 }
 
 /**
- * Inline structured data for tracker / bundle pages. Helps Google show
- * price + availability in search results.
+ * Inline structured data for tracker / e-book / bundle pages. Helps Google
+ * show price + availability in search results.
  */
-export function ProductJsonLd({ slug, title, description, pricePaise, isAvailable }: Props) {
-  const url = `${SITE_URL}/trackers/${slug}`;
+export function ProductJsonLd({
+  slug,
+  title,
+  description,
+  pricePaise,
+  isAvailable,
+  pathPrefix = 'trackers',
+}: Props) {
+  const url = `${SITE_URL}/${pathPrefix}/${slug}`;
   const priceRupees = (pricePaise / 100).toFixed(2);
 
   const data = {

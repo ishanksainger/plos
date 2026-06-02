@@ -8,6 +8,7 @@ import { CartButton } from './CartButton';
 const LINKS = [
   { href: '/',         label: 'Home' },
   { href: '/trackers', label: 'Trackers' },
+  { href: '/ebooks',   label: 'E-books' },
   { href: '/canvas',   label: 'Canvas' },
   { href: '/shop',     label: 'Shop' },
   { href: '/plos',     label: 'PLOS' },

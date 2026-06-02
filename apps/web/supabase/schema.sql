@@ -170,3 +170,27 @@ on conflict (id) do update set
   description = excluded.description,
   price_paise = excluded.price_paise,
   storage_path = excluded.storage_path;
+
+-- ----------------------------------------------------------------------------
+-- E-book seed template (commented until the first PDF actually exists).
+-- E-books reuse the digital pipeline: type='digital', storage_path points at
+-- the file in the `products` bucket under ebooks/<slug>.<ext>. The matching
+-- catalog entry lives in apps/web/lib/ebook-catalog.ts. To go live:
+--   1. Upload the file:   products/ebooks/<slug>.pdf
+--   2. Flip active: true on the ebook-catalog.ts entry
+--   3. Run the upsert below with the real slug/title/price.
+-- ----------------------------------------------------------------------------
+-- insert into commerce.products (id, type, title, description, price_paise, storage_path)
+-- values (
+--   'ai-freelancer-india',
+--   'digital',
+--   'The AI-Assisted Freelancer · India Edition',
+--   'India-first playbook for running a freelance business with AI — proposals, outreach, invoicing, GST.',
+--   29900,
+--   'ebooks/ai-freelancer-india.pdf'
+-- )
+-- on conflict (id) do update set
+--   title = excluded.title,
+--   description = excluded.description,
+--   price_paise = excluded.price_paise,
+--   storage_path = excluded.storage_path;
