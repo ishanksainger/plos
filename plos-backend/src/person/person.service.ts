@@ -4,18 +4,28 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PlanService } from 'src/plan/plan.service';
 import { normalizeOptionalPhone } from 'src/common/phone.util';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 
 @Injectable()
 export class PersonService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private plan: PlanService,
+  ) {}
 
   /**
    * Creates a person in the user's circle with required email and optional phone.
    */
   async create(dto: CreatePersonDto) {
+    // Dormant plan-limit guard (no-op until BILLING_ENABLED). Free tier = 3 people.
+    const count = await this.prisma.person.count({
+      where: { userId: dto.userId as number },
+    });
+    await this.plan.assertCanCreate(dto.userId as number, 'people', count);
+
     return this.prisma.person.create({
       data: {
         userId: dto.userId as number,

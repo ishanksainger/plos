@@ -12,6 +12,7 @@ import { computeState } from './compute-state';
 import { computeNextDueDate } from './compute-next-due';
 import { RECURRING_COMPLETION_NOTE_PREFIX } from 'src/event/activity-completion';
 import { NotificationService } from 'src/notification/notification.service';
+import { PlanService } from 'src/plan/plan.service';
 import { computeStreakFromCompletionDays, localDayKey } from './habit-streaks';
 
 @Injectable()
@@ -20,9 +21,16 @@ export class ResponsibilityService {
     private prisma: PrismaService,
     private eventService: EventService,
     private notificationService: NotificationService,
+    private plan: PlanService,
   ) {}
 
   async create(dto: CreateResponsibilityDto) {
+    // Dormant plan-limit guard (no-op until BILLING_ENABLED). Free tier = 50.
+    const count = await this.prisma.responsibility.count({
+      where: { userId: dto.userId as number },
+    });
+    await this.plan.assertCanCreate(dto.userId as number, 'responsibilities', count);
+
     return this.prisma.responsibility.create({
       data: {
         title: dto.title,

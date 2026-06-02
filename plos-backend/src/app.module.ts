@@ -16,6 +16,7 @@ import { EventModule } from './event/event.module';
 import { NotificationModule } from './notification/notification.module';
 import { SearchModule } from './search/search.module';
 import { PlanModule } from './plan/plan.module';
+import { BillingModule } from './billing/billing.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { PlanModule } from './plan/plan.module';
     SchedulerModule,
     EventModule,
     SearchModule,
+    BillingModule,
   ],
   controllers: [AppController],
   providers: [
