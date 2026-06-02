@@ -8,7 +8,7 @@
 /** Parse CSV text into rows of raw string cells. Skips fully blank lines. */
 export function parseCsvRows(text: string): string[][] {
   // Strip a UTF-8 BOM if present (Excel/Canva exports love adding one).
-  const input = text.replace(/^﻿/, '');
+  const input = text.replace(/^\uFEFF/, '');
   const rows: string[][] = [];
   let row: string[] = [];
   let field = '';
@@ -82,21 +82,54 @@ export function pick(rec: Record<string, string>, aliases: string[]): string {
 }
 
 const CATEGORY_ALIASES: Record<string, string> = {
-  finance: 'finance', money: 'finance', bill: 'finance', bills: 'finance',
-  expense: 'finance', payment: 'finance', sip: 'finance', investment: 'finance',
-  gst: 'finance', tax: 'finance', emi: 'finance', budget: 'finance',
-  health: 'health', medical: 'health', fitness: 'health', doctor: 'health',
-  habit: 'habit', habits: 'habit', routine: 'habit',
-  family: 'family', home: 'family', household: 'family', kids: 'family',
-  admin: 'admin', work: 'admin', job: 'admin', general: 'admin',
-  task: 'admin', todo: 'admin', other: 'admin', personal: 'admin',
+  finance: 'finance',
+  money: 'finance',
+  bill: 'finance',
+  bills: 'finance',
+  expense: 'finance',
+  payment: 'finance',
+  sip: 'finance',
+  investment: 'finance',
+  gst: 'finance',
+  tax: 'finance',
+  emi: 'finance',
+  budget: 'finance',
+  health: 'health',
+  medical: 'health',
+  fitness: 'health',
+  doctor: 'health',
+  habit: 'habit',
+  habits: 'habit',
+  routine: 'habit',
+  family: 'family',
+  home: 'family',
+  household: 'family',
+  kids: 'family',
+  admin: 'admin',
+  work: 'admin',
+  job: 'admin',
+  general: 'admin',
+  task: 'admin',
+  todo: 'admin',
+  other: 'admin',
+  personal: 'admin',
 };
 
 const MODULE_FOR_CATEGORY: Record<string, string> = {
-  finance: 'finance', health: 'health', habit: 'habits', family: 'family', admin: 'general',
+  finance: 'finance',
+  health: 'health',
+  habit: 'habits',
+  family: 'family',
+  admin: 'general',
 };
 
-export const VALID_CATEGORIES = ['finance', 'health', 'habit', 'family', 'admin'] as const;
+export const VALID_CATEGORIES = [
+  'finance',
+  'health',
+  'habit',
+  'family',
+  'admin',
+] as const;
 
 /** Map a free-text category cell onto a PLOS category, defaulting to 'admin'. */
 export function normalizeCategory(raw: string): string {
@@ -116,7 +149,13 @@ export function normalizeRecurrence(raw: string): string {
   if (key === 'every day') return 'daily';
   if (key === 'every week') return 'weekly';
   if (key === 'every month' || key === 'month') return 'monthly';
-  if (key === 'every year' || key === 'annual' || key === 'annually' || key === 'year') return 'yearly';
+  if (
+    key === 'every year' ||
+    key === 'annual' ||
+    key === 'annually' ||
+    key === 'year'
+  )
+    return 'yearly';
   return 'none';
 }
 
@@ -147,7 +186,7 @@ export function parseDueDate(raw: string): Date | null {
   // DD/MM/YYYY or DD-MM-YYYY (Indian convention — day first).
   const dmy = /^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})$/.exec(s);
   if (dmy) {
-    let [, dd, mm, yy] = dmy;
+    const [, dd, mm, yy] = dmy;
     let year = Number(yy);
     if (year < 100) year += 2000;
     const month = Number(mm);

@@ -12,10 +12,15 @@ import {
 describe('csv.util', () => {
   describe('parseCsvRows / parseCsvRecords', () => {
     it('parses a simple header + rows into keyed records (case-insensitive headers)', () => {
-      const csv = 'Title,Category,DueDate\nPay rent,finance,2026-06-10\nGym,health,2026-06-11\n';
+      const csv =
+        'Title,Category,DueDate\nPay rent,finance,2026-06-10\nGym,health,2026-06-11\n';
       const recs = parseCsvRecords(csv);
       expect(recs).toHaveLength(2);
-      expect(recs[0]).toMatchObject({ title: 'Pay rent', category: 'finance', duedate: '2026-06-10' });
+      expect(recs[0]).toMatchObject({
+        title: 'Pay rent',
+        category: 'finance',
+        duedate: '2026-06-10',
+      });
     });
 
     it('handles quoted fields with embedded commas and escaped quotes', () => {
@@ -34,7 +39,10 @@ describe('csv.util', () => {
 
     it('handles CRLF line endings', () => {
       const rows = parseCsvRows('a,b\r\n1,2\r\n');
-      expect(rows).toEqual([['a', 'b'], ['1', '2']]);
+      expect(rows).toEqual([
+        ['a', 'b'],
+        ['1', '2'],
+      ]);
     });
 
     it('returns [] when there is no data row', () => {

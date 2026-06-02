@@ -52,7 +52,10 @@ export class ImportService {
    * Validates every row, creates the valid ones transactionally, and reports
    * exactly which rows were skipped and why.
    */
-  async importResponsibilities(userId: number, csvText: string): Promise<ImportSummary> {
+  async importResponsibilities(
+    userId: number,
+    csvText: string,
+  ): Promise<ImportSummary> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { importsUsed: true },
@@ -111,20 +114,29 @@ export class ImportService {
         amount: parseAmount(pick(rec, COLS.amount)),
         recurrence: normalizeRecurrence(pick(rec, COLS.recurrence)),
         notes: pick(rec, COLS.notes) || undefined,
-        personId: personName ? personByName.get(personName.toLowerCase()) : undefined,
+        personId: personName
+          ? personByName.get(personName.toLowerCase())
+          : undefined,
         userId,
       });
     });
 
     if (toCreate.length === 0) {
-      return { created: 0, skipped: errors.length, total: records.length, errors };
+      return {
+        created: 0,
+        skipped: errors.length,
+        total: records.length,
+        errors,
+      };
     }
 
     // Responsibility-count gate (free tier: 50). Dormant-safe: limit is null
     // while billing is off, so this block is skipped.
     const limits = await this.plan.limitsFor(userId);
     if (limits.maxResponsibilities !== null) {
-      const current = await this.prisma.responsibility.count({ where: { userId } });
+      const current = await this.prisma.responsibility.count({
+        where: { userId },
+      });
       if (current + toCreate.length > limits.maxResponsibilities) {
         throw new ForbiddenException({
           code: 'PLAN_LIMIT_REACHED',
@@ -152,7 +164,8 @@ export class ImportService {
     const header = 'title,category,dueDate,amount,recurrence,notes,person';
     const example =
       'Pay advance tax,finance,2026-07-31,18000,yearly,Freelance income,Self';
-    const example2 = 'Mom doctor visit,health,2026-06-20,,none,Annual checkup,Mother';
+    const example2 =
+      'Mom doctor visit,health,2026-06-20,,none,Annual checkup,Mother';
     return `${header}\n${example}\n${example2}\n`;
   }
 }
