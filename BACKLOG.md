@@ -127,6 +127,17 @@ Everything else from the older pick-list is itemized below.
 - ✅ **Nightly PLOS DB backups** — `/docker/backups/plos-backup.sh` via cron (04:00 IST), keeps 14 days, logs to `backup.log`. See deployment-state memory.
 - [ ] **Off-box backup copy** — current dumps sit on the same VPS disk (protects logical loss, not full-disk disaster). Add a Hostinger VPS snapshot schedule OR push dumps to object storage. **Owner:** `claude` (P2)
 
+### PLOS sell-readiness (assessed 2026-06-02 — see `docs/plos-pricing-tiers.md`)
+Core app works end-to-end in prod (live-tested: register/login/me/delete ✅). Pricing specced. Verdict: **ready to launch FREE after the quick wins below; NOT ready to charge until the retention engine + billing + real legal copy land** (and per plan, shouldn't charge pre-retention).
+- [ ] **Analytics (Plausible)** — "install before launch, not after". Self-host on VPS or Plausible cloud; NIS layout already has the env-gated script. Blind without it. **Owner:** `claude` (P1 for launch)
+- [ ] **Error monitoring (Sentry free tier)** — plan Sprint-0 item, never done; silent failures in prod. **Owner:** `claude/either` (P1)
+- [ ] **First-run onboarding nudge** — guided first action so a new user isn't dropped into an empty app (weak onboarding ⇒ −50% retention). **Owner:** `claude` (P1)
+- [ ] **Real legal copy** — privacy/terms/refund are DPDP-shaped placeholders; needed before taking money (Razorpay compliance + Consumer Protection E-Comm Rules 2020). Need a subscription cancellation/refund policy w/ timelines. **Owner:** `human/lawyer` (claude can draft) (P1 for paid)
+- [ ] **support@thenispace.com** forwarding — a real support channel. **Owner:** `human` (P2)
+- [ ] **Step K — CSV import from trackers → PLOS** — NOT built. Highest-conversion onboarding hook + the NIS↔PLOS bridge (buy tracker → import → populated app). Strong retention lever. **Owner:** `either` (P1)
+- [ ] **Step J — WhatsApp dispatch** — NOT built (only in-app + email). The headline Pro feature + core promise. Gating decided = Option B. **Owner:** `cursor/either` (P1)
+- [ ] **Step M — Razorpay billing** — NOT built (intentional; post-retention). Schema half-ready. See pricing doc checklist. **Owner:** `cursor/either` (P2 until retention)
+
 ### P1 — visible gaps
 
 - ~~**E-book product type**~~ → shipped 2026-06-02 in `ea14d17` (`feat/web-ebook-product-type` branch). New digital SKU that reuses the entire tracker commerce pipeline (Razorpay order/verify/cart + Supabase Storage + download token + Resend email) with zero API-route changes — ebooks resolve through the shared catalog. Adds `/ebooks` + `/ebooks/[slug]`, `ebook` kind + `epub` fileType, "E-books" nav link, sitemap entries, and a commented Supabase seed recipe. Ships with one **placeholder** "coming soon" ebook (`ai-freelancer-india`) so the page renders. **To go live:** Ishank confirms topic/copy → flip `active:true` in `lib/ebook-catalog.ts` → upload PDF to `products/ebooks/<slug>.pdf` → uncomment+run the seed in `schema.sql`.
