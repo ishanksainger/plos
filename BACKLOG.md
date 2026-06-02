@@ -129,6 +129,8 @@ Everything else from the older pick-list is itemized below.
 
 ### PLOS sell-readiness (assessed 2026-06-02 — see `docs/plos-pricing-tiers.md`)
 Core app works end-to-end in prod (live-tested: register/login/me/delete ✅). Pricing specced. Verdict: **ready to launch FREE after the quick wins below; NOT ready to charge until the retention engine + billing + real legal copy land** (and per plan, shouldn't charge pre-retention).
+
+> **[in progress · 2026-06-02 · claude]** — Ishank directed a "build it all now, ship dormant, flip at 100 users" push. Claude is building the full stack on branch `feat/plos-billing-readiness` (touches plos-backend — Cursor please don't pick up Step J/K/M while this is active). **Foundation shipped on branch:** `PlanService` + plan-limits + `BILLING_ENABLED` flag (dormant). Activation runbook in the pricing doc.
 - [ ] **Analytics (Plausible)** — "install before launch, not after". Self-host on VPS or Plausible cloud; NIS layout already has the env-gated script. Blind without it. **Owner:** `claude` (P1 for launch)
 - [ ] **Error monitoring (Sentry free tier)** — plan Sprint-0 item, never done; silent failures in prod. **Owner:** `claude/either` (P1)
 - [ ] **First-run onboarding nudge** — guided first action so a new user isn't dropped into an empty app (weak onboarding ⇒ −50% retention). **Owner:** `claude` (P1)
