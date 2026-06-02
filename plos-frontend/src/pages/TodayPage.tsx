@@ -22,6 +22,7 @@ import { TodayPulse, type PulseMarker } from '../components/plos/TodayPulse';
 import { LifeRingsBar } from '../components/plos/LifeRings';
 import { PlosMarquee } from '../components/plos/PlosMarquee';
 import { PlosStreakChain } from '../components/habits/PlosStreakChain';
+import OnboardingNudge from '../components/today/OnboardingNudge';
 
 const HABIT_COLORS = ['#7c3aed', '#3b82f6', '#10b981', '#ec4899', '#f59e0b', '#22d3ee'];
 
@@ -63,7 +64,7 @@ export default function TodayPage() {
   const [busyId, setBusyId] = useState<number | null>(null);
 
   // Pulled in parallel so the signature rhythm card + life rings have data
-  const { data: allResp = [] } = useQuery({
+  const { data: allResp = [], isLoading: respLoading } = useQuery({
     queryKey: ['responsibilities'],
     queryFn: () => responsibilityService.getAll(),
     staleTime: 15_000,
@@ -198,6 +199,10 @@ export default function TodayPage() {
     <div className="plos-page-enter">
       <CreateResponsibilityModal opened={createOpen} onClose={() => setCreateOpen(false)} />
       {headerBlock}
+
+      {!respLoading && allResp.length === 0 && (
+        <OnboardingNudge userId={user?.id} onAddResponsibility={() => setCreateOpen(true)} />
+      )}
 
       <PlosReveal>
         <TodayPulse markers={pulseMarkers} />
