@@ -35,7 +35,7 @@ At zero users today, **nothing is gated**. This spec is what the limits *become*
 | **Insights dashboard** | basic | full | full |
 | **People (contacts)** | up to **3** | unlimited | unlimited |
 | **Responsibilities** | up to **50** | unlimited | unlimited |
-| **Notifications** | in-app + email | **+ WhatsApp** | + WhatsApp |
+| **Notifications** | in-app + email + *critical-deadline* WhatsApp | **all WhatsApp** (digests, habit nudges, custom) | all WhatsApp |
 | **CSV / tracker import** | **1** import | unlimited | unlimited |
 | **Data export (JSON/CSV)** | ✓ *(stays free — see note)* | ✓ | ✓ |
 | **Shared logins** | 1 (just you) | 1 | up to **5** |
@@ -48,15 +48,14 @@ At zero users today, **nothing is gated**. This spec is what the limits *become*
 
 ---
 
-## ⚠️ One real decision for you (not mine to make)
+## WhatsApp gating — DECIDED (2026-06-02): Option B
 
-The plan puts **WhatsApp reminders entirely behind Pro**. But the review doc also says: *"If a freelancer misses a GST deadline because PLOS didn't WhatsApp them, you've broken the core promise."* Those slightly conflict.
+The plan put WhatsApp entirely behind Pro, but the review doc warns *"if a freelancer misses a GST deadline because PLOS didn't WhatsApp them, you've broken the core promise."* Resolved in favour of **B**:
 
-**Options:**
-- **A — Pro-only WhatsApp** (per the plan): cleanest monetization lever; risk is free users feel the core promise is paywalled.
-- **B — Free gets *critical-deadline* WhatsApp only** (e.g., bill/GST due in 24h), Pro gets *all* WhatsApp (habit nudges, daily digest, custom): keeps the promise intact for everyone, still reserves the bulk of WhatsApp value for Pro. **My lean: B.**
+- **Free** gets **critical-deadline WhatsApp only** — a bill/GST/responsibility due within ~24h. Keeps the core promise intact for everyone (the thing that makes PLOS trustworthy).
+- **Pro / Family** get **all WhatsApp** — daily digest, habit nudges, streak-at-risk pings, custom timing. The *volume + convenience* of WhatsApp is the paid lever, not the safety-net itself.
 
-Pick A or B before billing is built — it changes one guard.
+Implementation note for Step J/M: the WhatsApp dispatcher checks the user's plan; free users only receive messages tagged `critical` (due ≤24h), Pro/Family receive all categories.
 
 ---
 
