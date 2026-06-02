@@ -2,7 +2,7 @@
 
 **Single source of truth for what's not done yet.** Both Claude Code and Cursor read this file at the start of any session that involves picking up new work. Update it as items move.
 
-**Last updated:** 2026-05-28
+**Last updated:** 2026-06-03
 
 ---
 
@@ -129,14 +129,17 @@ Everything else from the older pick-list is itemized below.
 
 ### PLOS sell-readiness (assessed 2026-06-02 — see `docs/plos-pricing-tiers.md`)
 Core app works end-to-end in prod (live-tested: register/login/me/delete ✅). Pricing specced. Verdict: **ready to launch FREE after the quick wins below; NOT ready to charge until the retention engine + billing + real legal copy land** (and per plan, shouldn't charge pre-retention).
-- [ ] **Analytics (Plausible)** — "install before launch, not after". Self-host on VPS or Plausible cloud; NIS layout already has the env-gated script. Blind without it. **Owner:** `claude` (P1 for launch)
-- [ ] **Error monitoring (Sentry free tier)** — plan Sprint-0 item, never done; silent failures in prod. **Owner:** `claude/either` (P1)
-- [ ] **First-run onboarding nudge** — guided first action so a new user isn't dropped into an empty app (weak onboarding ⇒ −50% retention). **Owner:** `claude` (P1)
+
+**2026-06-03 update (claude, branch `feat/plos-billing-readiness`):** the build-now/activate-later push landed. Steps J + K + M are built and shipped *dormant* (everything reads `BILLING_ENABLED`, default off → no gating, no checkout). Onboarding shipped. Analytics + Sentry were found already scaffolded. Remaining sell-readiness work is now mostly human/legal + the activation runbook in the pricing doc.
+
+- [ ] **Analytics (Plausible on NIS)** — note: PLOS frontend *already* has env-gated **PostHog** analytics (`lib/analytics.ts`, fires `app_opened`/`today_view_loaded`) + **Sentry** (`lib/sentry.ts`) — both just need keys (`VITE_POSTHOG_KEY` / `VITE_SENTRY_DSN`). This item is now only the Plausible-on-NIS-marketing piece. **Owner:** `claude/human` (P1 for launch)
+- ✅ ~~**Error monitoring (Sentry free tier)**~~ → scaffold already present (`plos-frontend/src/lib/sentry.ts`, env-gated `VITE_SENTRY_DSN`, wired in `main.tsx`). Just set the DSN. **Owner:** `human` (set key)
+- ~~**First-run onboarding nudge**~~ → shipped 2026-06-03 in `a9e0b62` (dismissible welcome card on Today for users with zero responsibilities; 3 first actions — add responsibility / add person / import tracker; remembered per-user in localStorage, auto-hides once a responsibility exists).
 - [ ] **Real legal copy** — privacy/terms/refund are DPDP-shaped placeholders; needed before taking money (Razorpay compliance + Consumer Protection E-Comm Rules 2020). Need a subscription cancellation/refund policy w/ timelines. **Owner:** `human/lawyer` (claude can draft) (P1 for paid)
 - [ ] **support@thenispace.com** forwarding — a real support channel. **Owner:** `human` (P2)
-- [ ] **Step K — CSV import from trackers → PLOS** — NOT built. Highest-conversion onboarding hook + the NIS↔PLOS bridge (buy tracker → import → populated app). Strong retention lever. **Owner:** `either` (P1)
-- [ ] **Step J — WhatsApp dispatch** — NOT built (only in-app + email). The headline Pro feature + core promise. Gating decided = Option B. **Owner:** `cursor/either` (P1)
-- [ ] **Step M — Razorpay billing** — NOT built (intentional; post-retention). Schema half-ready. See pricing doc checklist. **Owner:** `cursor/either` (P2 until retention)
+- ~~**Step K — CSV import from trackers → PLOS**~~ → shipped 2026-06-03 in `3215014` (`POST /import/responsibilities` multipart CSV → validated, transactional bulk-create, `{created,skipped,errors[]}`; dependency-free parser + 16 unit tests; plan-gated on import-count (free=1, new `User.importsUsed` + migration) AND responsibility-count (free=50), both dormant; `GET …/template`; Settings → Plan import modal with result summary).
+- ~~**Step J — WhatsApp dispatch**~~ → shipped (dormant) in `f547f61` (provider-agnostic dispatcher, plan-gated via Option B: free = critical-deadline only, Pro/Family = all; log-only until a provider key is added, like MailerService).
+- [ ] **Step M — Razorpay billing** — readiness shipped dormant: backend `PlanService` + limit guards + `/billing/me`+`/subscribe` (`c21f330`, `8e761ff`), frontend pricing page + plan badge + limit modal (`5116664`). **Still pending for activation** (post-retention): create the 3 Razorpay **Subscriptions** plans, add the SDK subscriptions helper + HMAC webhook, then flip `BILLING_ENABLED=true` + run `grandfatherExistingUsers` per the runbook in `docs/plos-pricing-tiers.md`. **Owner:** `cursor/either` (P2 until retention)
 
 ### P1 — visible gaps
 
@@ -166,7 +169,7 @@ Core app works end-to-end in prod (live-tested: register/login/me/delete ✅). P
 - ~~**Per-day habit completion history endpoint**~~ → shipped 2026-05-25 in `48e4d0a` (BE service + controller + migration-friendly query; FE `useQueries` fan-out on `HabitsPage`; deterministic synth removed in favour of real per-day data). Claude handled both halves with explicit authority.
 - ~~**Notification preferences API**~~ → shipped 2026-05-25 in `e2b28cb` (Prisma model + lazy-create getOrCreate + PATCH partial update; Settings tab swaps the display-only chips for live `role="switch"` toggles with optimistic update + rollback). Claude handled both halves with explicit authority.
 - ~~**Data export endpoints**~~ → shipped 2026-05-25 in `f80f2e5` (`ExportService` builds full nested JSON or row-oriented CSV in one Prisma query; `GET /users/export?format=json|csv` JwtAuthGuard'd with `Content-Disposition: attachment`; Settings buttons live with toast feedback).
-- [ ] **Razorpay billing wiring** — `subscription.tier/status` exists in `MeResponse` but there's no payment flow. Need plan upgrade endpoint + Razorpay subscription create + webhook. **Owner:** `cursor`
+- [ ] **Razorpay billing wiring** — dormant readiness shipped (`PlanService` + guards + `/billing/me`+`/subscribe`; frontend pricing/limit modal — `c21f330`/`8e761ff`/`5116664`). Remaining = the actual Razorpay **Subscriptions** plans + SDK helper + HMAC webhook, activated via the runbook in `docs/plos-pricing-tiers.md`. Post-retention. **Owner:** `cursor/either`
 
 ### P1 — visible gaps
 
@@ -174,7 +177,7 @@ Core app works end-to-end in prod (live-tested: register/login/me/delete ✅). P
 - ~~**Responsibility detail page**~~ → shipped 2026-05-25 in `ed55d42` (`/responsibilities/:id` with category-tinted hero, at-a-glance card incl. `<Badge tone>`, notes, immutable timeline, Mark complete / Edit / Delete; row titles on `/responsibilities` link through).
 - [ ] **Search bar in topbar** [backend in progress · 2026-05-25e · claude] — frontend shipped 2026-05-25 in `27f7dd1`. Backend endpoint being shipped by claude with explicit authority. **Owner:** was `cursor`.
 - ~~**`⌘K` command palette**~~ → shipped 2026-05-25 in `d7a5da5` (empty input shows "Jump to" + "Create" actions, typed input fuzzy-matches + runs the search popover; "New responsibility" routes to `/responsibilities?new=1` which auto-opens the create modal).
-- [ ] **WhatsApp reminder pipeline** — Settings marks it "Coming soon"; need Twilio / Meta integration + opt-in flow. **Owner:** `cursor`
+- [ ] **WhatsApp reminder pipeline** — dispatcher shipped dormant (`f547f61`, provider-agnostic + plan-gated, Option B). Remaining = wire a real provider key (Twilio / Meta) + the opt-in flow surfacing, then it lights up. **Owner:** `cursor/either`
 - ~~**Streaks-at-risk reminder cron**~~ → shipped 2026-05-25 in `a79457c` (`SchedulerService.notifyStreaksAtRisk` runs hourly in prod, every 30 min in dev; gates on `streakAtRisk` user pref + post-noon check; idempotent per habit/day; uses existing `NotificationService.createInApp`).
 
 ### P2 — polish

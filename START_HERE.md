@@ -8,6 +8,20 @@
 >
 > **For AI coordination rules** → [`CLAUDE.md`](./CLAUDE.md) (Claude Code) or [`.cursorrules`](./.cursorrules) (Cursor) — both AIs share `plos-frontend/` now; `BACKLOG.md` is the lock queue
 
+## Session log — what shipped 2026-06-03 (PLOS billing readiness — branch `feat/plos-billing-readiness`)
+
+The "build it all now, ship it dormant, flip it on at ~100 users" push. Everything reads `BILLING_ENABLED` (default off) so nothing is gated and there's no checkout to break until you decide to charge — see the activation runbook in `docs/plos-pricing-tiers.md`.
+
+| Commit | What |
+|---|---|
+| `c21f330` / `8e761ff` | `feat(plos)` — **Billing backend (dormant).** `PlanService` (effective tier, limit guards wired into responsibility-/person-create), `/billing/me` + `/billing/subscribe` (returns the founding-member notice while off). |
+| `f547f61` | `feat(plos)` — **WhatsApp dispatch (dormant).** Provider-agnostic, plan-gated (Option B: free = critical-deadline only; Pro/Family = all). Log-only until a provider key lands. |
+| `5116664` | `feat(plos-frontend)` — **Billing UI (dormant).** `/pricing` page (Free/Pro/Family, monthly/annual, founding banner), `usePlan` hook, `ApiError` with structured codes, global **LimitReachedModal** (opens on any `PLAN_LIMIT_REACHED` 403 via the MutationCache), sidebar "Plans" nav + tier chip + upgrade CTA. |
+| `3215014` | `feat(plos)` — **Step K: tracker CSV import.** `POST /import/responsibilities` (multipart, validated, transactional bulk-create, `{created,skipped,errors[]}`), dependency-free parser + 16 tests, plan-gated (import-count + responsibility-count, dormant), `…/template` download, Settings → Plan import modal. The NIS↔PLOS bridge. |
+| `a9e0b62` | `feat(plos-frontend)` — **First-run onboarding nudge** on Today for users with zero responsibilities (3 first actions, dismissible/remembered, auto-hides). |
+
+**Also found already present this session:** PLOS frontend analytics (PostHog, `lib/analytics.ts`) + Sentry (`lib/sentry.ts`), both env-gated — they just need keys.
+
 ## Session log — what shipped 2026-05-25 (batches 5 + 6)
 
 | Commit | What |
@@ -139,7 +153,8 @@ npm run dev:web
 | `/responsibilities/:id` | Category-tinted module hero + at-a-glance card with state badge + notes + immutable timeline + mark-complete/edit/delete. |
 | `/timeline` | Module hero (twin-ribbon scene) + tl-day / tl-event grouping + All / You / System filter |
 | `/notifications` | Eyebrow + greeting-row + glass list with unread dots + Mark-all-read |
-| `/settings` | 4 tabs (Profile / Account / Notifications / Plan) + 220px label/input rows |
+| `/settings` | 4 tabs (Profile / Account / Notifications / Plan) + 220px label/input rows. Plan tab has Data export + **Import from a tracker CSV** (Step K). |
+| `/pricing` | Free/Pro/Family tier table, monthly/annual toggle. Dormant until billing flips on (shows founding-member banner). |
 | `/responsibilities` | Master list with state filter chips + category select + edit/delete |
 
 ### Shared design system (`plos-frontend/src/components/plos/`)
