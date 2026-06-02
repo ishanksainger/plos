@@ -124,7 +124,7 @@ Everything else from the older pick-list is itemized below.
 
 ### P1 — visible gaps
 
-- [in progress · 2026-06-02 · claude] **E-book product type** — new digital SKU type that reuses the existing tracker payment + delivery pipeline (Razorpay order/verify/cart + Supabase storage + download token + Resend email). Adds `/ebooks` + `/ebooks/[slug]` pages, an `ebook` kind in the catalog, and an "E-books" nav link. Ships with one "coming soon" placeholder so the page renders; flips live the moment Ishank writes the first PDF. **Owner:** `claude`
+- ~~**E-book product type**~~ → shipped 2026-06-02 in `ea14d17` (`feat/web-ebook-product-type` branch). New digital SKU that reuses the entire tracker commerce pipeline (Razorpay order/verify/cart + Supabase Storage + download token + Resend email) with zero API-route changes — ebooks resolve through the shared catalog. Adds `/ebooks` + `/ebooks/[slug]`, `ebook` kind + `epub` fileType, "E-books" nav link, sitemap entries, and a commented Supabase seed recipe. Ships with one **placeholder** "coming soon" ebook (`ai-freelancer-india`) so the page renders. **To go live:** Ishank confirms topic/copy → flip `active:true` in `lib/ebook-catalog.ts` → upload PDF to `products/ebooks/<slug>.pdf` → uncomment+run the seed in `schema.sql`.
 - [ ] **Spline 3D embed** for the home hero — currently a CSS conic-gradient placeholder (`HeroOrb` in `components/nis/HeroOrb.tsx`). **Owner:** `human` (Nikita produces) + `claude` (wires)
 - [ ] **Canvas page imagery** — six scene tiles are CSS gradient placeholders. **Owner:** `human` (Nikita)
 - [ ] **Shop merch imagery + real SKUs** in `lib/nis-data.ts`. **Owner:** `human` (Nikita)
