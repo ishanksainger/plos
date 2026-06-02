@@ -124,6 +124,7 @@ Everything else from the older pick-list is itemized below.
 
 ### P1 — visible gaps
 
+- [in progress · 2026-06-02 · claude] **E-book product type** — new digital SKU type that reuses the existing tracker payment + delivery pipeline (Razorpay order/verify/cart + Supabase storage + download token + Resend email). Adds `/ebooks` + `/ebooks/[slug]` pages, an `ebook` kind in the catalog, and an "E-books" nav link. Ships with one "coming soon" placeholder so the page renders; flips live the moment Ishank writes the first PDF. **Owner:** `claude`
 - [ ] **Spline 3D embed** for the home hero — currently a CSS conic-gradient placeholder (`HeroOrb` in `components/nis/HeroOrb.tsx`). **Owner:** `human` (Nikita produces) + `claude` (wires)
 - [ ] **Canvas page imagery** — six scene tiles are CSS gradient placeholders. **Owner:** `human` (Nikita)
 - [ ] **Shop merch imagery + real SKUs** in `lib/nis-data.ts`. **Owner:** `human` (Nikita)
