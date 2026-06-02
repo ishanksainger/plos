@@ -52,6 +52,11 @@ services:
       NODE_ENV: production
       PORT: 3001
       PLOS_APP_URL: https://app.thenispace.com
+      # Transactional email (password reset + email verification). Shares the
+      # verified `thenispace.com` Resend domain + API key with nis-web (key is
+      # in /docker/nis-web/.env). From-name is "PLOS" to distinguish from NIS.
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      RESEND_FROM_EMAIL: "PLOS <notifications@thenispace.com>"
     volumes:
       - plos_uploads:/app/uploads
     networks:
