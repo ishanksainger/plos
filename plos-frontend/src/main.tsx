@@ -3,9 +3,11 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { MantineProvider, createTheme } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, MutationCache } from '@tanstack/react-query';
 import { Provider } from 'react-redux';
 import { useAppSelector } from './store/hooks';
+import { isPlanLimitError } from './services/api.ts';
+import { openLimitModal } from './lib/limit-modal.ts';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import '@nis/ui/ui.css';
@@ -25,6 +27,19 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: { retry: 1, refetchOnWindowFocus: false },
   },
+  // Any mutation that trips the free-plan ceiling opens the upgrade modal.
+  // Dormant-safe: the backend only throws PLAN_LIMIT_REACHED once billing is on.
+  mutationCache: new MutationCache({
+    onError: (error) => {
+      if (!isPlanLimitError(error)) return;
+      const body = error.body ?? {};
+      openLimitModal({
+        resource: typeof body.resource === 'string' ? body.resource : undefined,
+        limit: typeof body.limit === 'number' ? body.limit : undefined,
+        message: error.message,
+      });
+    },
+  }),
 });
 
 void initSentry();

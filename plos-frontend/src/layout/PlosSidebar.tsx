@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { logout } from '../store/authSlice';
+import { usePlan } from '../hooks/usePlan';
 
 /* Icons inlined to match the prototype's stroke / sizing exactly. */
 const Icon = {
@@ -61,6 +62,20 @@ const Icon = {
       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
     </svg>
   ),
+  plans: (
+    <svg className="plos-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2 3 7v6c0 5 3.8 8.5 9 9 5.2-.5 9-4 9-9V7l-9-5Z" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  ),
+};
+
+/** Short label for the current tier, shown as a chip by the brand. */
+const TIER_BADGE: Record<string, { label: string; tone: string } | null> = {
+  free: null,
+  pro: { label: 'Pro', tone: 'var(--brand, #7c4fff)' },
+  family: { label: 'Family', tone: 'var(--brand, #7c4fff)' },
+  founding: { label: 'Founding', tone: '#b8860b' },
 };
 
 const DAILY = [
@@ -115,6 +130,8 @@ export default function PlosSidebar({
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
   const user = useAppSelector((s) => s.auth.user);
+  const { tier, isFreeTier } = usePlan();
+  const tierBadge = TIER_BADGE[tier] ?? null;
 
   const isActive = (to: string, exact: boolean) =>
     exact ? pathname === to : pathname === to || pathname.startsWith(to + '/');
@@ -138,6 +155,24 @@ export default function PlosSidebar({
           <span className="name">PLOS</span>
           <span className="who">Personal Life OS</span>
         </div>
+        {tierBadge && (
+          <span
+            title={`${tierBadge.label} plan`}
+            style={{
+              marginLeft: 'auto',
+              fontSize: 10,
+              fontWeight: 800,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              color: tierBadge.tone,
+              border: `1px solid ${tierBadge.tone}55`,
+              borderRadius: 999,
+              padding: '2px 8px',
+            }}
+          >
+            {tierBadge.label}
+          </span>
+        )}
       </div>
 
       <div className="plos-section-label">Daily</div>
@@ -164,12 +199,42 @@ export default function PlosSidebar({
         onNavigate={onNavigate}
       />
       <NavRow
+        to="/pricing"
+        label="Plans"
+        icon={Icon.plans}
+        active={isActive('/pricing', false)}
+        onNavigate={onNavigate}
+      />
+      <NavRow
         to="/settings"
         label="Settings"
         icon={Icon.settings}
         active={isActive('/settings', false)}
         onNavigate={onNavigate}
       />
+
+      {isFreeTier && (
+        <Link
+          to="/pricing"
+          onClick={onNavigate}
+          style={{
+            display: 'block',
+            margin: '12px 4px 0',
+            padding: '12px 14px',
+            borderRadius: 14,
+            background: 'linear-gradient(135deg, rgba(124,79,255,0.14), rgba(124,79,255,0.05))',
+            border: '1px solid rgba(124,79,255,0.28)',
+            textDecoration: 'none',
+          }}
+        >
+          <div style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--brand, #7c4fff)' }}>
+            Upgrade to Pro
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--plos-ink-3)', marginTop: 2 }}>
+            Unlimited everything + WhatsApp
+          </div>
+        </Link>
+      )}
 
       <div className="plos-user-card">
         <div className="plos-avatar">{initial}</div>

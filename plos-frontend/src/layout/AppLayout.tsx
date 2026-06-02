@@ -9,6 +9,7 @@ import ErrorBoundary from '../components/ErrorBoundary';
 import { requestDashboardNewResponsibility } from '../utils/dashboard-create-bridge';
 import { usePlosMouseMesh } from '../components/plos/usePlosMouseMesh';
 import { PlosInstallPrompt } from '../components/plos/PlosInstallPrompt';
+import LimitReachedModal from '../components/billing/LimitReachedModal';
 import { useAppSelector } from '../store/hooks';
 
 /**
@@ -78,6 +79,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         </ErrorBoundary>
       </main>
       <PlosInstallPrompt />
+      <LimitReachedModal />
     </div>
   );
 };

@@ -18,6 +18,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
 import SettingsPage from './pages/SettingsPage';
 import NotificationsPage from './pages/NotificationsPage';
+import PricingPage from './pages/PricingPage';
 
 export default function App() {
   return (
@@ -44,6 +45,7 @@ export default function App() {
                 <Route path="/habits"           element={<HabitsPage />} />
                 <Route path="/timeline"         element={<TimelinePage />} />
                 <Route path="/notifications"   element={<NotificationsPage />} />
+                <Route path="/pricing"          element={<PricingPage />} />
                 <Route path="/settings"         element={<SettingsPage />} />
                 <Route path="*"                 element={<Navigate to="/" replace />} />
               </Routes>

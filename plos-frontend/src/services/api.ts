@@ -2,6 +2,43 @@ import { logout } from '../store/authSlice';
 import { store } from '../store/store';
 
 /**
+ * Error thrown by every API call. Extends Error (so existing `.message`
+ * consumers keep working) but also carries the HTTP `status` and the parsed
+ * response `body`, so callers can branch on structured codes — e.g. the
+ * `PLAN_LIMIT_REACHED` 403 that opens the upgrade modal.
+ */
+export class ApiError extends Error {
+  status: number;
+  /** Machine-readable code from the backend body, when present. */
+  code?: string;
+  /** The parsed JSON response body, when the server returned one. */
+  body?: Record<string, unknown>;
+
+  constructor(message: string, status: number, body?: Record<string, unknown>) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.body = body;
+    if (body && typeof body.code === 'string') this.code = body.code;
+  }
+}
+
+/** Narrow an unknown error to the plan-limit 403 the upgrade modal listens for. */
+export function isPlanLimitError(err: unknown): err is ApiError {
+  return err instanceof ApiError && err.code === 'PLAN_LIMIT_REACHED';
+}
+
+/** Pull a human message out of a parsed error body, falling back to `fallback`. */
+function messageFromBody(body: unknown, fallback: string): string {
+  if (body && typeof body === 'object') {
+    const m = (body as { message?: unknown }).message;
+    if (Array.isArray(m)) return m.join(', ');
+    if (typeof m === 'string') return m;
+  }
+  return fallback;
+}
+
+/**
  * API origin: `VITE_API_BASE_URL` if set; otherwise in dev use same-origin `/api` (Vite proxy);
  * for production builds opened on localhost/`127.*` (including `vite preview`), also use `/api`
  * when `preview.proxy` is configured so local testing works without rebuild.
@@ -51,14 +88,11 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   });
 
   if (!res.ok) {
+    let body: Record<string, unknown> | undefined;
     let message = `Request failed (${res.status})`;
     try {
-      const err = await res.json();
-      if (Array.isArray(err.message)) {
-        message = err.message.join(', ');
-      } else if (typeof err.message === 'string') {
-        message = err.message;
-      }
+      body = (await res.json()) as Record<string, unknown>;
+      message = messageFromBody(body, message);
     } catch {
       message = res.statusText || message;
     }
@@ -78,7 +112,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
       }
     }
 
-    throw new Error(message);
+    throw new ApiError(message, res.status, body);
   }
 
   const contentType = res.headers.get('content-type');
@@ -101,15 +135,15 @@ async function uploadRequest<T>(path: string, formData: FormData): Promise<T> {
     },
   });
   if (!res.ok) {
+    let body: Record<string, unknown> | undefined;
     let message = `Upload failed (${res.status})`;
     try {
-      const err = await res.json();
-      if (Array.isArray(err.message)) message = err.message.join(', ');
-      else if (typeof err.message === 'string') message = err.message;
+      body = (await res.json()) as Record<string, unknown>;
+      message = messageFromBody(body, message);
     } catch {
       message = res.statusText || message;
     }
-    throw new Error(message);
+    throw new ApiError(message, res.status, body);
   }
   return res.json() as Promise<T>;
 }
