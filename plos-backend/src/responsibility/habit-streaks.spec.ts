@@ -9,7 +9,9 @@ describe('habit streaks', () => {
   it('returns 0 when last activity was before yesterday', () => {
     const today = new Date(2026, 4, 11);
     today.setHours(0, 0, 0, 0);
-    expect(computeStreakFromCompletionDays(new Set(['2026-05-08']), today)).toBe(0);
+    expect(
+      computeStreakFromCompletionDays(new Set(['2026-05-08']), today),
+    ).toBe(0);
   });
 
   it('counts consecutive days from today when today is included', () => {

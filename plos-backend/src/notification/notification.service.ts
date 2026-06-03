@@ -4,7 +4,8 @@ import { ResponsibilityState } from 'src/responsibility/responsibility.state';
 import { WhatsappService } from './whatsapp.service';
 
 /** Template name for the due/overdue reminder (override via env to match your BSP). */
-const WA_TEMPLATE_DUE = process.env.WHATSAPP_TEMPLATE_DUE ?? 'plos_due_reminder';
+const WA_TEMPLATE_DUE =
+  process.env.WHATSAPP_TEMPLATE_DUE ?? 'plos_due_reminder';
 
 /** Delivered to the in-app feed immediately (no external queue in MVP). */
 export const NOTIFICATION_CHANNEL_IN_APP = 'in_app';
@@ -63,10 +64,14 @@ export class NotificationService {
     toState: ResponsibilityState;
   }) {
     const { toState } = params;
-    if (toState !== ResponsibilityState.DUE && toState !== ResponsibilityState.OVERDUE) {
+    if (
+      toState !== ResponsibilityState.DUE &&
+      toState !== ResponsibilityState.OVERDUE
+    ) {
       return null;
     }
-    const title = toState === ResponsibilityState.OVERDUE ? 'Task overdue' : 'Due today';
+    const title =
+      toState === ResponsibilityState.OVERDUE ? 'Task overdue' : 'Due today';
     const message =
       toState === ResponsibilityState.OVERDUE
         ? `"${params.taskTitle}" is now overdue.`
@@ -120,7 +125,10 @@ export class NotificationService {
   /**
    * Newest first in-app feed for the user.
    */
-  async listForUser(userId: number, limit = 50): Promise<NotificationListItem[]> {
+  async listForUser(
+    userId: number,
+    limit = 50,
+  ): Promise<NotificationListItem[]> {
     const rows = await this.prisma.notification.findMany({
       where: { userId, channel: NOTIFICATION_CHANNEL_IN_APP },
       orderBy: { createdAt: 'desc' },

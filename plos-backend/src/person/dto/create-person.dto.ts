@@ -25,7 +25,9 @@ export class CreatePersonDto {
 
   @IsOptional()
   @IsString()
-  @Matches(PHONE_PATTERN, { message: 'phone must be 8–20 digits (optional + prefix)' })
+  @Matches(PHONE_PATTERN, {
+    message: 'phone must be 8–20 digits (optional + prefix)',
+  })
   phone?: string;
 
   @IsIn(['self', 'father', 'mother', 'partner', 'child', 'sibling', 'other'])

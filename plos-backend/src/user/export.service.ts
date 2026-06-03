@@ -28,7 +28,12 @@ export class ExportService {
             person: { select: { id: true, name: true, relation: true } },
             events: {
               orderBy: { occurredAt: 'asc' },
-              select: { fromState: true, toState: true, note: true, occurredAt: true },
+              select: {
+                fromState: true,
+                toState: true,
+                note: true,
+                occurredAt: true,
+              },
             },
           },
           orderBy: { dueDate: 'asc' },
@@ -58,7 +63,10 @@ export class ExportService {
       String(today.getDate()).padStart(2, '0'),
     ];
     const stamp = stampParts.join('-');
-    const slug = user.email.split('@')[0].replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    const slug = user.email
+      .split('@')[0]
+      .replace(/[^a-z0-9]/gi, '-')
+      .toLowerCase();
 
     if (format === 'csv') {
       return {

@@ -59,7 +59,10 @@ export class AuthController {
   @Throttle({ long: { ttl: 60_000, limit: 10 } })
   @Post('reset-password')
   resetPassword(@Body() dto: ResetPasswordDto) {
-    return this.authService.resetPassword(dto?.token ?? '', dto?.password ?? '');
+    return this.authService.resetPassword(
+      dto?.token ?? '',
+      dto?.password ?? '',
+    );
   }
 
   /** Re-send the verification email for the currently logged-in user. */

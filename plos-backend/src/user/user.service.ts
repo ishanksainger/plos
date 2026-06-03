@@ -31,7 +31,13 @@ export class UserService {
       this.getActivityCompletionSeries(userId, ACTIVITY_SERIES_DAYS),
     ]);
 
-    const summary = { total: responsibilities.length, completed: 0, due: 0, overdue: 0, upcoming: 0 };
+    const summary = {
+      total: responsibilities.length,
+      completed: 0,
+      due: 0,
+      overdue: 0,
+      upcoming: 0,
+    };
     const overdue: typeof responsibilities = [];
     const dueToday: typeof responsibilities = [];
     const upcoming: typeof responsibilities = [];
@@ -40,7 +46,10 @@ export class UserService {
     // Category breakdown
     const categoryCount: Record<string, number> = {};
     // Person load
-    const personLoad: Record<number, { name: string; relation: string; count: number }> = {};
+    const personLoad: Record<
+      number,
+      { name: string; relation: string; count: number }
+    > = {};
     // Financial pressure: monthly totals for next 6 months
     const financialPressure: Record<string, number> = {};
 
@@ -59,19 +68,19 @@ export class UserService {
       switch (state) {
         case ResponsibilityState.COMPLETED:
           summary.completed++;
-          recentlyCompleted.push(withState as typeof withState);
+          recentlyCompleted.push(withState);
           break;
         case ResponsibilityState.DUE:
           summary.due++;
-          dueToday.push(withState as typeof withState);
+          dueToday.push(withState);
           break;
         case ResponsibilityState.OVERDUE:
           summary.overdue++;
-          overdue.push(withState as typeof withState);
+          overdue.push(withState);
           break;
         case ResponsibilityState.UPCOMING:
           summary.upcoming++;
-          upcoming.push(withState as typeof withState);
+          upcoming.push(withState);
           break;
       }
 
@@ -81,7 +90,11 @@ export class UserService {
       // Person load
       if (r.personId && r.person) {
         if (!personLoad[r.personId]) {
-          personLoad[r.personId] = { name: r.person.name, relation: r.person.relation, count: 0 };
+          personLoad[r.personId] = {
+            name: r.person.name,
+            relation: r.person.relation,
+            count: 0,
+          };
         }
         personLoad[r.personId].count++;
       }
@@ -95,9 +108,10 @@ export class UserService {
       }
     }
 
-    const completionRate = summary.total > 0
-      ? Math.round((summary.completed / summary.total) * 100)
-      : 0;
+    const completionRate =
+      summary.total > 0
+        ? Math.round((summary.completed / summary.total) * 100)
+        : 0;
 
     return {
       summary: { ...summary, completionRate },
@@ -105,11 +119,19 @@ export class UserService {
       dueToday,
       upcoming: upcoming.slice(0, 20),
       recentlyCompleted: recentlyCompleted
-        .sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime())
+        .sort(
+          (a, b) =>
+            new Date(b.completedAt!).getTime() -
+            new Date(a.completedAt!).getTime(),
+        )
         .slice(0, 5),
-      categoryBreakdown: Object.entries(categoryCount).map(([category, count]) => ({ category, count })),
+      categoryBreakdown: Object.entries(categoryCount).map(
+        ([category, count]) => ({ category, count }),
+      ),
       personLoad: Object.values(personLoad),
-      financialPressure: Object.entries(financialPressure).map(([month, total]) => ({ month, total })),
+      financialPressure: Object.entries(financialPressure).map(
+        ([month, total]) => ({ month, total }),
+      ),
       persons,
       activitySeries,
     };

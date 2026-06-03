@@ -168,12 +168,14 @@ export class SchedulerService {
             todayState,
           );
           if (created) {
-            await this.notificationService.notifyResponsibilityScheduleTransition({
-              userId: r.userId,
-              responsibilityId: r.id,
-              taskTitle: r.title,
-              toState: todayState as ResponsibilityState,
-            });
+            await this.notificationService.notifyResponsibilityScheduleTransition(
+              {
+                userId: r.userId,
+                responsibilityId: r.id,
+                taskTitle: r.title,
+                toState: todayState,
+              },
+            );
           }
         }
       }

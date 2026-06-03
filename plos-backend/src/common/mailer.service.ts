@@ -17,11 +17,18 @@ export class MailerService {
   constructor() {
     const apiKey = process.env.RESEND_API_KEY;
     this.resend = apiKey ? new Resend(apiKey) : null;
-    this.from = process.env.RESEND_FROM_EMAIL ?? 'PLOS <notifications@thenispace.com>';
-    this.siteUrl = (process.env.PLOS_APP_URL ?? 'http://localhost:5173').replace(/\/+$/, '');
+    this.from =
+      process.env.RESEND_FROM_EMAIL ?? 'PLOS <notifications@thenispace.com>';
+    this.siteUrl = (
+      process.env.PLOS_APP_URL ?? 'http://localhost:5173'
+    ).replace(/\/+$/, '');
   }
 
-  async sendPasswordReset(opts: { to: string; token: string; name?: string | null }) {
+  async sendPasswordReset(opts: {
+    to: string;
+    token: string;
+    name?: string | null;
+  }) {
     const resetUrl = `${this.siteUrl}/reset-password?token=${encodeURIComponent(opts.token)}`;
     const subject = 'Reset your PLOS password';
     const html = passwordResetHtml({ resetUrl, name: opts.name ?? null });
@@ -34,13 +41,22 @@ export class MailerService {
     }
 
     try {
-      await this.resend.emails.send({ from: this.from, to: opts.to, subject, html });
+      await this.resend.emails.send({
+        from: this.from,
+        to: opts.to,
+        subject,
+        html,
+      });
     } catch (err) {
       this.logger.error('Failed to send password reset email', err);
     }
   }
 
-  async sendEmailVerification(opts: { to: string; token: string; name?: string | null }) {
+  async sendEmailVerification(opts: {
+    to: string;
+    token: string;
+    name?: string | null;
+  }) {
     const verifyUrl = `${this.siteUrl}/verify-email?token=${encodeURIComponent(opts.token)}`;
     const subject = 'Verify your PLOS email';
     const html = verifyEmailHtml({ verifyUrl, name: opts.name ?? null });
@@ -53,14 +69,25 @@ export class MailerService {
     }
 
     try {
-      await this.resend.emails.send({ from: this.from, to: opts.to, subject, html });
+      await this.resend.emails.send({
+        from: this.from,
+        to: opts.to,
+        subject,
+        html,
+      });
     } catch (err) {
       this.logger.error('Failed to send verification email', err);
     }
   }
 }
 
-function passwordResetHtml({ resetUrl, name }: { resetUrl: string; name: string | null }): string {
+function passwordResetHtml({
+  resetUrl,
+  name,
+}: {
+  resetUrl: string;
+  name: string | null;
+}): string {
   const greeting = name ? `Hi ${escapeHtml(name)},` : 'Hi,';
   return `
     <div style="font-family:-apple-system,system-ui,sans-serif;max-width:540px;margin:0 auto;padding:32px 24px;color:#0a0a0a;">
@@ -82,7 +109,13 @@ function passwordResetHtml({ resetUrl, name }: { resetUrl: string; name: string 
   `;
 }
 
-function verifyEmailHtml({ verifyUrl, name }: { verifyUrl: string; name: string | null }): string {
+function verifyEmailHtml({
+  verifyUrl,
+  name,
+}: {
+  verifyUrl: string;
+  name: string | null;
+}): string {
   const greeting = name ? `Hi ${escapeHtml(name)},` : 'Welcome,';
   return `
     <div style="font-family:-apple-system,system-ui,sans-serif;max-width:540px;margin:0 auto;padding:32px 24px;color:#0a0a0a;">

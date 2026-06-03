@@ -27,7 +27,8 @@ export class BillingService {
     };
   }
 
-  async subscribe(userId: number, _dto: SubscribeDto) {
+  // eslint-disable-next-line @typescript-eslint/require-await -- async signature kept for the activation path (Razorpay calls land here)
+  async subscribe(_userId: number, _dto: SubscribeDto) {
     if (!isBillingEnabled()) {
       return {
         enabled: false,

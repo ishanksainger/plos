@@ -39,9 +39,9 @@ import { ImportModule } from './import/import.module';
     // Per-IP rate limiting (default guard). Auth endpoints tighten further
     // via @Throttle() overrides on the controller methods.
     ThrottlerModule.forRoot([
-      { name: 'short',  ttl: 1_000,  limit: 10 },  //  10 / 1s   — burst
-      { name: 'medium', ttl: 10_000, limit: 30 },  //  30 / 10s  — steady
-      { name: 'long',   ttl: 60_000, limit: 120 }, // 120 / 60s  — ceiling
+      { name: 'short', ttl: 1_000, limit: 10 }, //  10 / 1s   — burst
+      { name: 'medium', ttl: 10_000, limit: 30 }, //  30 / 10s  — steady
+      { name: 'long', ttl: 60_000, limit: 120 }, // 120 / 60s  — ceiling
     ]),
     PrismaModule,
     PlanModule,
@@ -57,9 +57,6 @@ import { ImportModule } from './import/import.module';
     ImportModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    { provide: APP_GUARD, useClass: ThrottlerGuard },
-  ],
+  providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

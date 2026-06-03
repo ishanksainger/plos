@@ -10,11 +10,11 @@ import * as bcrypt from 'bcrypt';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterDto, LoginDto, UpdateProfileDto } from './dto/auth.dto';
-import { normalizeAccountType, type AccountType } from './account-type';
+import { normalizeAccountType } from './account-type';
 import { normalizeOptionalPhone } from 'src/common/phone.util';
 import { MailerService } from 'src/common/mailer.service';
 
-const PASSWORD_RESET_TTL_MS = 30 * 60 * 1000;        // 30 min
+const PASSWORD_RESET_TTL_MS = 30 * 60 * 1000; // 30 min
 const EMAIL_VERIFY_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -173,7 +173,11 @@ export class AuthService {
       },
     });
 
-    await this.mailer.sendPasswordReset({ to: user.email, token, name: user.name });
+    await this.mailer.sendPasswordReset({
+      to: user.email,
+      token,
+      name: user.name,
+    });
   }
 
   /**
@@ -241,7 +245,11 @@ export class AuthService {
       },
     });
 
-    await this.mailer.sendEmailVerification({ to: user.email, token, name: user.name });
+    await this.mailer.sendEmailVerification({
+      to: user.email,
+      token,
+      name: user.name,
+    });
   }
 
   /** Consumes a verification token and stamps User.emailVerifiedAt. */
@@ -326,7 +334,7 @@ export class AuthService {
       name: user.name,
       timezone: user.timezone,
       currency: user.currency,
-      accountType: normalizeAccountType(user.accountType) as AccountType,
+      accountType: normalizeAccountType(user.accountType),
       phone: user.phone ?? null,
     };
   }

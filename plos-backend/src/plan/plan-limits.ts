@@ -29,11 +29,31 @@ export type PlanLimits = {
 export const UNLIMITED = null;
 
 export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
-  free: { maxPeople: 3, maxResponsibilities: 50, maxImports: 1, whatsapp: 'critical' },
-  pro: { maxPeople: UNLIMITED, maxResponsibilities: UNLIMITED, maxImports: UNLIMITED, whatsapp: 'all' },
-  family: { maxPeople: UNLIMITED, maxResponsibilities: UNLIMITED, maxImports: UNLIMITED, whatsapp: 'all' },
+  free: {
+    maxPeople: 3,
+    maxResponsibilities: 50,
+    maxImports: 1,
+    whatsapp: 'critical',
+  },
+  pro: {
+    maxPeople: UNLIMITED,
+    maxResponsibilities: UNLIMITED,
+    maxImports: UNLIMITED,
+    whatsapp: 'all',
+  },
+  family: {
+    maxPeople: UNLIMITED,
+    maxResponsibilities: UNLIMITED,
+    maxImports: UNLIMITED,
+    whatsapp: 'all',
+  },
   // Founding = early users, kept on Pro-equivalent access for free, forever.
-  founding: { maxPeople: UNLIMITED, maxResponsibilities: UNLIMITED, maxImports: UNLIMITED, whatsapp: 'all' },
+  founding: {
+    maxPeople: UNLIMITED,
+    maxResponsibilities: UNLIMITED,
+    maxImports: UNLIMITED,
+    whatsapp: 'all',
+  },
 };
 
 /** Pricing in paise. Annual ≈ 20% off. Mirrors docs/plos-pricing-tiers.md. */

@@ -2,10 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ResponsibilityState } from 'src/responsibility/responsibility.state';
 import { computeState } from 'src/responsibility/compute-state';
-import { computeStreakFromCompletionDays, localDayKey } from 'src/responsibility/habit-streaks';
+import {
+  computeStreakFromCompletionDays,
+  localDayKey,
+} from 'src/responsibility/habit-streaks';
 import { RECURRING_COMPLETION_NOTE_PREFIX } from 'src/event/activity-completion';
 import { EventService } from 'src/event/event.service';
-import { addDaysToDayKey, dayKeyInTimezone, resolveTimezone } from 'src/common/timezone';
+import {
+  addDaysToDayKey,
+  dayKeyInTimezone,
+  resolveTimezone,
+} from 'src/common/timezone';
 
 const BUCKET_CAP = 50;
 
@@ -70,7 +77,10 @@ export class TodayService {
       };
 
       if (r.completedAt) {
-        const completedKey = dayKeyInTimezone(timeZone, new Date(r.completedAt));
+        const completedKey = dayKeyInTimezone(
+          timeZone,
+          new Date(r.completedAt),
+        );
         if (completedKey === todayKey) {
           completedToday.push(row);
         }
@@ -109,7 +119,7 @@ export class TodayService {
   /**
    * Habits with an active streak but no completion logged today (calendar day, server-local for streak set).
    */
-  private async getStreaksAtRisk(userId: number, todayKey: string) {
+  private async getStreaksAtRisk(userId: number, _todayKey: string) {
     const habits = await this.prisma.responsibility.findMany({
       where: { userId, category: 'habit', completedAt: null },
       select: { id: true, title: true, recurrence: true },
@@ -133,7 +143,10 @@ export class TodayService {
     todayStart.setHours(0, 0, 0, 0);
     const serverTodayKey = localDayKey(todayStart);
 
-    const byResp = new Map<number, { days: Set<string>; lastAt: Date | null }>();
+    const byResp = new Map<
+      number,
+      { days: Set<string>; lastAt: Date | null }
+    >();
     for (const e of events) {
       let entry = byResp.get(e.responsibilityId);
       if (!entry) {

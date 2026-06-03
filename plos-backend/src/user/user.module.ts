@@ -9,7 +9,12 @@ import { EventModule } from 'src/event/event.module';
 
 @Module({
   imports: [AuthModule, EventModule],
-  providers: [UserService, TodayService, NotificationPrefsService, ExportService],
+  providers: [
+    UserService,
+    TodayService,
+    NotificationPrefsService,
+    ExportService,
+  ],
   controllers: [UserController],
   exports: [UserService, NotificationPrefsService],
 })

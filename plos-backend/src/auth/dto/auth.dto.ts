@@ -76,6 +76,8 @@ export class UpdateProfileDto {
   /** Optional — for WhatsApp / SMS reminders (Step J). */
   @IsOptional()
   @IsString()
-  @Matches(PHONE_PATTERN, { message: 'phone must be 8–20 digits (optional + prefix)' })
+  @Matches(PHONE_PATTERN, {
+    message: 'phone must be 8–20 digits (optional + prefix)',
+  })
   phone?: string;
 }

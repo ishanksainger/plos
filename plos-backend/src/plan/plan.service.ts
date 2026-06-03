@@ -24,7 +24,9 @@ export class PlanService {
    */
   async effectiveTier(userId: number): Promise<PlanTier> {
     if (!isBillingEnabled()) return 'founding';
-    const sub = await this.prisma.subscription.findUnique({ where: { userId } });
+    const sub = await this.prisma.subscription.findUnique({
+      where: { userId },
+    });
     return (sub?.tier as PlanTier) ?? 'free';
   }
 

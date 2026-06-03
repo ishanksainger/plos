@@ -29,7 +29,11 @@ export class ResponsibilityService {
     const count = await this.prisma.responsibility.count({
       where: { userId: dto.userId as number },
     });
-    await this.plan.assertCanCreate(dto.userId as number, 'responsibilities', count);
+    await this.plan.assertCanCreate(
+      dto.userId as number,
+      'responsibilities',
+      count,
+    );
 
     return this.prisma.responsibility.create({
       data: {
@@ -37,7 +41,7 @@ export class ResponsibilityService {
         category: dto.category,
         module: dto.module,
         dueDate: new Date(dto.dueDate),
-        userId: dto.userId as number,   // always set by controller from JWT
+        userId: dto.userId as number, // always set by controller from JWT
         personId: dto.personId,
         amount: dto.amount,
         recurrence: dto.recurrence ?? 'none',
@@ -56,15 +60,20 @@ export class ResponsibilityService {
     const responsibility = await this.prisma.responsibility.findFirst({
       where: { id, userId },
     });
-    if (!responsibility) throw new NotFoundException('Responsibility not found');
+    if (!responsibility)
+      throw new NotFoundException('Responsibility not found');
 
-    const fromState = computeState(responsibility.dueDate, responsibility.completedAt);
+    const fromState = computeState(
+      responsibility.dueDate,
+      responsibility.completedAt,
+    );
     if (fromState === ResponsibilityState.COMPLETED) {
       const existingDone = await this.prisma.responsibility.findFirst({
         where: { id, userId },
         include: { person: true },
       });
-      if (!existingDone) throw new NotFoundException('Responsibility not found');
+      if (!existingDone)
+        throw new NotFoundException('Responsibility not found');
       return { ...existingDone, state: ResponsibilityState.COMPLETED };
     }
 
@@ -72,7 +81,10 @@ export class ResponsibilityService {
     const isRecurring = recurrence !== 'none';
 
     if (isRecurring) {
-      const nextDue = computeNextDueDate(new Date(responsibility.dueDate), recurrence);
+      const nextDue = computeNextDueDate(
+        new Date(responsibility.dueDate),
+        recurrence,
+      );
       const updated = await this.prisma.responsibility.update({
         where: { id },
         data: {
@@ -83,7 +95,10 @@ export class ResponsibilityService {
       });
       const toState = computeState(nextDue, null);
       const note = `${RECURRING_COMPLETION_NOTE_PREFIX} — next due ${nextDue.toISOString().slice(0, 10)}`;
-      await this.eventService.recordStateTransition(id, fromState, toState, { force: true, note });
+      await this.eventService.recordStateTransition(id, fromState, toState, {
+        force: true,
+        note,
+      });
       await this.notificationService.notifyTaskCompleted({
         userId,
         responsibilityId: id,
@@ -100,7 +115,11 @@ export class ResponsibilityService {
       include: { person: true },
     });
 
-    await this.eventService.recordStateTransition(id, fromState, ResponsibilityState.COMPLETED);
+    await this.eventService.recordStateTransition(
+      id,
+      fromState,
+      ResponsibilityState.COMPLETED,
+    );
     await this.notificationService.notifyTaskCompleted({
       userId,
       responsibilityId: id,
@@ -110,7 +129,12 @@ export class ResponsibilityService {
     return { ...updated, state: ResponsibilityState.COMPLETED };
   }
 
-  async getByUser(userId: number, state?: string, category?: string, personId?: number) {
+  async getByUser(
+    userId: number,
+    state?: string,
+    category?: string,
+    personId?: number,
+  ) {
     const responsibilities = await this.prisma.responsibility.findMany({
       where: {
         userId,
@@ -123,7 +147,9 @@ export class ResponsibilityService {
 
     return responsibilities
       .map((r) => ({ ...r, state: computeState(r.dueDate, r.completedAt) }))
-      .filter((r) => state === undefined ? true : r.state === (state as ResponsibilityState));
+      .filter((r) =>
+        state === undefined ? true : r.state === (state as ResponsibilityState),
+      );
   }
 
   async getById(id: number, userId: number) {
@@ -181,7 +207,12 @@ export class ResponsibilityService {
     const ids = habits.map((h) => h.id);
     if (ids.length === 0) {
       return {
-        items: [] as { id: number; title: string; recurrence: string; streak: number }[],
+        items: [] as {
+          id: number;
+          title: string;
+          recurrence: string;
+          streak: number;
+        }[],
         maxStreak: 0,
         activeRecurring: 0,
         completionsLast7Days: 0,
@@ -222,7 +253,10 @@ export class ResponsibilityService {
       id: h.id,
       title: h.title,
       recurrence: h.recurrence ?? 'none',
-      streak: computeStreakFromCompletionDays(byResp.get(h.id) ?? new Set(), today),
+      streak: computeStreakFromCompletionDays(
+        byResp.get(h.id) ?? new Set(),
+        today,
+      ),
     }));
     const maxStreak = items.reduce((m, i) => Math.max(m, i.streak), 0);
     const activeRecurring = habits.filter(
@@ -266,7 +300,8 @@ export class ResponsibilityService {
     });
 
     const completionDays = new Set<string>();
-    for (const e of events) completionDays.add(localDayKey(new Date(e.occurredAt)));
+    for (const e of events)
+      completionDays.add(localDayKey(new Date(e.occurredAt)));
 
     const items: { date: string; completed: boolean }[] = [];
     for (let i = 0; i < days; i++) {
@@ -285,20 +320,36 @@ export class ResponsibilityService {
       select: { dueDate: true, completedAt: true },
     });
 
-    const summary = { total: responsibilities.length, completed: 0, due: 0, overdue: 0, upcoming: 0 };
+    const summary = {
+      total: responsibilities.length,
+      completed: 0,
+      due: 0,
+      overdue: 0,
+      upcoming: 0,
+    };
     for (const r of responsibilities) {
       const state = computeState(r.dueDate, r.completedAt);
       switch (state) {
-        case ResponsibilityState.COMPLETED: summary.completed++; break;
-        case ResponsibilityState.DUE: summary.due++; break;
-        case ResponsibilityState.OVERDUE: summary.overdue++; break;
-        case ResponsibilityState.UPCOMING: summary.upcoming++; break;
+        case ResponsibilityState.COMPLETED:
+          summary.completed++;
+          break;
+        case ResponsibilityState.DUE:
+          summary.due++;
+          break;
+        case ResponsibilityState.OVERDUE:
+          summary.overdue++;
+          break;
+        case ResponsibilityState.UPCOMING:
+          summary.upcoming++;
+          break;
       }
     }
     return summary;
   }
 
-  getTimeline(responsibilityId: number): Promise<ResponsibilityTimelineEntry[]> {
+  getTimeline(
+    responsibilityId: number,
+  ): Promise<ResponsibilityTimelineEntry[]> {
     return this.eventService.getTimelineByResponsibility(responsibilityId);
   }
 }
