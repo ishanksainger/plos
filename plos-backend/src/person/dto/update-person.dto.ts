@@ -1,4 +1,12 @@
-import { IsDateString, IsEmail, IsIn, IsOptional, IsString, Matches, MaxLength } from 'class-validator';
+import {
+  IsDateString,
+  IsEmail,
+  IsIn,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+} from 'class-validator';
 import { PHONE_PATTERN } from 'src/common/phone.util';
 
 export class UpdatePersonDto {
@@ -13,7 +21,9 @@ export class UpdatePersonDto {
 
   @IsOptional()
   @IsString()
-  @Matches(PHONE_PATTERN, { message: 'phone must be 8–20 digits (optional + prefix)' })
+  @Matches(PHONE_PATTERN, {
+    message: 'phone must be 8–20 digits (optional + prefix)',
+  })
   phone?: string;
 
   @IsOptional()

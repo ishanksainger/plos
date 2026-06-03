@@ -55,7 +55,9 @@ export class EventService {
         responsibilityId,
         fromState,
         toState,
-        ...(opts?.note !== undefined && opts.note !== null ? { note: opts.note } : {}),
+        ...(opts?.note !== undefined && opts.note !== null
+          ? { note: opts.note }
+          : {}),
       },
     });
   }
@@ -111,7 +113,10 @@ export class EventService {
       ...e,
       responsibility: {
         ...e.responsibility,
-        amount: e.responsibility.amount === null ? null : Number(e.responsibility.amount),
+        amount:
+          e.responsibility.amount === null
+            ? null
+            : Number(e.responsibility.amount),
       },
     }));
   }

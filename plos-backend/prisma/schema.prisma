@@ -19,6 +19,8 @@ model User {
   phone           String?
   /** solo | family | shared — roadmap H; permissions model in a later step */
   accountType     String    @default("solo")
+  /** Count of completed tracker/CSV imports — enforces the free-plan import cap (Step K). */
+  importsUsed     Int       @default(0)
   createdAt       DateTime  @default(now())
 
   persons                Person[]

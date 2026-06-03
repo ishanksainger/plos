@@ -1,4 +1,5 @@
-import type { CSSProperties, ElementType, ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
+import { type Icon as TablerIconType } from '@tabler/icons-react';
 import { Box, Group, Text } from '@mantine/core';
 import { motion } from 'framer-motion';
 import { PLOS_SHADOW_CARD, useDS } from '../theme/palette';
@@ -13,7 +14,7 @@ interface PageHeaderProps {
   eyebrow: string;
   title: string;
   subtitle: string;
-  icon: ElementType;
+  icon: TablerIconType;
   accent?: string;
   action?: ReactNode;
   metrics?: PageHeaderMetric[];

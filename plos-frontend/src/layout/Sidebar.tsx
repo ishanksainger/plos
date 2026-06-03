@@ -1,8 +1,8 @@
-import type { ElementType } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { Box, Stack, Text } from '@mantine/core';
 import {
+  type Icon as TablerIconType,
   IconAdjustmentsHorizontal,
   IconChartBar,
   IconChartDots,
@@ -27,7 +27,7 @@ const NavRow = ({
   onNavigate,
 }: {
   to: string;
-  icon: ElementType;
+  icon: TablerIconType;
   label: string;
   active: boolean;
   onNavigate?: () => void;

@@ -11,6 +11,7 @@ import {
   type NotificationPrefsPatch,
 } from '../services/notification-prefs.service';
 import { downloadExport, type ExportFormat } from '../services/export.service';
+import ImportTrackerRow from '../components/account/ImportTrackerRow';
 import { useAppDispatch as useAppDispatchUi, useAppSelector } from '../store/hooks';
 import { setTheme, type ThemeMode } from '../store/uiSlice';
 import { useAppDispatch } from '../store/hooks';
@@ -377,6 +378,7 @@ export default function SettingsPage() {
               </div>
             </div>
             <DataExportRow />
+            <ImportTrackerRow />
             <DangerZone />
           </>
         )}

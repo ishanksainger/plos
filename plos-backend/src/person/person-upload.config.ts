@@ -3,7 +3,11 @@ import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 
-export const PERSON_AVATAR_UPLOAD_DIR = join(process.cwd(), 'uploads', 'avatars');
+export const PERSON_AVATAR_UPLOAD_DIR = join(
+  process.cwd(),
+  'uploads',
+  'avatars',
+);
 
 const ALLOWED_MIME = new Set([
   'image/jpeg',
@@ -46,7 +50,12 @@ export function personAvatarFileFilter(
   cb: (error: Error | null, acceptFile: boolean) => void,
 ): void {
   if (!ALLOWED_MIME.has(file.mimetype)) {
-    cb(new BadRequestException('Only JPEG, PNG, WebP, or GIF images are allowed'), false);
+    cb(
+      new BadRequestException(
+        'Only JPEG, PNG, WebP, or GIF images are allowed',
+      ),
+      false,
+    );
     return;
   }
   cb(null, true);

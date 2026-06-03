@@ -1,6 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ResponsibilityState } from 'src/responsibility/responsibility.state';
+import { WhatsappService } from './whatsapp.service';
+
+/** Template name for the due/overdue reminder (override via env to match your BSP). */
+const WA_TEMPLATE_DUE =
+  process.env.WHATSAPP_TEMPLATE_DUE ?? 'plos_due_reminder';
 
 /** Delivered to the in-app feed immediately (no external queue in MVP). */
 export const NOTIFICATION_CHANNEL_IN_APP = 'in_app';
@@ -19,7 +24,10 @@ export type NotificationListItem = {
 
 @Injectable()
 export class NotificationService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly whatsapp: WhatsappService,
+  ) {}
 
   /**
    * Inserts an in-app notification row (treated as already delivered to the feed).
@@ -56,14 +64,32 @@ export class NotificationService {
     toState: ResponsibilityState;
   }) {
     const { toState } = params;
-    if (toState !== ResponsibilityState.DUE && toState !== ResponsibilityState.OVERDUE) {
+    if (
+      toState !== ResponsibilityState.DUE &&
+      toState !== ResponsibilityState.OVERDUE
+    ) {
       return null;
     }
-    const title = toState === ResponsibilityState.OVERDUE ? 'Task overdue' : 'Due today';
+    const title =
+      toState === ResponsibilityState.OVERDUE ? 'Task overdue' : 'Due today';
     const message =
       toState === ResponsibilityState.OVERDUE
         ? `"${params.taskTitle}" is now overdue.`
         : `"${params.taskTitle}" is due today.`;
+
+    // A due/overdue deadline is the "critical" category — the one even free
+    // users get on WhatsApp (per the Option-B decision). Fire-and-forget so the
+    // in-app feed never blocks on an external send; dormant until a provider
+    // key is set, so this is free + safe today.
+    void this.whatsapp
+      .dispatchToUser(params.userId, {
+        category: 'critical',
+        templateName: WA_TEMPLATE_DUE,
+        bodyParams: [params.taskTitle, title],
+        preview: message,
+      })
+      .catch(() => undefined);
+
     return this.createInApp({
       userId: params.userId,
       responsibilityId: params.responsibilityId,
@@ -99,7 +125,10 @@ export class NotificationService {
   /**
    * Newest first in-app feed for the user.
    */
-  async listForUser(userId: number, limit = 50): Promise<NotificationListItem[]> {
+  async listForUser(
+    userId: number,
+    limit = 50,
+  ): Promise<NotificationListItem[]> {
     const rows = await this.prisma.notification.findMany({
       where: { userId, channel: NOTIFICATION_CHANNEL_IN_APP },
       orderBy: { createdAt: 'desc' },

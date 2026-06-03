@@ -9,9 +9,25 @@ on:
 jobs:
   plos-backend:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     defaults:
       run:
         working-directory: plos-backend
+    env:
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -20,13 +36,20 @@ jobs:
           cache: npm
           cache-dependency-path: plos-backend/package-lock.json
       - run: npm ci
+      # Generate the Prisma client so the type-aware lint + typecheck have
+      # @prisma/client types (there is no postinstall generate step).
+      - run: npx prisma generate
       - run: npm run lint
       - run: npm run typecheck
       - run: npx prisma validate
+      # Apply migrations to the throwaway service DB — also verifies they run
+      # cleanly from scratch.
+      - run: npx prisma migrate deploy
+      # Drift check: the migrated DB must match schema.prisma exactly.
+      # (Prisma 7 renamed --to-schema-datamodel -> --to-schema; the migrations
+      # source needs a live DB, so we diff the post-deploy datasource instead.)
       - name: Prisma migrate diff (schema drift check)
-        run: npx prisma migrate diff --from-migrations prisma/migrations --to-schema-datamodel prisma/schema.prisma --exit-code
-        env:
-          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+        run: npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code
 
   plos-frontend:
     runs-on: ubuntu-latest
@@ -48,21 +71,20 @@ jobs:
 
   apps-web:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/web
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
-          cache-dependency-path: apps/web/package-lock.json
+          # apps/web is an npm workspace — the only lockfile is the repo root's.
+          cache-dependency-path: package-lock.json
+      # Install the whole workspace from the root lockfile (apps/web has none).
       - run: npm ci
       - name: TypeScript check
-        run: npx tsc --noEmit
+        run: npm run typecheck --workspace=@nis/web
       - name: Next.js build
-        run: npm run build
+        run: npm run build --workspace=@nis/web
         env:
           # Skip env-dependent steps for CI build
           NEXT_TELEMETRY_DISABLED: '1'

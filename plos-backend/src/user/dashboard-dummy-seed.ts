@@ -229,7 +229,14 @@ export async function insertDashboardDummyBundle(
   });
 
   for (let i = 0; i < 6; i++) {
-    const ref = new Date(today.getFullYear(), today.getMonth() + i, 14, 12, 0, 0);
+    const ref = new Date(
+      today.getFullYear(),
+      today.getMonth() + i,
+      14,
+      12,
+      0,
+      0,
+    );
     await db.responsibility.create({
       data: {
         userId,
@@ -258,7 +265,9 @@ export async function ensureBareUserDashboardDummy(
 ): Promise<void> {
   if (
     typeof process.env.DISABLE_DASHBOARD_DUMMY_SEED === 'string' &&
-    ['1', 'true', 'yes'].includes(process.env.DISABLE_DASHBOARD_DUMMY_SEED.trim().toLowerCase())
+    ['1', 'true', 'yes'].includes(
+      process.env.DISABLE_DASHBOARD_DUMMY_SEED.trim().toLowerCase(),
+    )
   ) {
     return;
   }

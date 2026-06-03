@@ -34,10 +34,18 @@ export class NotificationPrefsService {
     const updated = await this.prisma.notificationPreferences.update({
       where: { userId },
       data: {
-        ...(dto.inAppEnabled !== undefined ? { inAppEnabled: dto.inAppEnabled } : {}),
-        ...(dto.emailDigests !== undefined ? { emailDigests: dto.emailDigests } : {}),
-        ...(dto.whatsappOptIn !== undefined ? { whatsappOptIn: dto.whatsappOptIn } : {}),
-        ...(dto.streakAtRisk !== undefined ? { streakAtRisk: dto.streakAtRisk } : {}),
+        ...(dto.inAppEnabled !== undefined
+          ? { inAppEnabled: dto.inAppEnabled }
+          : {}),
+        ...(dto.emailDigests !== undefined
+          ? { emailDigests: dto.emailDigests }
+          : {}),
+        ...(dto.whatsappOptIn !== undefined
+          ? { whatsappOptIn: dto.whatsappOptIn }
+          : {}),
+        ...(dto.streakAtRisk !== undefined
+          ? { streakAtRisk: dto.streakAtRisk }
+          : {}),
       },
     });
     return this.shape(updated);

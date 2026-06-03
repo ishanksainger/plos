@@ -88,3 +88,24 @@ All true before you build Step M:
 3. A handful of users **asking** for an unlimited/WhatsApp/Family feature.
 
 Until then: free, founding-member offer live, and this spec sitting ready.
+
+---
+
+## Build-now / activate-later architecture
+
+The whole point: **everything is built and shipped while it's calm, but stays dormant so a sudden influx of users can't hit a half-built paywall.** Activation is config, not code.
+
+**The dormancy mechanism (backend):**
+- `BILLING_ENABLED` env flag (default `false`). `PlanService.effectiveTier()` returns `founding` (= unlimited) for *everyone* while it's false → nothing is gated, nothing can break.
+- `PlanService.assertCanCreate()` is wired into the People / Responsibility / import create paths but is a **no-op while billing is off**. Wiring it now means zero scramble later.
+- WhatsApp + email dispatch use the "no key → log only" fallback (like `MailerService`), so they're built and wired now; the provider key gets added at activation.
+- Billing endpoints + webhook are live but inert: `/billing/subscribe` returns "you're a founding member, Pro is free" while the flag is off; the webhook safely receives nothing.
+
+**The activation runbook (the day you flip it, ~100 users):**
+1. Create the 3 plans in the Razorpay **Subscriptions** dashboard (Pro/Family, monthly + annual), enable e-mandate.
+2. Set env on `plos-backend`: `BILLING_ENABLED=true`, `BILLING_ACTIVATED_AT=<now ISO>`, `RAZORPAY_*`, and the WhatsApp provider key. Recreate the container.
+3. Run the one-shot `PlanService.grandfatherExistingUsers(BILLING_ACTIVATED_AT)` → every existing user becomes `founding` (Pro free for life). **No current user is ever walled.**
+4. New signups now get `free` with limits; the pricing page + `LimitReachedModal` go live automatically (they read the same flag).
+5. Watch the billing webhook + first real subscription end-to-end.
+
+That's the entire flip. No deploy of new features, no risky migration under load — just env + one idempotent script.

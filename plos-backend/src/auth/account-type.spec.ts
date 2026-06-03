@@ -1,7 +1,4 @@
-import {
-  normalizeAccountType,
-  accountTypeChangeWarning,
-} from './account-type';
+import { normalizeAccountType, accountTypeChangeWarning } from './account-type';
 
 describe('account-type', () => {
   describe('normalizeAccountType', () => {

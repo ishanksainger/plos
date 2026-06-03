@@ -14,10 +14,7 @@ export class EventController {
    * each entry joined with its originating responsibility.
    */
   @Get()
-  getFeed(
-    @CurrentUser() user: JwtPayload,
-    @Query('limit') limit?: string,
-  ) {
+  getFeed(@CurrentUser() user: JwtPayload, @Query('limit') limit?: string) {
     const cap = Math.min(Math.max(Number(limit) || 100, 1), 500);
     return this.eventService.getUserFeed(user.sub, cap);
   }

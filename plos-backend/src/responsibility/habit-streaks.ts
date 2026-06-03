@@ -11,7 +11,10 @@ export function localDayKey(d: Date): string {
  * **today** if today has activity, otherwise from **yesterday** (standard “don’t break
  * the streak until you miss a day” behaviour).
  */
-export function computeStreakFromCompletionDays(completionDays: Set<string>, todayStart: Date): number {
+export function computeStreakFromCompletionDays(
+  completionDays: Set<string>,
+  todayStart: Date,
+): number {
   const todayKey = localDayKey(todayStart);
   const y = new Date(todayStart);
   y.setDate(y.getDate() - 1);

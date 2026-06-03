@@ -22,7 +22,10 @@ export class ResponsibilityController {
   constructor(private readonly responsibilityService: ResponsibilityService) {}
 
   @Post()
-  create(@CurrentUser() user: JwtPayload, @Body() dto: CreateResponsibilityDto) {
+  create(
+    @CurrentUser() user: JwtPayload,
+    @Body() dto: CreateResponsibilityDto,
+  ) {
     return this.responsibilityService.create({ ...dto, userId: user.sub });
   }
 
