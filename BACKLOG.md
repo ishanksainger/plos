@@ -59,7 +59,7 @@ See `memory/project_build_plan_qikink_storefront.md` for the sequenced detail. T
 
 ### Phase 3 — Operational (post-launch polish)
 
-19. [ ] **`/admin/orders` dashboard** (auth-gated) for daily monitoring (claude, 2 hr)
+19. **`/admin/orders` dashboard** (auth-gated) for daily monitoring `[in progress · 2026-06-05 · claude]`
 20. [ ] **Plausible analytics** self-hosted on VPS (claude, 1 hr)
 21. [ ] **COD enablement decision** + wiring (Ishank decides; Qikink supports it)
 22. [ ] **support@thenispace.com** Gmail forwarding (human, 30 min)
