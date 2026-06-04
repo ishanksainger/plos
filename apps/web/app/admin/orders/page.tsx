@@ -71,6 +71,51 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+function Flash({ resent, error }: { resent?: string; error?: string }) {
+  if (!resent && !error) return null;
+  const ok = Boolean(resent);
+  return (
+    <div
+      role="status"
+      style={{
+        margin: '0 0 20px',
+        padding: '12px 16px',
+        borderRadius: '10px',
+        fontSize: '14px',
+        background: ok ? '#dcfce7' : '#fee2e2',
+        color: ok ? '#166534' : '#991b1b',
+        border: `1px solid ${ok ? '#bbf7d0' : '#fecaca'}`,
+      }}
+    >
+      {ok
+        ? `Re-sent the download link${resent && resent !== '1' ? ` to ${resent}` : ''}.`
+        : `Couldn't resend: ${error}`}
+    </div>
+  );
+}
+
+function ResendButton({ orderItemId }: { orderItemId: string }) {
+  return (
+    <form method="post" action="/admin/resend" style={{ display: 'inline', marginLeft: '6px' }}>
+      <input type="hidden" name="orderItemId" value={orderItemId} />
+      <button
+        type="submit"
+        style={{
+          padding: '2px 10px',
+          fontSize: '12px',
+          borderRadius: '9999px',
+          border: '1px solid #d1d5db',
+          background: '#fff',
+          color: '#374151',
+          cursor: 'pointer',
+        }}
+      >
+        Resend
+      </button>
+    </form>
+  );
+}
+
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div
@@ -88,7 +133,11 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-export default async function AdminOrdersPage() {
+export default async function AdminOrdersPage({
+  searchParams,
+}: {
+  searchParams: { resent?: string; error?: string };
+}) {
   if (!isSupabaseConfigured()) {
     return (
       <Shell>
@@ -138,6 +187,7 @@ export default async function AdminOrdersPage() {
 
   return (
     <Shell>
+      <Flash resent={searchParams.resent} error={searchParams.error} />
       <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '28px' }}>
         <Stat label={`Recent orders (max ${ORDER_LIMIT})`} value={String(orders.length)} />
         <Stat label="Gross (paid + fulfilled)" value={formatINR(grossPaise)} />
@@ -192,6 +242,7 @@ export default async function AdminOrdersPage() {
                                     · no token
                                   </span>
                                 )}
+                                {tok ? <ResendButton orderItemId={it.id} /> : null}
                               </li>
                             );
                           })}

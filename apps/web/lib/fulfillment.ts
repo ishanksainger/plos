@@ -73,6 +73,66 @@ export async function fulfillDigitalOrderIdempotent(
   return await persistAndEmail(input);
 }
 
+/**
+ * Operator action (admin dashboard): re-issue a download for one already-paid
+ * order item. Mints a FRESH token (new 7-day expiry, uses reset) and re-sends
+ * the receipt email — for buyers whose link expired or hit its use cap. Old
+ * tokens stay valid until they expire; this just grants a new one.
+ */
+export async function resendDownloadForOrderItem(
+  orderItemId: string,
+): Promise<{ ok: boolean; email?: string; error?: string }> {
+  if (!isSupabaseConfigured()) return { ok: false, error: 'Supabase not configured' };
+  if (!orderItemId) return { ok: false, error: 'Missing order item id' };
+
+  const supabase = getServiceSupabase();
+  const { data, error } = await supabase
+    .schema('commerce')
+    .from('order_items')
+    .select(
+      `id, price_paise,
+       product:products!inner ( title, storage_path ),
+       order:orders!inner ( email )`,
+    )
+    .eq('id', orderItemId)
+    .maybeSingle();
+
+  if (error || !data) return { ok: false, error: 'Order item not found' };
+
+  const product = Array.isArray(data.product) ? data.product[0] : data.product;
+  const order = Array.isArray(data.order) ? data.order[0] : data.order;
+  if (!product?.storage_path) {
+    return { ok: false, error: 'This line has no deliverable file (e.g. a bundle SKU row).' };
+  }
+  if (!order?.email) return { ok: false, error: 'No buyer email on the order' };
+
+  const token = crypto.randomBytes(32).toString('base64url');
+  const expiresAt = new Date(Date.now() + DOWNLOAD_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
+
+  const { error: tokenErr } = await supabase
+    .schema('commerce')
+    .from('download_tokens')
+    .insert({
+      token,
+      order_item_id: orderItemId,
+      expires_at: expiresAt.toISOString(),
+      max_uses: DOWNLOAD_MAX_USES,
+    });
+
+  if (tokenErr) return { ok: false, error: `Token create failed: ${tokenErr.message}` };
+
+  await sendReceiptEmail({
+    to: order.email,
+    productTitle: product.title as string,
+    pricePaise: data.price_paise as number,
+    downloadUrl: downloadLink(token),
+    expiresAt,
+    maxUses: DOWNLOAD_MAX_USES,
+  });
+
+  return { ok: true, email: order.email as string };
+}
+
 async function persistAndEmail(input: FulfillmentInput): Promise<FulfillmentResult> {
   const tracker = getTracker(input.productSlug);
   if (!tracker) throw new Error(`Unknown product: ${input.productSlug}`);

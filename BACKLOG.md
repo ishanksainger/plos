@@ -171,7 +171,7 @@ Core app works end-to-end in prod (live-tested: register/login/me/delete ✅). P
 
 ### P2 — polish
 
-- **Admin "resend download link" action** `[in progress · 2026-06-05 · claude]` — one-click re-issue from `/admin/orders` when a buyer's link expires or hits its use cap (receipts say "reply to resend" — make that real instead of DB surgery). Mints a fresh token + re-sends the receipt email; gated by the same Basic Auth (handler under `/admin/`). **Owner:** `claude`
+- ~~**Admin "resend download link" action**~~ → shipped 2026-06-05 on `feat/web-admin-resend`. `resendDownloadForOrderItem()` in `lib/fulfillment.ts` mints a fresh token (new 7-day expiry, uses reset) + re-sends the receipt email; `POST /admin/resend` route handler (under `/admin/` so it inherits Basic Auth) called by a per-item "Resend" button on `/admin/orders` (shown only for items that have a token, i.e. deliverable lines — not bundle SKU rows). Flash banner confirms success/failure. Typecheck + build clean.
 - ~~**SEO**~~ → shipped 2026-05-25 in `f623388` (`app/sitemap.ts` + `app/robots.ts` Next.js convention files; `ProductJsonLd` JSON-LD mounted on /trackers/[slug] and /trackers/bundle with INR currency + availability).
 - ~~**Analytics** — Plausible or GA on every page.~~ → shipped 2026-05-25 in `f623388` (env-gated Plausible `<Script>` in root layout — only renders when NEXT_PUBLIC_PLAUSIBLE_DOMAIN is set; custom CDN supported).
 - ~~**Newsletter signup** in footer~~ → shipped 2026-05-25 in `cbeea40` (`NewsletterRow` in `SiteFooter`; reuses `/api/waitlist` with `source=newsletter` so all email captures live in one table; inline loading + success + error states).
