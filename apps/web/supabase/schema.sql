@@ -55,6 +55,16 @@ create table if not exists commerce.order_items (
 
 create index if not exists order_items_order_id_idx on commerce.order_items (order_id);
 
+-- Optional hardening (recommended before high volume): this unique constraint
+-- makes fulfillment idempotent even under a *simultaneous* /verify + webhook
+-- race — the second insert fails instead of minting a duplicate token + email.
+-- lib/fulfillment.ts already guards every realistic *sequential* duplicate with
+-- a select-then-insert check; this closes the millisecond overlap window too.
+-- Note: it collapses qty>1 of the same digital SKU on one order to a single
+-- delivery (intended — a digital file is identical per copy).
+--   alter table commerce.order_items
+--     add constraint order_items_order_product_uniq unique (order_id, product_id);
+
 -- ----------------------------------------------------------------------------
 -- download_tokens: signed download access for digital purchases.
 -- ----------------------------------------------------------------------------
