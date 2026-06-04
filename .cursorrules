@@ -2,18 +2,18 @@
 
 Cursor reads this file at the start of every chat. These are the same rules as `CLAUDE.md` — keep them in sync if you edit either.
 
-**Both AIs share PLOS work now** (Claude Code led the May 2026 visual redesign of `plos-frontend`; Cursor continues backend work and shares the frontend). See ownership table + coordination protocol below.
+**Claude Code now owns all code in this repo** (`apps/web`, `plos-backend`, `plos-frontend`, `packages/*`). Decided 2026-06-05 — for a solo founder on a side-hustle schedule, one coherent agent beats the coordination tax of a backend/frontend split. **Cursor is on standby:** only pick up a task that is explicitly tagged `cursor` in `BACKLOG.md` **and** confirmed by Ishank (typically a parallel backend push when there's a big independent pile of work). Otherwise hands off — don't start code Claude Code is already driving. Product *content* (trackers, Canva, wedding box) stays with Claude Desktop / the humans per `nis_build_plan.md`.
 
 **Before starting any task, read `BACKLOG.md` at the repo root** — it's the single source of truth for pending work and ownership.
 
-**Last updated:** 2026-05-23
+**Last updated:** 2026-06-05
 
 ## What's in this repo
 
 Monorepo holding two products under one brand (NIS):
-- `apps/web/` → NIS brand site (Next.js, thenispace.com) — **Claude Code primary. Cursor: hands off unless BACKLOG.md tags an item `cursor` or `either`.**
-- `plos-backend/` → PLOS API (NestJS) — **Cursor primary. Claude Code touches only when an item is tagged for them.**
-- `plos-frontend/` → PLOS web app (Vite + Mantine) — **Shared. Coordinate via BACKLOG.md.**
+- `apps/web/` → NIS brand site (Next.js, thenispace.com) — **Claude Code owns. Cursor hands off.**
+- `plos-backend/` → PLOS API (NestJS) — **Claude Code owns. Cursor only on a `cursor`-tagged BACKLOG.md item confirmed by Ishank.**
+- `plos-frontend/` → PLOS web app (Vite + Mantine) — **Claude Code owns. Cursor only on a `cursor`-tagged BACKLOG.md item confirmed by Ishank.**
 - `packages/brand-tokens/` → shared design tokens — **Nikita owns. Don't change values without explicit approval.**
 - `packages/ui/` → shared UI primitives — either AI may add components with PR review
 - `packages/razorpay-sdk/` → shared Razorpay client — either AI may extend with PR review
@@ -21,11 +21,11 @@ Monorepo holding two products under one brand (NIS):
 - `BACKLOG.md` → pending work register (READ FIRST)
 - `START_HERE.md` → current state + what's running + click-through flow
 
-## Coordination protocol (shared frontend)
+## Working protocol (`BACKLOG.md` is the queue)
 
 The protocol is simple: **`BACKLOG.md` is the queue.** Don't start a task that isn't in there or isn't tagged for you.
 
-1. Open `BACKLOG.md`, find an item tagged `cursor` or `either`. To pick up something tagged `claude`, ask the human first.
+1. Open `BACKLOG.md`, find an item tagged `cursor` that Ishank has confirmed is yours. Everything else (`claude` / `either`) is Claude Code's — don't take it unless Ishank reassigns.
 2. Edit the line to `[in progress · YYYY-MM-DD · cursor]` and commit before writing code — this is the lock.
 3. Branch as `feat/plos-<short-name>`. One PR per item.
 4. When done, strike through the bullet, add `→ shipped in <commit-or-PR>`. Update `START_HERE.md` if user-visible.
@@ -80,11 +80,12 @@ Claude Code's May 2026 redesign established these patterns — preserve them:
 - Don't gate free-tier features without checking the pricing plan.
 - Don't send notifications without opt-in checks.
 - Don't store secrets in code — use `.env` files.
-- Don't restructure `plos-frontend/src/components/plos/` or `src/styles/plos-prototype/` without an entry in BACKLOG.md — that's the design-system surface both AIs depend on.
+- Don't restructure `plos-frontend/src/components/plos/` or `src/styles/plos-prototype/` without an entry in BACKLOG.md — that's the shared design-system surface.
+- Don't create product content (tracker spreadsheets, Canva designs, the wedding box) — that's Claude Desktop's per `nis_build_plan.md`.
 
 ## When in doubt
 
 - Item not in `BACKLOG.md`? Don't code it. Add the entry first.
 - Touching `packages/*`? Open a PR with a clear "why" in the description. Ishank reviews shared packages.
-- Touching `apps/web/`? Don't, unless the BACKLOG.md item is tagged for you.
+- Touching any code (it's Claude Code's now)? Don't, unless the BACKLOG.md item is tagged `cursor` and Ishank confirmed it's yours.
 - Unsure which doc to read? Start with `BACKLOG.md`, then `START_HERE.md`, then `SETUP.md`.

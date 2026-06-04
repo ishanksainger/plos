@@ -1,8 +1,10 @@
 # BACKLOG — Pending work register
 
-**Single source of truth for what's not done yet.** Both Claude Code and Cursor read this file at the start of any session that involves picking up new work. Update it as items move.
+**Single source of truth for what's not done yet.** Claude Code reads this file at the start of any session that involves picking up new work (Cursor too, on the rare `cursor`-tagged item). Update it as items move.
 
-**Last updated:** 2026-06-03
+> **Ownership (2026-06-05):** Claude Code owns **all code** (`apps/web`, `plos-backend`, `plos-frontend`, `packages/*`). Cursor is on standby for invited parallel backend pushes only. Product *content* stays with Claude Desktop / the humans. See `CLAUDE.md` §3.
+
+**Last updated:** 2026-06-05
 
 ---
 
@@ -171,8 +173,8 @@ Core app works end-to-end in prod (live-tested: register/login/me/delete ✅). P
 - ~~**SEO**~~ → shipped 2026-05-25 in `f623388` (`app/sitemap.ts` + `app/robots.ts` Next.js convention files; `ProductJsonLd` JSON-LD mounted on /trackers/[slug] and /trackers/bundle with INR currency + availability).
 - ~~**Analytics** — Plausible or GA on every page.~~ → shipped 2026-05-25 in `f623388` (env-gated Plausible `<Script>` in root layout — only renders when NEXT_PUBLIC_PLAUSIBLE_DOMAIN is set; custom CDN supported).
 - ~~**Newsletter signup** in footer~~ → shipped 2026-05-25 in `cbeea40` (`NewsletterRow` in `SiteFooter`; reuses `/api/waitlist` with `source=newsletter` so all email captures live in one table; inline loading + success + error states).
-- [ ] **Analytics** — Plausible or GA on every page. **Owner:** `claude`
-- [ ] **OG images** per page — currently no `og:image` for social sharing. **Owner:** `claude` + `human` (designs)
+- ~~**Analytics** — Plausible or GA on every page~~ → shipped in `f623388` (env-gated Plausible in root layout; duplicate of the struck item above).
+- ~~**OG images** per page~~ → shipped in `5cf160c` (dynamic Open Graph images; Nikita can supply art later).
 
 ---
 
@@ -189,7 +191,7 @@ Core app works end-to-end in prod (live-tested: register/login/me/delete ✅). P
 
 - ~~**Person detail page**~~ → shipped 2026-05-25 in `ffefa9d` (route + UI; existing `GET /persons/:id` endpoint covered the data).
 - ~~**Responsibility detail page**~~ → shipped 2026-05-25 in `ed55d42` (`/responsibilities/:id` with category-tinted hero, at-a-glance card incl. `<Badge tone>`, notes, immutable timeline, Mark complete / Edit / Delete; row titles on `/responsibilities` link through).
-- [ ] **Search bar in topbar** [backend in progress · 2026-05-25e · claude] — frontend shipped 2026-05-25 in `27f7dd1`. Backend endpoint being shipped by claude with explicit authority. **Owner:** was `cursor`.
+- ~~**Search bar in topbar**~~ → both halves shipped: frontend `27f7dd1` + backend `da6d837` (`GET /search?q=`).
 - ~~**`⌘K` command palette**~~ → shipped 2026-05-25 in `d7a5da5` (empty input shows "Jump to" + "Create" actions, typed input fuzzy-matches + runs the search popover; "New responsibility" routes to `/responsibilities?new=1` which auto-opens the create modal).
 - [ ] **WhatsApp reminder pipeline** — dispatcher shipped dormant (`f547f61`, provider-agnostic + plan-gated, Option B). Remaining = wire a real provider key (Twilio / Meta) + the opt-in flow surfacing, then it lights up. **Owner:** `cursor/either`
 - ~~**Streaks-at-risk reminder cron**~~ → shipped 2026-05-25 in `a79457c` (`SchedulerService.notifyStreaksAtRisk` runs hourly in prod, every 30 min in dev; gates on `streakAtRisk` user pref + post-noon check; idempotent per habit/day; uses existing `NotificationService.createInApp`).
@@ -198,11 +200,11 @@ Core app works end-to-end in prod (live-tested: register/login/me/delete ✅). P
 
 - ~~**Loading skeletons**~~ → shipped 2026-05-25 in `5d36972` (`SkeletonBlock` / `SkeletonText` / `SkeletonCard` / `SkeletonGrid` / `SkeletonRowList` primitives with a single shimmer keyframe; applied across Today, Insights, People, Responsibilities, Habits, Person detail, Responsibility detail).
 - ~~**Error retry buttons**~~ → shipped 2026-05-25 in `5d36972` (`PlosErrorRetry` primitive with title + optional message + "Try again" CTA bound to React Query refetch; applied alongside skeletons on every page that had a "Failed to load…" state).
-- [ ] **Empty-state illustrations** — current empty states are text-only; even small SVG illustrations would warm them up. **Owner:** `claude` + `human` (Nikita illustrations)
-- [ ] **Form validation copy** on `/register` — password length, email format. Currently HTML-default validation. **Owner:** `claude`
-- [ ] **Avatar upload preview** before save — show the file thumbnail in the modal. **Owner:** `claude`
+- ~~**Empty-state illustrations**~~ → shipped in `05f07d2` (Nikita can refine the SVGs later).
+- ~~**Form validation copy** on `/register`~~ → shipped in `27bc77f` (password length + email format).
+- ~~**Avatar upload preview** before save~~ → shipped in `4904a20`.
 - ~~**Dark mode toggle**~~ → shipped 2026-05-25 in `0d6e853` (`uiSlice` Redux store with localStorage persistence + `prefers-color-scheme` first-visit fallback; `ThemedMantine` wrapper flips MantineProvider; `AppLayout` mirrors `data-theme` to `<html>` + `.plos`; Settings → Profile gets a Light/Dark segmented control).
-- [ ] **PWA manifest + install prompt** — make PLOS installable on phones. **Owner:** `claude`
+- ~~**PWA manifest + install prompt**~~ → shipped in `af97d3b`.
 
 ### P3 — backend hygiene
 
@@ -226,8 +228,8 @@ Core app works end-to-end in prod (live-tested: register/login/me/delete ✅). P
 
 ### P3
 
-- [ ] **Visual regression testing** — Playwright + Percy or similar; both AIs touch UI, regressions would be invisible without it. **Owner:** `either`
-- [ ] **Storybook or Ladle** for shared components in `packages/ui`. **Owner:** `either`
+- ~~**Visual regression testing**~~ → shipped in `d70b3e2` (Playwright smoke + visual regression suite).
+- ~~**Storybook or Ladle**~~ → shipped in `c4eaa9e` (Ladle story explorer + Button/Card/Badge stories).
 
 ---
 
