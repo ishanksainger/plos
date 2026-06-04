@@ -34,6 +34,9 @@ services:
       - RAZORPAY_WEBHOOK_SECRET=${RAZORPAY_WEBHOOK_SECRET}
       - RESEND_API_KEY=${RESEND_API_KEY}
       - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-NIS <notifications@thenispace.com>}
+      # Admin dashboard Basic Auth — leave unset to keep /admin disabled (404).
+      - ADMIN_USER=${ADMIN_USER:-}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}
     networks:
       - n8n_default
     labels:
