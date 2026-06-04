@@ -5,6 +5,13 @@ export const runtime = 'nodejs';
 
 const SIGNED_URL_TTL_SECONDS = 60; // short — buyer's browser only needs it long enough to redirect.
 
+// Link-scanners sometimes issue a HEAD to "verify" a URL. Answer cheaply and
+// WITHOUT spending a download — only a real GET (a human click) counts. Next
+// would otherwise auto-derive HEAD from GET and run its side effects.
+export async function HEAD() {
+  return new Response(null, { status: 200 });
+}
+
 export async function GET(req: Request) {
   if (!isSupabaseConfigured()) {
     return NextResponse.json({ error: 'Storage not configured' }, { status: 503 });
@@ -72,13 +79,15 @@ export async function GET(req: Request) {
     );
   }
 
-  // 4. Increment used_count atomically (best-effort — Postgres update with
-  //    where clause prevents double-increment in normal flows).
+  // 4. Spend one use. The extra `.eq('used_count', …)` makes this an optimistic
+  //    compare-and-set: two requests that both read the same used_count can't
+  //    both succeed, so we never over-count past max_uses.
   await supabase
     .schema('commerce')
     .from('download_tokens')
     .update({ used_count: tokenRow.used_count + 1 })
-    .eq('token', token);
+    .eq('token', token)
+    .eq('used_count', tokenRow.used_count);
 
   return NextResponse.redirect(signed.signedUrl, { status: 302 });
 }

@@ -130,7 +130,7 @@ async function persistAndEmail(input: FulfillmentInput): Promise<FulfillmentResu
     .update({ status: 'fulfilled', fulfilled_at: now.toISOString() })
     .eq('id', order.id);
 
-  const downloadUrl = `${publicSiteUrl()}/api/download?token=${encodeURIComponent(token)}`;
+  const downloadUrl = downloadLink(token);
 
   await sendReceiptEmail({
     to: input.email,
@@ -230,7 +230,7 @@ async function persistAndEmailBundle(
 
     deliverable.push({
       tracker,
-      downloadUrl: `${publicSiteUrl()}/api/download?token=${encodeURIComponent(token)}`,
+      downloadUrl: downloadLink(token),
       expiresAt,
     });
   }
@@ -260,6 +260,16 @@ function publicSiteUrl(): string {
     process.env.VERCEL_URL ??
     'http://localhost:3000'
   ).replace(/\/$/, '');
+}
+
+/**
+ * The link we email the buyer points at the /download landing PAGE, not the
+ * /api/download route. The page is read-only, so when email link-scanners
+ * prefetch it (Gmail / Outlook SafeLinks / Mimecast) they don't spend any of
+ * the buyer's downloads. The use is only counted when a human clicks through.
+ */
+function downloadLink(token: string): string {
+  return `${publicSiteUrl()}/download?token=${encodeURIComponent(token)}`;
 }
 
 async function sendReceiptEmail(opts: {
