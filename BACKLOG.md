@@ -59,7 +59,7 @@ See `memory/project_build_plan_qikink_storefront.md` for the sequenced detail. T
 
 ### Phase 3 — Operational (post-launch polish)
 
-19. [ ] **`/admin/orders` dashboard** (auth-gated) for daily monitoring (claude, 2 hr)
+19. ~~**`/admin/orders` dashboard** (auth-gated) for daily monitoring~~ → shipped 2026-06-05 on `feat/web-admin-orders`. Server-rendered `/admin/orders` page reads live `commerce` data via the service-role client (orders + line items + download-token usage), with gross-paid + last-24h summary stats. Gated by HTTP Basic Auth in `middleware.ts` (`ADMIN_USER`/`ADMIN_PASSWORD`; **fails closed → 404 if unset**). Env documented in `.env.example` + wired into `docker-compose.web.yml` (defaults empty = disabled). To turn on in prod: set both vars in `/docker/nis-web/.env` and redeploy. Typecheck + build clean.
 20. [ ] **Plausible analytics** self-hosted on VPS (claude, 1 hr)
 21. [ ] **COD enablement decision** + wiring (Ishank decides; Qikink supports it)
 22. [ ] **support@thenispace.com** Gmail forwarding (human, 30 min)
