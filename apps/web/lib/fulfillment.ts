@@ -62,6 +62,14 @@ export async function fulfillDigitalOrderIdempotent(
     return { fulfilled: true };
   }
 
+  // Route bundles to the bundle path — otherwise a bundle fulfilled via the
+  // webhook safety net (buyer closed the tab before /verify) would be treated
+  // as a single product: a token for the bundle slug, which has no file.
+  const tracker = getTracker(input.productSlug);
+  if (tracker?.kind === 'bundle') {
+    return await persistAndEmailBundle(input, tracker);
+  }
+
   return await persistAndEmail(input);
 }
 
@@ -91,6 +99,25 @@ async function persistAndEmail(input: FulfillmentInput): Promise<FulfillmentResu
     .single();
 
   if (orderErr || !order) throw new Error(`Order persist failed: ${orderErr?.message ?? 'no row'}`);
+
+  // Idempotency guard: if this product is already a line on this order, it's
+  // already been fulfilled — a retried/double-clicked /verify, or the webhook
+  // safety net firing after /verify. Return the existing item instead of
+  // minting a second download token and sending a second receipt email.
+  // (This covers every realistic *sequential* duplicate. To also close the
+  // millisecond verify+webhook overlap, add the unique(order_id,product_id)
+  // constraint noted in supabase/schema.sql.)
+  const { data: already } = await supabase
+    .schema('commerce')
+    .from('order_items')
+    .select('id')
+    .eq('order_id', order.id)
+    .eq('product_id', tracker.slug)
+    .maybeSingle();
+
+  if (already) {
+    return { fulfilled: true, orderItemId: already.id as string };
+  }
 
   // Insert order item.
   const { data: item, error: itemErr } = await supabase
@@ -171,6 +198,22 @@ async function persistAndEmailBundle(
 
   if (orderErr || !order) {
     throw new Error(`Bundle order persist failed: ${orderErr?.message ?? 'no row'}`);
+  }
+
+  // Idempotency guard: the bundle SKU line means "this bundle was fulfilled on
+  // this order". If it's already present, this is a re-run (retried /verify or
+  // the webhook safety net) — don't re-deliver components or send a second
+  // bundle email.
+  const { data: bundleAlready } = await supabase
+    .schema('commerce')
+    .from('order_items')
+    .select('id')
+    .eq('order_id', order.id)
+    .eq('product_id', bundle.slug)
+    .maybeSingle();
+
+  if (bundleAlready) {
+    return { fulfilled: true, orderItemId: order.id };
   }
 
   // Order item for the bundle SKU itself.
