@@ -4,7 +4,7 @@
 
 > **Ownership (2026-06-05):** Claude Code owns **all code** (`apps/web`, `plos-backend`, `plos-frontend`, `packages/*`). Cursor is on standby for invited parallel backend pushes only. Product *content* stays with Claude Desktop / the humans. See `CLAUDE.md` §3.
 
-**Last updated:** 2026-06-05
+**Last updated:** 2026-06-06
 
 ---
 
@@ -42,7 +42,7 @@
 
 See `memory/project_build_plan_qikink_storefront.md` for the sequenced detail. Top-level:
 
-7. [ ] **Qikink account + API credentials** (human, 15 min)
+7. ⏳ **Qikink account + API credentials** — **sandbox DONE 2026-06-06**: account live (dashboard.qikink.com, "thenispace"); sandbox Client ID `891986243657834` + secret saved to gitignored `apps/web/.env.local`. **Live request NOT submitted yet** — Qikink declines it unless you've made sandbox calls first, so the order is: build SDK (#8) → sandbox smoke test (auth + test order) → request live → swap keys. (human → claude)
 8. [ ] **`packages/qikink-sdk/`** — server-side typed wrappers, mirror @nis/razorpay-sdk shape (claude, 1 hr)
 9. [ ] **Merch catalog + variants** in `apps/web/lib/merch-catalog.ts` (claude, 30 min)
 10. [ ] **/shop/merch + /shop/merch/[slug]** pages with size/colour picker (claude, 3 hr)
@@ -237,6 +237,15 @@ Core app works end-to-end in prod (live-tested: register/login/me/delete ✅). P
 ---
 
 ## Recently completed (last 30 days)
+
+**Session 2026-06-05/06 (digital-delivery hardening burst — PRs #2–#7, all merged + deployed):**
+- ✅ PR #2 (`5ea877f`) — scanner-proof `/download` landing page (email link-scanners no longer burn a buyer's 5-use download cap).
+- ✅ PR #3 — ownership: **Claude Code owns all code**; Cursor optional/standby. `CLAUDE.md` + `.cursorrules` synced.
+- ✅ PR #4 (`af32ce2`) — digital fulfilment idempotency + fixed bundle-via-webhook mis-delivery.
+- ✅ PR #5 (`f79e61b`) — `/admin/orders` dashboard (Basic-Auth, fails closed → 404 if unset).
+- ✅ PR #6 (`5bbcd4d`) — one-click resend-download action. **Admin dashboard now LIVE & ON** at /admin/orders (creds in `/docker/nis-web/.env`).
+- ✅ PR #7 (`479ce85`) — true multi-item cart total recorded on order + `unique(order_id, product_id)` applied to prod `nis-prod`.
+- ✅ Qikink **sandbox** onboarded (keys in `apps/web/.env.local`) — see memory `project_qikink_onboarding_state.md`. Live request still pending sandbox testing.
 
 **Session 2026-05-25g (batch 7 — five pre-launch dev gaps, 5 commits):**
 - ✅ `docs(repo)` (`db905b6`) — claimed batch 7
