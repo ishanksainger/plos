@@ -11,6 +11,13 @@ type FulfillmentInput = {
   email: string;
   razorpayOrderId: string;
   razorpayPaymentId: string;
+  // Authoritative amount charged for the whole order (server-computed). For a
+  // multi-item cart, fulfillment runs once per line and each call upserts the
+  // same order row — so without this every call would overwrite total_paise
+  // with its own line price, leaving the order showing the last line's price.
+  // Pass the cart total here so the order records what was actually charged.
+  // Omitted on the single-item path, where the line price IS the order total.
+  orderTotalPaise?: number;
 };
 
 type FulfillmentResult = {
@@ -147,7 +154,7 @@ async function persistAndEmail(input: FulfillmentInput): Promise<FulfillmentResu
     .upsert(
       {
         email: input.email,
-        total_paise: tracker.pricePaise,
+        total_paise: input.orderTotalPaise ?? tracker.pricePaise,
         status: 'paid',
         razorpay_order_id: input.razorpayOrderId,
         razorpay_payment_id: input.razorpayPaymentId,
@@ -245,7 +252,7 @@ async function persistAndEmailBundle(
     .upsert(
       {
         email: input.email,
-        total_paise: bundle.pricePaise,
+        total_paise: input.orderTotalPaise ?? bundle.pricePaise,
         status: 'paid',
         razorpay_order_id: input.razorpayOrderId,
         razorpay_payment_id: input.razorpayPaymentId,
