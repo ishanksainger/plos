@@ -171,6 +171,7 @@ Core app works end-to-end in prod (live-tested: register/login/me/delete ✅). P
 
 ### P2 — polish
 
+- **Fulfillment follow-ups (PR #4)** `[in progress · 2026-06-06 · claude]` — (1) multi-item cart orders recorded `total_paise` = the *last* line's price (each per-item fulfilment upsert overwrote it) instead of the cart total; pass the authoritative server-computed cart total through fulfilment and write it idempotently. (2) Uncomment the `unique(order_id, product_id)` constraint in `schema.sql` + apply it to prod, closing the millisecond verify+webhook overlap the sequential guard can't. **Owner:** `claude`
 - ~~**Admin "resend download link" action**~~ → shipped 2026-06-05 on `feat/web-admin-resend`. `resendDownloadForOrderItem()` in `lib/fulfillment.ts` mints a fresh token (new 7-day expiry, uses reset) + re-sends the receipt email; `POST /admin/resend` route handler (under `/admin/` so it inherits Basic Auth) called by a per-item "Resend" button on `/admin/orders` (shown only for items that have a token, i.e. deliverable lines — not bundle SKU rows). Flash banner confirms success/failure. Typecheck + build clean.
 - ~~**SEO**~~ → shipped 2026-05-25 in `f623388` (`app/sitemap.ts` + `app/robots.ts` Next.js convention files; `ProductJsonLd` JSON-LD mounted on /trackers/[slug] and /trackers/bundle with INR currency + availability).
 - ~~**Analytics** — Plausible or GA on every page.~~ → shipped 2026-05-25 in `f623388` (env-gated Plausible `<Script>` in root layout — only renders when NEXT_PUBLIC_PLAUSIBLE_DOMAIN is set; custom CDN supported).
