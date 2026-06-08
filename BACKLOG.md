@@ -43,7 +43,7 @@
 See `memory/project_build_plan_qikink_storefront.md` for the sequenced detail. Top-level:
 
 7. ⏳ **Qikink account + API credentials** — **sandbox DONE 2026-06-06**: account live (dashboard.qikink.com, "thenispace"); sandbox Client ID `891986243657834` + secret saved to gitignored `apps/web/.env.local`. **Live request NOT submitted yet** — Qikink declines it unless you've made sandbox calls first, so the order is: build SDK (#8) → sandbox smoke test (auth + test order) → request live → swap keys. (human → claude)
-8. [ ] **`packages/qikink-sdk/`** — server-side typed wrappers, mirror @nis/razorpay-sdk shape (claude, 1 hr)
+8. [in progress · 2026-06-09 · claude] **`packages/qikink-sdk/`** — server-side typed wrappers, mirror @nis/razorpay-sdk shape (claude, 1 hr)
 9. [ ] **Merch catalog + variants** in `apps/web/lib/merch-catalog.ts` (claude, 30 min)
 10. [ ] **/shop/merch + /shop/merch/[slug]** pages with size/colour picker (claude, 3 hr)
 11. [ ] **Extend cart drawer** for physical goods (qty, variant display, shipping) (claude, 2 hr)
