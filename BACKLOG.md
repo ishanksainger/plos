@@ -4,7 +4,7 @@
 
 > **Ownership (2026-06-05):** Claude Code owns **all code** (`apps/web`, `plos-backend`, `plos-frontend`, `packages/*`). Cursor is on standby for invited parallel backend pushes only. Product *content* stays with Claude Desktop / the humans. See `CLAUDE.md` §3.
 
-**Last updated:** 2026-06-06
+**Last updated:** 2026-06-09
 
 ---
 
@@ -42,13 +42,13 @@
 
 See `memory/project_build_plan_qikink_storefront.md` for the sequenced detail. Top-level:
 
-7. ⏳ **Qikink account + API credentials** — **sandbox DONE 2026-06-06**: account live (dashboard.qikink.com, "thenispace"); sandbox Client ID `891986243657834` + secret saved to gitignored `apps/web/.env.local`. **Live request NOT submitted yet** — Qikink declines it unless you've made sandbox calls first, so the order is: build SDK (#8) → sandbox smoke test (auth + test order) → request live → swap keys. (human → claude)
-8. [in progress · 2026-06-09 · claude] **`packages/qikink-sdk/`** — server-side typed wrappers, mirror @nis/razorpay-sdk shape (claude, 1 hr)
-9. [ ] **Merch catalog + variants** in `apps/web/lib/merch-catalog.ts` (claude, 30 min)
+7. ⏳ **Qikink account + API credentials** — **sandbox DONE 2026-06-06**: account live (dashboard.qikink.com, "thenispace"); sandbox Client ID `891986243657834` + secret saved to gitignored `apps/web/.env.local`. **Sandbox auth call made 2026-06-09** (`@nis/qikink-sdk` smoke test minted a real token), so Qikink's "must have made sandbox calls first" precondition is now **met**. **Next: Ishank clicks "Request Live API Credentials"** at dashboard.qikink.com → Integrations → Open API (optionally place one sandbox *test order* first for extra safety), then `claude` swaps `QIKINK_API_BASE` + keys once approved. (human → claude)
+8. ~~**`packages/qikink-sdk/`** — server-side typed wrappers, mirror @nis/razorpay-sdk shape~~ → shipped 2026-06-09 on `pkg/qikink-sdk-init` (PR pending; `packages/*` needs Ishank's review). TS-source package mirroring `@nis/razorpay-sdk`: token + order endpoints (`POST /api/token`, `POST /api/order/create`, `GET /api/order`), 45-min token cache + transparent 401 re-auth, `QikinkError` (carries status+body), `paiseToRupeeString` (Qikink is rupee-denominated — never pass paise). **Sandbox auth smoke-tested ✓** via `scripts/smoke.mjs` (minted a real 225-char token). Strict typecheck clean; lockfile synced. **Finding:** the Open API exposes *only* token + order endpoints — there is NO products-catalog or pincode/shipping-quote endpoint (affects #9 + #13, annotated below).
+9. [ ] **Merch catalog + variants** in `apps/web/lib/merch-catalog.ts` (claude, 30 min). **Confirmed 2026-06-09:** no products endpoint in the Open API, so this is a hardcoded SKU list mirroring products created in the Qikink dashboard (as already implied by the filename) — `search_from_my_products: 1` on each line item.
 10. [ ] **/shop/merch + /shop/merch/[slug]** pages with size/colour picker (claude, 3 hr)
 11. [ ] **Extend cart drawer** for physical goods (qty, variant display, shipping) (claude, 2 hr)
 12. [ ] **Checkout page** with address form + Qikink pincode validation (claude, 2 hr)
-13. [ ] **`/api/qikink/shipping-quote`** route — pincode → shipping cost (claude, 1 hr)
+13. [ ] **`/api/qikink/shipping-quote`** route — pincode → shipping cost (claude, 1 hr). **Re-scope (found 2026-06-09):** the Qikink Open API has NO pincode/shipping-quote endpoint — shipping is delegated by sending `qikink_shipping: '1'` on the order. So this becomes either a flat/zone shipping rule or Qikink's published rate card, NOT a live API lookup.
 14. [ ] **`/api/razorpay/merch-order` + `merch-verify`** routes (parallel to existing tracker routes) (claude, 2 hr)
 15. [ ] **Extend webhook** to call Qikink for merch fulfilment on `payment.captured` (claude, 30 min)
 16. [ ] **Order status page `/orders/[id]`** with Qikink tracking number (claude, 1 hr)
@@ -237,6 +237,9 @@ Core app works end-to-end in prod (live-tested: register/login/me/delete ✅). P
 ---
 
 ## Recently completed (last 30 days)
+
+**Session 2026-06-09 (Qikink merch SDK — first Phase-2 code):**
+- ✅ `@nis/qikink-sdk` shipped on `pkg/qikink-sdk-init` (#8) — TS-source package mirroring `@nis/razorpay-sdk`; token + order endpoints, token cache + 401 re-auth, `QikinkError`, paise→rupee helper. **Sandbox auth smoke-tested** (real token minted), which also satisfies Qikink's "make sandbox calls before requesting live access" gate. Open-API recon finding: no products/pincode endpoints → re-scoped #9 (hardcoded catalog) + #13 (delegated shipping). PR open for Ishank's `packages/*` review.
 
 **Session 2026-06-05/06 (digital-delivery hardening burst — PRs #2–#7, all merged + deployed):**
 - ✅ PR #2 (`5ea877f`) — scanner-proof `/download` landing page (email link-scanners no longer burn a buyer's 5-use download cap).
