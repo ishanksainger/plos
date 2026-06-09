@@ -12,36 +12,15 @@ export function LegalPage({
   lastUpdated,
   intro,
   sections,
-  draft = false,
 }: {
   title: string;
   /** ISO date string or human label, e.g. "2026-05-25". */
   lastUpdated: string;
   intro: ReactNode;
   sections: LegalSection[];
-  /**
-   * When true, render a prominent notice that the copy is an internal draft
-   * pending professional legal review (i.e. not yet binding). Keep this on
-   * until a lawyer has red-lined the page and the business contact details
-   * (registered address, phone) are filled in.
-   */
-  draft?: boolean;
 }) {
   return (
     <section className="nis-section nis-legal">
-      {draft && (
-        <div className="nis-legal-draft" role="note">
-          <span className="nis-section-eyebrow">Draft · pending legal review</span>
-          <span>
-            This is a working draft prepared in-house and <strong>not yet
-            reviewed by a lawyer</strong>. It is not the final, binding version.
-            Treat the headline commitments (refund windows, timelines, contact)
-            as our genuine intent, but the precise wording may change once it is
-            professionally reviewed.
-          </span>
-        </div>
-      )}
-
       <div className="nis-legal-banner">
         <span className="nis-section-eyebrow">Heads up</span>
         <span>
