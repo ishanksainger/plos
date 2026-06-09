@@ -888,6 +888,21 @@ html, body {
   line-height: 1.5;
 }
 .nis-legal-banner a { color: var(--accent); }
+.nis-legal-draft {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  border: 1px dashed var(--rule-strong);
+  border-radius: var(--nis-radius-md);
+  background: var(--bg-card-hover);
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.nis-legal-draft .nis-section-eyebrow { color: var(--accent); }
+.nis-legal-draft strong { color: var(--ink-1); }
 .nis-legal-head {
   margin-bottom: 36px;
 }
