@@ -12,7 +12,6 @@ export default function Page() {
   return (
     <NisShell pillar="legal">
       <LegalPage
-        draft
         title="Terms of service."
         lastUpdated="2026-06-09"
         intro={
