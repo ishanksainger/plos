@@ -14,7 +14,7 @@ export function ShopPage() {
           <h1 className="nis-h2">Small store. Well-made things.</h1>
         </div>
         <p className="nis-section-body">
-          A handful of tees, notebooks, and small goods that we use ourselves. Printed in Pune, shipped India-wide, returns within seven days no questions. Checkout is Shopify; payments via Razorpay or UPI.
+          A handful of tees, notebooks, and small goods that we use ourselves. Printed in India, shipped India-wide, returns within seven days no questions. Checkout and payments via Razorpay or UPI.
         </p>
       </div>
 

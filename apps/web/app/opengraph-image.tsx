@@ -70,7 +70,7 @@ export default function OgImage() {
           }}
         >
           <span>thenispace.com</span>
-          <span>est. 2026 · pune + mumbai</span>
+          <span>est. 2026 · delhi + mumbai</span>
         </div>
       </div>
     ),

@@ -4,7 +4,7 @@ import { ShopPage } from '@/components/nis/pages/ShopPage';
 
 export const metadata: Metadata = {
   title: 'Shop',
-  description: 'A small store of tees, notebooks, and goods. Printed in Pune.',
+  description: 'A small store of tees, notebooks, and goods. Printed in India.',
 };
 
 export default function Page() {
