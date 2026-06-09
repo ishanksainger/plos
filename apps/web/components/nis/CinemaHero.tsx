@@ -24,7 +24,7 @@ const STAGES: Stage[] = [
   {
     num: '00', label: 'Studio',
     headline: ['Your creative nest.', 'Built for India.'],
-    sub: 'NIS is a small studio in Pune building four small things — trackers, canvas scenes, merch, and PLOS.',
+    sub: 'NIS is a small studio in India building four small things — trackers, canvas scenes, merch, and PLOS.',
     cta: { text: 'Browse trackers', href: '/trackers' },
     accent: '#d97757',
     bgX: '28%', bgY: '22%',
@@ -63,7 +63,7 @@ const STAGES: Stage[] = [
   {
     num: '03', label: 'Shop',
     headline: ['Small store.', 'Well-made', '_things_.'],
-    sub: 'Tees, notebooks, a tote, a cap. Printed in Pune, shipped India-wide, returns within seven days. Checkout via UPI or Razorpay.',
+    sub: 'Tees, notebooks, a tote, a cap. Printed in India, shipped India-wide, returns within seven days. Checkout via UPI or Razorpay.',
     cta: { text: 'Visit the shop', href: '/shop' },
     accent: '#7d8e44',
     bgX: '58%', bgY: '42%',

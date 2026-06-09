@@ -20,7 +20,7 @@ export function AboutPage() {
       <div className="nis-section-head">
         <div>
           <div className="nis-section-eyebrow">Studio</div>
-          <h1 className="nis-h2">A small studio in Pune.</h1>
+          <h1 className="nis-h2">A small studio in India.</h1>
         </div>
         <p className="nis-section-body">
           NIS — Nest of Innovative Space — is two people. Ishank writes the code and the strategy. Nikita owns the brand and the 3D scenes. The first product was a freelancer GST tracker on Etsy. The second was a life-OS for ourselves. We&apos;re building both, in public, in India.

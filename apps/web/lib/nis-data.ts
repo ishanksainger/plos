@@ -40,7 +40,7 @@ export type Stat = { fig: string; label: string };
 export const NIS_PILLARS: Pillar[] = [
   { key: 'trackers', num: '01', name: 'Trackers',  desc: 'Spreadsheets that hold a freelance life together.',     color: '#3b82f6', meta: '1 live · 4 in queue' },
   { key: 'canvas',   num: '02', name: 'Canvas',    desc: '3D and motion scenes Nikita builds. Drop in via Spline.', color: '#ec4899', meta: '6 scenes · drop in via Spline' },
-  { key: 'shop',     num: '03', name: 'Shop',      desc: 'T-shirts, notebooks, trackers. A small store, well-made.', color: '#10b981', meta: '12 SKUs · Shopify' },
+  { key: 'shop',     num: '03', name: 'Shop',      desc: 'T-shirts, notebooks, trackers. A small store, well-made.', color: '#10b981', meta: 'Print-on-demand · Razorpay' },
   { key: 'plos',     num: '04', name: 'PLOS',      desc: 'The life OS app. Today, money, habits, people, timeline.',  color: '#7c3aed', meta: 'Free · founding tier' },
 ];
 

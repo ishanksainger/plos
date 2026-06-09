@@ -21,7 +21,7 @@ export function SiteFooter() {
               lineHeight: 1.55,
             }}
           >
-            Nest of Innovative Space. A small studio in Pune building tools, trackers, and one life-OS for India.
+            Nest of Innovative Space. A small studio in India building tools, trackers, and one life-OS for India.
           </p>
           <NewsletterRow />
         </div>
@@ -47,13 +47,13 @@ export function SiteFooter() {
           <h4>Find us</h4>
           <ul>
             <li><a href="mailto:hello@thenispace.com">hello@thenispace.com</a></li>
-            <li><span>Pune · India</span></li>
+            <li><span>New Delhi · India</span></li>
           </ul>
         </div>
       </div>
       <div className="nis-footer-legal">
         <span>© 2026 NIS · made in India</span>
-        <span>operated by Ishank Sainger · Pune</span>
+        <span>operated by Ishank Sainger · New Delhi</span>
       </div>
     </footer>
   );

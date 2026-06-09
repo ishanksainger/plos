@@ -43,7 +43,7 @@ export function HomePage() {
           </div>
         </div>
 
-        <Marquee items={['Trackers', 'Canvas', 'Shop', 'PLOS', 'Made in Pune', 'India only']} />
+        <Marquee items={['Trackers', 'Canvas', 'Shop', 'PLOS', 'Made in India', 'India only']} />
 
         <div className="nis-section">
           <Reveal>
