@@ -28,7 +28,7 @@ export default function Page() {
               <p>
                 NIS (&ldquo;Nest of Innovative Space&rdquo;) is operated by{' '}
                 <strong>Ishank Sainger</strong> as a sole proprietor based in
-                Pune, Maharashtra, India. Contact:{' '}
+                New Delhi, India. Contact:{' '}
                 <a href="mailto:hello@thenispace.com">hello@thenispace.com</a>.
                 References to &ldquo;we&rdquo;, &ldquo;us&rdquo;, and
                 &ldquo;NIS&rdquo; mean this proprietorship.
@@ -182,7 +182,7 @@ export default function Page() {
                 </p>
                 <p>
                   These terms are governed by the laws of India, and the courts
-                  in Pune, Maharashtra have exclusive jurisdiction over any
+                  in New Delhi have exclusive jurisdiction over any
                   dispute.
                 </p>
               </>

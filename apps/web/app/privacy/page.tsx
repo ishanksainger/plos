@@ -17,7 +17,7 @@ export default function Page() {
         intro={
           <>
             NIS (&ldquo;Nest of Innovative Space&rdquo;) is operated by Ishank
-            Sainger, a sole proprietor based in Pune, India — the{' '}
+            Sainger, a sole proprietor based in New Delhi, India — the{' '}
             <strong>data fiduciary</strong> for the personal data described here.
             We only collect what we need to deliver a download, fulfil an order,
             run an app you signed up for, or answer a question you asked. We
@@ -230,7 +230,7 @@ export default function Page() {
                     <strong>Email:</strong>{' '}
                     <a href="mailto:hello@thenispace.com">hello@thenispace.com</a>
                   </li>
-                  <li><strong>Based in:</strong> Pune, Maharashtra, India</li>
+                  <li><strong>Based in:</strong> New Delhi, India</li>
                 </ul>
                 <p>
                   We acknowledge complaints within <strong>48 hours</strong> and
