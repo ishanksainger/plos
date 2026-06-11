@@ -42,7 +42,7 @@ export function TrackerCard({ t }: { t: Tracker }) {
             color: 'var(--ink-3)',
           }}
         >
-          {t.fileType} · {t.pages} sheets
+          {t.fileType} · {t.pages} {t.unit ?? 'sheets'}
         </span>
         {t.badge && (
           <span

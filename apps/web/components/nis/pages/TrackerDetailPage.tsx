@@ -44,7 +44,7 @@ export function TrackerDetailPage({ tracker: t }: { tracker: Tracker }) {
             }}
           >
             <span>{t.fileType}</span>
-            <span>{t.pages} sheets</span>
+            <span>{t.pages} {t.unit ?? 'sheets'}</span>
           </div>
         </div>
 
