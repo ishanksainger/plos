@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { NisShell } from '@/components/nis/Shell';
 import { BundlePage } from '@/components/nis/pages/BundlePage';
 import { ProductJsonLd } from '@/components/nis/ProductJsonLd';
@@ -11,6 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
+  // Bundle is hidden (BACKLOG #6) — 404 until BUNDLE.active flips back to true.
+  if (!BUNDLE.active) notFound();
   return (
     <NisShell pillar="trackers">
       <ProductJsonLd
