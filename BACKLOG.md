@@ -37,6 +37,7 @@
 2. ⏳ **Resend domain verification flips to "verified"** — DNS records correct + propagated; Resend's first-time verifier is slow. Background, no action needed.
 3. [ ] **Upload tracker #1** to Supabase `products` bucket at path `trackers/freelancer-gst.xlsx` (claude, 2 min — already seeded in DB)
 4. [ ] **Live ₹249 payment self-test** via UPI, refund from Razorpay dashboard (human, 10 min)
+5. [in progress · 2026-06-11 · claude] **Budget & UPI Tracker (`budget-upi`, ₹299, gsheet)** — new tracker; content (Welcome PDF + listing copy) provided by Ishank 2026-06-11. Wire end-to-end: `nis-data` + commerce-catalog entry + ₹599→₹299 strike-through; `commerce.products` row + Welcome-PDF uploaded to Storage at `trackers/budget-upi.pdf` (done via the VPS so the service key never left the box). **Finding while doing this:** the `products` bucket was *empty* — which confirms item #3 (`freelancer-gst.xlsx`) was never uploaded, so the "Bestseller" live SKU is currently **undeliverable** (a buyer would pay and the download would 500). Needs the actual `.xlsx` from Ishank.
 
 ### Phase 2 — Qikink POD storefront (Option 1, full e-commerce on NIS)
 
