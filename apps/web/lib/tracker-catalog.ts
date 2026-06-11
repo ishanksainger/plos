@@ -176,7 +176,10 @@ export const BUNDLE: Tracker = {
   audience: 'Anyone who wants the full library at a discount, even pre-launch.',
   fileType: 'xlsx',
   pages: 31,
-  active: true,
+  // Hidden 2026-06-12 (BACKLOG #6): "buy all" doesn't scale + the bundle is
+  // half-empty. Flip back to `true` to relist it everywhere (banner, route,
+  // sitemap all key off this). Future: themed packs, not "buy everything".
+  active: false,
   badge: 'Best value',
   kind: 'bundle',
   components: ALL_TRACKER_SLUGS,

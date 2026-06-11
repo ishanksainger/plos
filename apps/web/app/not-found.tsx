@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 
 const SUGGESTIONS: Array<{ href: string; label: string; hint: string }> = [
   { href: '/',                 label: 'Home',     hint: 'Start at the studio nest' },
-  { href: '/trackers',         label: 'Trackers', hint: '4 sheets, INR-native' },
-  { href: '/trackers/bundle',  label: 'Bundle',   hint: 'All four at 25% off' },
+  { href: '/trackers',         label: 'Trackers', hint: 'INR-native sheets' },
+  { href: '/ebooks',           label: 'E-books',  hint: 'Guides for Indian freelancers' },
   { href: '/plos',             label: 'PLOS',     hint: 'The life OS' },
   { href: '/about',            label: 'About',    hint: 'A two-person studio' },
 ];
