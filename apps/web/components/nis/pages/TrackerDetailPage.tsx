@@ -68,7 +68,7 @@ export function TrackerDetailPage({ tracker: t }: { tracker: Tracker }) {
             {t.tagline}
           </p>
 
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 18, marginBottom: 32 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 18, marginBottom: 32, flexWrap: 'wrap' }}>
             <span
               style={{
                 fontFamily: 'var(--nis-font-mono)',
@@ -78,8 +78,29 @@ export function TrackerDetailPage({ tracker: t }: { tracker: Tracker }) {
                 letterSpacing: '-0.02em',
               }}
             >
+              {t.mrp && (
+                <s style={{ color: 'var(--ink-4)', fontSize: 22, fontWeight: 400, marginRight: 12, opacity: 0.7 }}>
+                  {fmtINR(t.mrp)}
+                </s>
+              )}
               {fmtINR(t.price)}
             </span>
+            {t.mrp && t.mrp > t.price && (
+              <span
+                style={{
+                  fontFamily: 'var(--nis-font-mono)',
+                  fontSize: 12,
+                  padding: '3px 9px',
+                  borderRadius: 999,
+                  background: `${t.accent}1f`,
+                  color: t.accent,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {Math.round((1 - t.price / t.mrp) * 100)}% off
+              </span>
+            )}
             <span style={{ color: 'var(--ink-3)', fontSize: 13 }}>
               one-time · lifetime access · GST inclusive
             </span>

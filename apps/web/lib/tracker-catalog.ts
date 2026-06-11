@@ -51,6 +51,28 @@ export const TRACKERS: Tracker[] = [
     badge: 'Best seller',
   },
   {
+    slug: 'budget-upi',
+    title: 'Indian Budget & UPI Tracker — 2026',
+    tagline:
+      'Track every rupee in one Google Sheet — UPI, SIPs, EMIs, all auto-calculated.',
+    description:
+      'A budget tracker that looks like an app and runs itself. Log a spend and your dashboard, monthly view, budgets and savings goals update automatically. Built for India — ₹ formatting, GPay/PhonePe/Paytm tracking, and SIP & EMI categories out of the box. Works in Google Sheets and Excel; you get your own private copy to fill in.',
+    pricePaise: 29900,
+    features: [
+      'Auto-updating dashboard — log once, every tab refreshes',
+      'UPI-app split (GPay / PhonePe / Paytm) — see where money really goes',
+      '12-month view + category spending heatmap',
+      'Budget vs actual with over-budget alerts',
+      'Savings goals, net worth & 50/30/20 built in',
+    ],
+    audience:
+      'Indian salaried earners, freelancers, and dual-income households who want one clean money sheet.',
+    fileType: 'gsheet',
+    pages: 6,
+    active: true,
+    badge: 'New',
+  },
+  {
     slug: 'household',
     title: 'Household Money Planner',
     tagline:
