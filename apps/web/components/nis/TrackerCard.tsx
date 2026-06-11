@@ -71,7 +71,14 @@ export function TrackerCard({ t }: { t: Tracker }) {
       <h3 className="card-title">{t.title}</h3>
       <p className="card-desc">{t.tagline}</p>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span className="card-price">{fmtINR(t.price)}</span>
+        <span className="card-price">
+          {t.mrp && (
+            <s style={{ color: 'var(--ink-4)', fontWeight: 400, marginRight: 8, opacity: 0.7 }}>
+              {fmtINR(t.mrp)}
+            </s>
+          )}
+          {fmtINR(t.price)}
+        </span>
         <span style={{ color: 'var(--accent)', fontSize: 13, fontWeight: 500, display: 'inline-flex', gap: 6, alignItems: 'center' }}>
           See inside
           <svg width="12" height="9" viewBox="0 0 14 10" fill="none" aria-hidden>

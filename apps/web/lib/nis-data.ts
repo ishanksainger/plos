@@ -16,6 +16,8 @@ export type Tracker = {
   accent: string;
   tagline: string;
   price: number;
+  /** Optional "was" price (rupees) shown struck-through next to `price`. */
+  mrp?: number;
   fileType: string;
   pages: number;
   desc: string;
@@ -56,6 +58,19 @@ export const NIS_TRACKERS: Tracker[] = [
       'TDS reconciliation against Form 26AS',
       'Client-wise outstanding tracker',
       'Drop-in formulas — paste your invoice, done',
+    ],
+  },
+  {
+    slug: 'budget-upi', title: 'Indian Budget & UPI Tracker — 2026', badge: 'New', accent: '#f59e0b',
+    tagline: 'Track every rupee in one Google Sheet — UPI, SIPs, EMIs, all auto-calculated.',
+    price: 299, mrp: 599, fileType: 'Google Sheet', pages: 6,
+    desc: 'A budget tracker that looks like an app and runs itself. Log a spend and your dashboard, monthly view, budgets and savings goals update automatically. Built for India — ₹ formatting, GPay/PhonePe/Paytm tracking, and SIP & EMI categories out of the box. Works in Google Sheets and Excel; you get your own private copy to fill in.',
+    features: [
+      'Auto-updating dashboard — log once, every tab refreshes',
+      'UPI-app split (GPay / PhonePe / Paytm) — see where money really goes',
+      '12-month view + category spending heatmap',
+      'Budget vs actual with over-budget alerts',
+      'Savings goals, net worth & 50/30/20 built in',
     ],
   },
   {
