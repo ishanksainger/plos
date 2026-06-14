@@ -43,6 +43,8 @@
 
    > ⚠️ **Finding while doing #5:** the `products` bucket was *empty* before this — confirming item #3 (`freelancer-gst.xlsx`) was **never uploaded**, so the live "Bestseller" SKU is currently **undeliverable** (a buyer would pay and the download would 500 at `createSignedUrl`). Needs the actual `.xlsx` from Ishank, then a 30-second upload (I can run it on the VPS the same way once the file's on the Mac).
 
+6b. ~~**Shop shows only trackers with a real file (hide GST + the 3 "coming soon" placeholders)**~~ → **shipped 2026-06-15 (Ishank-directed: "only [the budget one] should be live and on sale, otherwise nothing else").** `freelancer-gst` flipped `active:false` (no `.xlsx` exists → can't deliver), so the shop now shows **only `budget-upi`**. The catalog `active` flag is the single source of truth: `/trackers` grid + homepage feature + detail-page `generateStaticParams` + sitemap all filter on `getPurchasableTracker(slug)`; non-live detail pages `notFound()` (no teaser). Stale copy fixed: "Four templates."→removed, "All four trackers"→"All trackers". All tracker code kept dormant — **flip `active:true` + upload the file to relist any tracker.** Typecheck + `next build` clean (build pre-renders only `/trackers/budget-upi`). **Still content-flagged (Ishank's call, NOT changed):** the homepage prose still name-drops the GST / dual-income / wedding sheets ("the GST log that survives an audit…") though only budget is buyable — reword when you like.
+
 ### Phase 2 — Qikink POD storefront (Option 1, full e-commerce on NIS)
 
 See `memory/project_build_plan_qikink_storefront.md` for the sequenced detail. Top-level:

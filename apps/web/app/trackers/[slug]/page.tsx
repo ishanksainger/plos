@@ -9,7 +9,9 @@ import { getTracker } from '@/lib/tracker-catalog';
 type Props = { params: { slug: string } };
 
 export function generateStaticParams() {
-  return NIS_TRACKERS.map((t) => ({ slug: t.slug }));
+  // Only pre-render trackers with a real file behind them (active in the
+  // commerce catalog). Hidden placeholders 404 via the check in Page().
+  return NIS_TRACKERS.filter((t) => getTracker(t.slug)?.active).map((t) => ({ slug: t.slug }));
 }
 
 export function generateMetadata({ params }: Props): Metadata {
@@ -23,8 +25,11 @@ export default function Page({ params }: Props) {
   if (!tracker) notFound();
 
   const catalogEntry = getTracker(params.slug);
-  const pricePaise = catalogEntry?.pricePaise ?? tracker.price * 100;
-  const isAvailable = Boolean(catalogEntry?.active);
+  // Hide trackers without a real file (no live catalog entry) — no teaser pages.
+  if (!catalogEntry?.active) notFound();
+
+  const pricePaise = catalogEntry.pricePaise;
+  const isAvailable = true;
 
   return (
     <NisShell pillar="trackers">

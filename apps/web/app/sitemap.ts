@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { NIS_TRACKERS } from '@/lib/nis-data';
 import { listEbooks } from '@/lib/ebook-catalog';
-import { BUNDLE } from '@/lib/tracker-catalog';
+import { BUNDLE, getPurchasableTracker } from '@/lib/tracker-catalog';
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://thenispace.com').replace(/\/+$/, '');
 
@@ -26,7 +26,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/refund`,   lastModified, changeFrequency: 'yearly',  priority: 0.2 },
   ];
 
-  const trackerRoutes: MetadataRoute.Sitemap = NIS_TRACKERS.map((t) => ({
+  // Only list trackers with a real file behind them (active in the catalog).
+  const trackerRoutes: MetadataRoute.Sitemap = NIS_TRACKERS.filter((t) =>
+    getPurchasableTracker(t.slug),
+  ).map((t) => ({
     url: `${SITE_URL}/trackers/${t.slug}`,
     lastModified,
     changeFrequency: 'monthly',

@@ -7,8 +7,12 @@ import { TrackerCard } from './TrackerCard';
 import { Marquee } from './Marquee';
 import { ImageSlot } from './ImageSlot';
 import { NIS_STATS, NIS_TRACKERS, NIS_TESTIMONIALS } from '@/lib/nis-data';
+import { getPurchasableTracker } from '@/lib/tracker-catalog';
 
 const PLOS_URL = process.env.NEXT_PUBLIC_PLOS_URL ?? 'http://localhost:5173';
+
+// Only feature trackers with a real file behind them (active in the catalog).
+const LIVE_TRACKERS = NIS_TRACKERS.filter((t) => getPurchasableTracker(t.slug));
 
 export function HomePage() {
   return (
@@ -58,7 +62,7 @@ export function HomePage() {
             </div>
           </Reveal>
           <div className="nis-tracker-grid">
-            {NIS_TRACKERS.slice(0, 2).map((t, i) => (
+            {LIVE_TRACKERS.slice(0, 2).map((t, i) => (
               <Reveal key={t.slug} delay={((i + 1) as 1 | 2)}>
                 <TiltCard>
                   <TrackerCard t={t} />
@@ -69,7 +73,7 @@ export function HomePage() {
           <Reveal delay={3}>
             <div style={{ marginTop: 28, textAlign: 'right' }}>
               <Link href="/trackers" className="nis-btn">
-                All four trackers
+                All trackers
                 <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden>
                   <path d="M1 5h12m0 0L9 1m4 4L9 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>

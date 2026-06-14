@@ -47,7 +47,10 @@ export const TRACKERS: Tracker[] = [
     audience: 'Indian freelancers, consultants, solo founders billing in INR.',
     fileType: 'xlsx',
     pages: 9,
-    active: true,
+    // Hidden 2026-06-15: no .xlsx file exists yet, so it can't be delivered.
+    // The shop shows only trackers with a real file behind them — flip back to
+    // `true` the moment freelancer-gst.xlsx is uploaded to Storage.
+    active: false,
     badge: 'Best seller',
   },
   {
