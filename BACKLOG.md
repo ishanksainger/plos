@@ -4,7 +4,7 @@
 
 > **Ownership (2026-06-05):** Claude Code owns **all code** (`apps/web`, `plos-backend`, `plos-frontend`, `packages/*`). Cursor is on standby for invited parallel backend pushes only. Product *content* stays with Claude Desktop / the humans. See `CLAUDE.md` §3.
 
-**Last updated:** 2026-06-09
+**Last updated:** 2026-06-18
 
 ---
 
@@ -77,9 +77,9 @@ See `memory/project_build_plan_qikink_storefront.md` for the sequenced detail. T
 
 - PLOS Pro subscription flow (trigger: PLOS has 10-20 active free users)
 - International shipping
-- GST registration + CA hire (trigger: ~₹15-18L/yr revenue)
+- ~~GST registration~~ — **NOT happening (Ishank's settled decision, 2026-06-18).** Not deferred, not trigger-based, not roadmap work — don't relist it. This is *why* NIS is own-domain-only (see the marketplace line below). CA hire is a separate, only-if-a-real-compliance-need-arises item, not tied to GST.
 - Pvt Ltd / LLP incorporation (trigger: investor talks or liability exposure)
-- Marketplace channels: Amazon/Flipkart/Etsy/Meesho (requires GSTIN)
+- ~~Marketplace channels: Amazon/Flipkart/Etsy/Meesho~~ — **NOT happening:** all require a GSTIN, and GST registration is off the table (above). Sell own-domain (thenispace.com + Razorpay) + merchant-of-record channels that need no Indian GSTIN (Gumroad / Lemon Squeezy / Payhip / Ko-fi) + royalty POD (Redbubble). See `memory/project_marketplace_strategy.md`.
 - Influencer collabs / paid ads
 - Custom packaging beyond Qikink defaults
 - Brand trademark filing
