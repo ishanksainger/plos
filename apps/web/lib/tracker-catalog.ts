@@ -27,6 +27,13 @@ export type Tracker = {
   kind?: TrackerKind;
   /** For bundles: slugs of the trackers included. */
   components?: string[];
+  /**
+   * For link-delivered SKUs (e.g. a Google Sheet "make a copy" link): the URL
+   * handed to the buyer after payment instead of a stored file. When set, the
+   * product has no Storage `storage_path` and `/api/download` redirects here
+   * (still token-gated — only a paid buyer ever reaches the redirect).
+   */
+  deliveryUrl?: string;
 };
 
 export const TRACKERS: Tracker[] = [
@@ -74,6 +81,32 @@ export const TRACKERS: Tracker[] = [
     pages: 6,
     active: true,
     badge: 'New',
+  },
+  {
+    slug: 'wedding-budget',
+    title: 'Indian Wedding Budget Planner',
+    tagline:
+      'One Google Sheet to plan a calm, on-budget Indian wedding — every ceremony, vendor, guest and rupee, with totals that update themselves.',
+    description:
+      "A single, beautifully designed Google Sheet that does the wedding maths for you. Set your budget, tick the ceremonies you're having, and type real costs into each tab — everything rolls up into one live dashboard automatically. Pure Google Sheets: works the moment you copy it, on any device, yours forever. No app, no subscription, no ads.",
+    pricePaise: 89900,
+    features: [
+      'Live budget dashboard — auto-totals, progress bars and status',
+      '7 ceremony tabs — Roka, Pre-wedding, Sagan, Haldi, Mehendi & Sangeet, Wedding, Reception',
+      'Vendors & Payments log — advance, balance, due dates, GST',
+      'Guest list & RSVP tracker',
+      'Shagun & Neg ledger — every gift, lifafa and gold coin, and who you thanked',
+      'Bride / Groom split + 4 switchable colour themes',
+    ],
+    audience: 'Indian families and couples planning a wedding.',
+    fileType: 'gsheet',
+    pages: 11,
+    active: true,
+    badge: 'New',
+    // Force-copy Google Sheet (carries a bound Apps Script → can't ship as a
+    // downloadable file). No storage_path; /api/download redirects to this.
+    deliveryUrl:
+      'https://docs.google.com/spreadsheets/d/1KzcG7ka4npWR1Pcvt00M857Tx2iPR1l8n_7BIeYEY54/copy',
   },
   {
     slug: 'household',

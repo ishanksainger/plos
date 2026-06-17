@@ -76,6 +76,20 @@ export const NIS_TRACKERS: Tracker[] = [
     ],
   },
   {
+    slug: 'wedding-budget', title: 'Indian Wedding Budget Planner', badge: 'New', accent: '#f59e0b',
+    tagline: 'One Google Sheet to plan a calm, on-budget Indian wedding — every ceremony, vendor, guest and rupee, with totals that update themselves.',
+    price: 899, fileType: 'Google Sheet', pages: 11, unit: 'tabs',
+    desc: "A single, beautifully designed Google Sheet that does the wedding maths for you. Set your budget, tick the ceremonies you're having, and type real costs into each tab — everything rolls up into one live dashboard automatically. Pure Google Sheets: works the moment you copy it, on any device, yours forever. No app, no subscription.",
+    features: [
+      'Live budget dashboard — auto-totals, progress bars and status',
+      '7 ceremony tabs — Roka, Pre-wedding, Sagan, Haldi, Mehendi & Sangeet, Wedding, Reception',
+      'Vendors & Payments log — advance, balance, due dates, GST',
+      'Guest list & RSVP tracker',
+      'Shagun & Neg ledger — every gift, lifafa and gold coin, and who you thanked',
+      'Bride / Groom split + 4 switchable colour themes',
+    ],
+  },
+  {
     slug: 'household', title: 'Household Money Planner', badge: 'New', accent: '#7c3aed',
     tagline: 'A dual-income spreadsheet for couples who share a calendar but split rent.',
     price: 199, fileType: 'XLSX · GSheets', pages: 7,

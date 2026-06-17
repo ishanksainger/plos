@@ -186,6 +186,27 @@ on conflict (id) do update set
   storage_path = excluded.storage_path;
 
 -- ----------------------------------------------------------------------------
+-- Indian Wedding Budget Planner — LINK-delivered (force-copy Google Sheet).
+-- No storage_path: the sheet carries a bound Apps Script so it can't ship as a
+-- downloadable file. The "make a copy" URL lives on the catalog entry in
+-- apps/web/lib/tracker-catalog.ts (deliveryUrl); /api/download redirects there.
+-- This row only needs to exist so order_items.product_id FK resolves on a sale.
+-- ----------------------------------------------------------------------------
+insert into commerce.products (id, type, title, description, price_paise, storage_path)
+values (
+  'wedding-budget',
+  'digital',
+  'Indian Wedding Budget Planner',
+  'One Google Sheet to plan an on-budget Indian wedding — ceremonies, vendors, guests, shagun, all auto-totalled. Delivered as a force-copy Google Sheets link (no stored file).',
+  89900,
+  null
+)
+on conflict (id) do update set
+  title = excluded.title,
+  description = excluded.description,
+  price_paise = excluded.price_paise;
+
+-- ----------------------------------------------------------------------------
 -- E-book seed template (commented until the first PDF actually exists).
 -- E-books reuse the digital pipeline: type='digital', storage_path points at
 -- the file in the `products` bucket under ebooks/<slug>.<ext>. The matching
