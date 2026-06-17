@@ -130,8 +130,8 @@ npm run dev:web
 | Route | What's there |
 |---|---|
 | `/` | 5-stage cinematic scroll hero (Nest → Sheets → Iridescent Blob → Shop Stack → PLOS Pearl with heartbeat) + intro + stats + marquee + tracker preview cards + testimonial + PLOS feature CTA |
-| `/trackers` | Catalog grid (4 trackers, only Freelancer GST has real content) |
-| `/trackers/freelancer-gst` | Detail page with `What you get` + Buy button |
+| `/trackers` | Catalog grid — shows only **live** trackers (`budget-upi` ₹299 + `wedding-budget` ₹899 as of 2026-06-18); queued/file-less ones are hidden until they have a real file or delivery link |
+| `/trackers/budget-upi` | Live tracker detail page with `What you get` + Buy button (`wedding-budget` is the second live one, link-delivered via a force-copy Google Sheet) |
 | `/canvas` | Six original 3D/motion scene tiles |
 | `/shop` | Merch grid with category filter |
 | `/plos` | PLOS pillar page with 42-day StreakChain demo |
@@ -254,7 +254,7 @@ Open Chrome DevTools → toggle device mode. Sweep through:
 ### NIS
 - **Cart + multi-item checkout** — single-product Razorpay only; no Zustand cart
 - **PLOS waitlist form** on `/plos` — placeholder, no POST
-- **3 more trackers** — only `freelancer-gst` has real content
+- **More trackers** — `budget-upi` + `wedding-budget` are live; `freelancer-gst` (no file) and the queued ones stay hidden until they have a real file/link
 - **Real Spline 3D embed** for hero (currently CSS conic-gradient placeholder)
 - **Canvas / Shop imagery** — placeholders
 - **SEO** — meta tags exist, no sitemap, no schema.org
