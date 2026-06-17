@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
+import { getTracker } from '@/lib/tracker-catalog';
 
 export const runtime = 'nodejs';
 
@@ -31,7 +32,7 @@ export async function GET(req: Request) {
       `token, expires_at, used_count, max_uses,
        order_item:order_items!inner (
          id,
-         product:products!inner ( storage_path, title )
+         product:products!inner ( id, storage_path, title )
        )`,
     )
     .eq('token', token)
@@ -62,7 +63,25 @@ export async function GET(req: Request) {
     : null;
 
   const storagePath = product?.storage_path as string | undefined;
+
+  // Link-delivered SKUs (e.g. a Google Sheet "make a copy" link) have no stored
+  // file. Hand the buyer the catalog's deliveryUrl instead of signing a Storage
+  // object — the token already gated access, so only a paid buyer reaches here.
   if (!storagePath) {
+    const productId = product?.id as string | undefined;
+    const deliveryUrl = productId ? getTracker(productId)?.deliveryUrl : undefined;
+    if (deliveryUrl) {
+      // Spend one use (same optimistic compare-and-set as the file path), then
+      // redirect out to the external link.
+      await supabase
+        .schema('commerce')
+        .from('download_tokens')
+        .update({ used_count: tokenRow.used_count + 1 })
+        .eq('token', token)
+        .eq('used_count', tokenRow.used_count);
+
+      return NextResponse.redirect(deliveryUrl, { status: 302 });
+    }
     return NextResponse.json({ error: 'File not configured' }, { status: 500 });
   }
 
