@@ -39,7 +39,7 @@ The PLOS dev script (`npm run dev`) is untouched — backend on :3001 + frontend
 | 3 | Sign up Supabase, create `thenispace` project | supabase.com | ☐ |
 | 4 | Run `supabase/schema.sql` in the SQL editor | Supabase Studio | ☐ |
 | 5 | Create Storage bucket named `products` | Supabase Studio | ☐ |
-| 6 | Upload `freelancer-gst.xlsx` to `products/trackers/freelancer-gst.xlsx` | Supabase Studio | ☐ |
+| 6 | Upload any file-delivered tracker to `products/trackers/<slug>.xlsx` (note: the live Google-Sheet trackers are link-delivered via `deliveryUrl` — no upload) | Supabase Studio | ☐ |
 | 7 | Sign up Razorpay, generate test mode API keys | dashboard.razorpay.com | ☐ |
 | 8 | Sign up Resend, verify `thenispace.com` domain | resend.com | ☐ |
 | 9 | Paste all keys into `apps/web/.env.local` | local machine | ☐ |

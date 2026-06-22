@@ -160,16 +160,19 @@ revoke all on marketing.waitlist       from anon, authenticated;
 -- to the file.
 
 -- ----------------------------------------------------------------------------
--- Seed: insert the Freelancer GST Tracker + bundle so server-side reads work.
+-- Seed: insert the Freelancer Income & Tax Tracker + bundle so server-side
+-- reads work. The freelancer tracker is now LINK-delivered (force-copy Google
+-- Sheet, bound Apps Script) — storage_path is null and the "make a copy" URL
+-- lives on the catalog entry (deliveryUrl); /api/download redirects there.
 -- ----------------------------------------------------------------------------
 insert into commerce.products (id, type, title, description, price_paise, storage_path)
 values (
   'freelancer-gst',
   'digital',
-  'Freelancer GST Tracker',
-  'Logs invoices, GST output/input, TDS deducted, and produces a clean quarterly summary for Indian freelancers.',
-  24900,
-  'trackers/freelancer-gst.xlsx'
+  'Freelancer Income & Tax Tracker',
+  'A Google Sheet for Indian freelancers — income, invoices, expenses, a 44ADA tax estimate under both regimes, TDS reconciliation and foreign receipts. Delivered as a force-copy Google Sheets link (no stored file).',
+  49900,
+  null
 ),
 (
   'all-trackers-bundle',
@@ -199,6 +202,26 @@ values (
   'Indian Wedding Budget Planner',
   'One Google Sheet to plan an on-budget Indian wedding — ceremonies, vendors, guests, shagun, all auto-totalled. Delivered as a force-copy Google Sheets link (no stored file).',
   89900,
+  null
+)
+on conflict (id) do update set
+  title = excluded.title,
+  description = excluded.description,
+  price_paise = excluded.price_paise;
+
+-- ----------------------------------------------------------------------------
+-- Small Business Accounts & GST Book — LINK-delivered (force-copy Google Sheet,
+-- bound Apps Script → no downloadable file). storage_path null; the "make a
+-- copy" URL lives on the catalog entry (deliveryUrl); /api/download redirects
+-- there. Row exists so order_items.product_id FK resolves on a sale.
+-- ----------------------------------------------------------------------------
+insert into commerce.products (id, type, title, description, price_paise, storage_path)
+values (
+  'small-business',
+  'digital',
+  'Small Business Accounts & GST Book',
+  'One Google Sheet that runs a small business''s books — sales, purchases, GST payable (5/18/40%), profit & cashflow, and a rough 44AD income-tax estimate. Delivered as a force-copy Google Sheets link (no stored file).',
+  69900,
   null
 )
 on conflict (id) do update set
