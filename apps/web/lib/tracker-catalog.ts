@@ -39,26 +39,28 @@ export type Tracker = {
 export const TRACKERS: Tracker[] = [
   {
     slug: 'freelancer-gst',
-    title: 'Freelancer GST Tracker',
-    tagline: 'Track invoices, GST collected, and TDS — without an accountant.',
+    title: 'Freelancer Income & Tax Tracker',
+    tagline:
+      'Log income, chase invoices, and see your estimated tax the moment money lands — no formulas, no jargon.',
     description:
-      'Designed for Indian freelancers earning ₹2L–₹40L/year. Logs every invoice, computes GST output and input, tracks TDS deducted by clients, and shows a clean quarterly summary you can hand to a CA. Works in Google Sheets and Excel.',
-    pricePaise: 24900,
+      "A single Google Sheet for Indian freelancers, consultants and solo professionals. Log income, raise and chase invoices, record expenses, and watch an estimated tax figure update under both regimes the moment money lands — built for FY 2025–26 with Section 44ADA presumptive tax, TDS reconciliation and foreign-receipt handling baked in. Pure Google Sheets: copy it once and it's yours, on any device. No app, no subscription.",
+    pricePaise: 49900,
     features: [
-      'Invoice log with GST/TDS split',
-      'Quarterly GST + ITR summary',
-      'TDS reconciliation against Form 26AS',
-      'Client-wise outstanding tracker',
-      'Built-in formulas — paste your invoice, done',
+      'Dashboard — the whole year at a glance: gross income, tax under both regimes, TDS refund',
+      'Invoices — domestic + export, marked received or awaiting, auto-totalled and converted to INR',
+      'Tax Summary — Section 44ADA, new vs old regime side by side (FY 2025–26)',
+      'TDS Reconciliation — match Form 26AS and claim every rupee of TDS',
+      'Foreign Receipts — USD/EUR/GBP at the SBI rate, with FIRC, purpose code & LUT notes',
     ],
-    audience: 'Indian freelancers, consultants, solo founders billing in INR.',
-    fileType: 'xlsx',
-    pages: 9,
-    // Hidden 2026-06-15: no .xlsx file exists yet, so it can't be delivered.
-    // The shop shows only trackers with a real file behind them — flip back to
-    // `true` the moment freelancer-gst.xlsx is uploaded to Storage.
-    active: false,
-    badge: 'Best seller',
+    audience: 'Indian freelancers, consultants and solo professionals billing in INR.',
+    fileType: 'gsheet',
+    pages: 8,
+    active: true,
+    badge: 'New',
+    // Force-copy Google Sheet (carries a bound Apps Script → can't ship as a
+    // downloadable file). No storage_path; /api/download redirects to this.
+    deliveryUrl:
+      'https://docs.google.com/spreadsheets/d/1SbBxWfx58tQbCzS-ruvEFxzdGekGCSEMS60n6FscxOw/copy',
   },
   {
     slug: 'budget-upi',
@@ -152,24 +154,29 @@ export const TRACKERS: Tracker[] = [
   },
   {
     slug: 'small-business',
-    title: 'Small Business Cashflow',
+    title: 'Small Business Accounts & GST Book',
     tagline:
-      'Daily cashflow with festival spike modelling for shop-front India.',
+      'Record sales and purchases, and watch GST payable and real profit update themselves — no accounting software, no monthly fees.',
     description:
-      'A practical cashflow for shops, salons, and studios doing ₹ 1L–₹ 25L monthly revenue. Plans for the Diwali bump and the post-Diwali dip in the same view.',
-    pricePaise: 29900,
+      "A single Google Sheet that runs a small business's books, for Indian shops, traders and small businesses. Record sales and purchases, track who owes you and who you owe, and see GST payable and real profit update themselves, quarter by quarter — built for FY 2025–26 on India's GST 2.0 slabs (5% / 18% / 40%). Pure Google Sheets: copy it once and it's yours, on any device. No software, no subscription.",
+    pricePaise: 69900,
     features: [
-      'Daily till + UPI log',
-      'Festival demand forecast',
-      'Vendor payable ageing',
-      'Owner draw vs business spend',
-      'GSTR-3B summary block',
+      'Dashboard — sales, profit, GST and cash in hand for the whole year',
+      'Sales — every invoice, GST-tagged at 5 / 18 / 40%',
+      'Purchases & Expenses — supplier bills and running costs, with the input GST you can claim',
+      'GST Summary — output − input = net payable, quarter by quarter, credits carried forward',
+      'Profit & Cashflow — gross and net profit, margins and cash in hand',
+      'Income Tax Estimate — a rough 44AD figure, separate from GST',
     ],
-    audience: 'Shop owners, salons, studios billing under ₹25L/month.',
-    fileType: 'xlsx',
-    pages: 6,
-    active: false,
-    badge: 'In queue',
+    audience: 'Indian shops, traders and small businesses.',
+    fileType: 'gsheet',
+    pages: 7,
+    active: true,
+    badge: 'New',
+    // Force-copy Google Sheet (carries a bound Apps Script → can't ship as a
+    // downloadable file). No storage_path; /api/download redirects to this.
+    deliveryUrl:
+      'https://docs.google.com/spreadsheets/d/1v8Cd3kphOPfJVf-w46lgnDxJ97yHZq1gFpNqEfuGmdw/copy',
   },
 ];
 

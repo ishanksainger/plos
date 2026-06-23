@@ -9,7 +9,7 @@ import { test, expect } from '@playwright/test';
 const PUBLIC_ROUTES = [
   { path: '/',                            heading: /creative nest|nest of innovative/i },
   { path: '/trackers',                    heading: /spreadsheets|trackers/i },
-  { path: '/trackers/freelancer-gst',     heading: /freelancer gst/i },
+  { path: '/trackers/freelancer-gst',     heading: /freelancer income/i },
   { path: '/trackers/bundle',             heading: /every tracker|all-trackers/i },
   { path: '/plos',                        heading: /diary of life|plos/i },
   { path: '/about',                       heading: /two-person|about/i },

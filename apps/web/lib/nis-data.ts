@@ -22,6 +22,12 @@ export type Tracker = {
   pages: number;
   /** Noun for the `pages` count — defaults to 'sheets'; a single Google Sheet uses 'tabs'. */
   unit?: string;
+  /**
+   * Optional square cover image (served from /public). When set, the shop card
+   * + detail page render it (object-fit: cover) instead of the placeholder SVG.
+   * Omit it and the tracker keeps the branded faux-spreadsheet placeholder.
+   */
+  image?: string;
   desc: string;
   features: string[];
 };
@@ -50,16 +56,16 @@ export const NIS_PILLARS: Pillar[] = [
 
 export const NIS_TRACKERS: Tracker[] = [
   {
-    slug: 'freelancer-gst', title: 'Freelancer GST Tracker', badge: 'Bestseller', accent: '#3b82f6',
-    tagline: 'GST, TDS, and a CA-ready quarterly summary — without an accountant.',
-    price: 249, fileType: 'XLSX · GSheets', pages: 9,
-    desc: 'For Indian freelancers earning ₹ 2L–₹ 40L/year. Logs every invoice, computes GST output + input, tracks TDS deducted by clients, and shows a clean quarterly summary you can hand to your CA.',
+    slug: 'freelancer-gst', title: 'Freelancer Income & Tax Tracker', badge: 'New', accent: '#f43f5e',
+    tagline: 'Log income, chase invoices, and see your estimated tax the moment money lands — no formulas, no jargon.',
+    price: 499, fileType: 'Google Sheet', pages: 8, unit: 'tabs', image: '/trackers/freelancer-gst.png',
+    desc: 'For Indian freelancers, consultants and solo professionals. Log income, raise and chase invoices, record expenses, and watch an estimated tax figure update under both regimes the moment money lands — built for FY 2025–26 with Section 44ADA, TDS reconciliation and foreign-receipt handling baked in.',
     features: [
-      'Invoice log with GST / TDS split',
-      'Quarterly GST + ITR summary',
-      'TDS reconciliation against Form 26AS',
-      'Client-wise outstanding tracker',
-      'Drop-in formulas — paste your invoice, done',
+      'Dashboard — gross income, tax under both regimes, TDS refund',
+      'Invoices — domestic + export, auto-totalled and converted to INR',
+      'Tax Summary — Section 44ADA, new vs old regime side by side',
+      'TDS Reconciliation — match Form 26AS, claim every rupee of TDS',
+      'Foreign Receipts — USD/EUR/GBP at the SBI rate, FIRC + LUT notes',
     ],
   },
   {
@@ -110,11 +116,17 @@ export const NIS_TRACKERS: Tracker[] = [
     features: ['Ceremony-tagged line items', 'GST handling (5% / 18%)', 'Guest RSVP + table plan', 'Pandit & ritual checklist', 'Photo/video shot list'],
   },
   {
-    slug: 'small-business', title: 'Small Business Cashflow', badge: 'In queue', accent: '#10b981',
-    tagline: 'Daily cashflow with festival spike modelling for shop-front India.',
-    price: 299, fileType: 'XLSX · GSheets', pages: 6,
-    desc: 'A practical cashflow for shops, salons, and studios doing ₹ 1L–₹ 25L monthly revenue. Plans for the Diwali bump and the post-Diwali dip in the same view.',
-    features: ['Daily till + UPI log', 'Festival demand forecast', 'Vendor payable ageing', 'Owner draw vs business spend', 'GSTR-3B summary block'],
+    slug: 'small-business', title: 'Small Business Accounts & GST Book', badge: 'New', accent: '#1e40af',
+    tagline: 'Record sales and purchases, and watch GST payable and real profit update themselves — no software, no monthly fees.',
+    price: 699, fileType: 'Google Sheet', pages: 7, unit: 'tabs', image: '/trackers/small-business.png',
+    desc: "A single Google Sheet that runs a small business's books — for Indian shops, traders and small businesses. Record sales and purchases, track who owes you and who you owe, and see GST payable and real profit update themselves, quarter by quarter, on India's GST 2.0 slabs.",
+    features: [
+      'Dashboard — sales, profit, GST and cash in hand',
+      'Sales — every invoice, GST-tagged at 5 / 18 / 40%',
+      'Purchases & Expenses — bills and costs, with input GST to claim',
+      'GST Summary — output − input = net payable, quarter by quarter',
+      'Profit & Cashflow + a rough 44AD income-tax estimate',
+    ],
   },
 ];
 

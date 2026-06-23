@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { fmtINR, type Tracker } from '@/lib/nis-data';
 
@@ -10,40 +11,52 @@ export function TrackerCard({ t }: { t: Tracker }) {
         className="nis-card-art"
         style={{ background: `linear-gradient(135deg, ${t.accent}22, ${t.accent}08)`, position: 'relative' }}
       >
-        <svg
-          viewBox="0 0 240 160"
-          width="80%"
-          height="80%"
-          style={{ position: 'absolute', inset: '0 auto auto 50%', transform: 'translate(-50%, 14%)', opacity: 0.7 }}
-        >
-          <rect x="20" y="20" width="200" height="14" rx="2" fill={t.accent} fillOpacity="0.3" />
-          {[44, 56, 68, 80, 92, 104, 116, 128].map((y, k) => (
-            <rect
-              key={y}
-              x="20"
-              y={y}
-              width={[200, 180, 200, 140, 200, 160, 200, 170][k]}
-              height="6"
-              rx="1"
-              fill="currentColor"
-              opacity="0.18"
-            />
-          ))}
-        </svg>
-        <span
-          style={{
-            position: 'absolute',
-            top: 12,
-            left: 16,
-            fontFamily: 'var(--nis-font-mono)',
-            fontSize: 10,
-            textTransform: 'uppercase',
-            letterSpacing: '0.16em',
-            color: 'var(--ink-3)',
-          }}
-        >
-          {t.fileType} · {t.pages} {t.unit ?? 'sheets'}
-        </span>
+        {t.image ? (
+          <Image
+            src={t.image}
+            alt={`${t.title} cover`}
+            fill
+            sizes="(max-width: 720px) 100vw, 640px"
+            style={{ objectFit: 'cover' }}
+          />
+        ) : (
+          <svg
+            viewBox="0 0 240 160"
+            width="80%"
+            height="80%"
+            style={{ position: 'absolute', inset: '0 auto auto 50%', transform: 'translate(-50%, 14%)', opacity: 0.7 }}
+          >
+            <rect x="20" y="20" width="200" height="14" rx="2" fill={t.accent} fillOpacity="0.3" />
+            {[44, 56, 68, 80, 92, 104, 116, 128].map((y, k) => (
+              <rect
+                key={y}
+                x="20"
+                y={y}
+                width={[200, 180, 200, 140, 200, 160, 200, 170][k]}
+                height="6"
+                rx="1"
+                fill="currentColor"
+                opacity="0.18"
+              />
+            ))}
+          </svg>
+        )}
+        {!t.image && (
+          <span
+            style={{
+              position: 'absolute',
+              top: 12,
+              left: 16,
+              fontFamily: 'var(--nis-font-mono)',
+              fontSize: 10,
+              textTransform: 'uppercase',
+              letterSpacing: '0.16em',
+              color: 'var(--ink-3)',
+            }}
+          >
+            {t.fileType} · {t.pages} {t.unit ?? 'sheets'}
+          </span>
+        )}
         {t.badge && (
           <span
             style={{
