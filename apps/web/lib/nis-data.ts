@@ -22,6 +22,12 @@ export type Tracker = {
   pages: number;
   /** Noun for the `pages` count — defaults to 'sheets'; a single Google Sheet uses 'tabs'. */
   unit?: string;
+  /**
+   * Optional square cover image (served from /public). When set, the shop card
+   * + detail page render it (object-fit: cover) instead of the placeholder SVG.
+   * Omit it and the tracker keeps the branded faux-spreadsheet placeholder.
+   */
+  image?: string;
   desc: string;
   features: string[];
 };
@@ -52,7 +58,7 @@ export const NIS_TRACKERS: Tracker[] = [
   {
     slug: 'freelancer-gst', title: 'Freelancer Income & Tax Tracker', badge: 'New', accent: '#f43f5e',
     tagline: 'Log income, chase invoices, and see your estimated tax the moment money lands — no formulas, no jargon.',
-    price: 499, fileType: 'Google Sheet', pages: 8, unit: 'tabs',
+    price: 499, fileType: 'Google Sheet', pages: 8, unit: 'tabs', image: '/trackers/freelancer-gst.png',
     desc: 'For Indian freelancers, consultants and solo professionals. Log income, raise and chase invoices, record expenses, and watch an estimated tax figure update under both regimes the moment money lands — built for FY 2025–26 with Section 44ADA, TDS reconciliation and foreign-receipt handling baked in.',
     features: [
       'Dashboard — gross income, tax under both regimes, TDS refund',
@@ -112,7 +118,7 @@ export const NIS_TRACKERS: Tracker[] = [
   {
     slug: 'small-business', title: 'Small Business Accounts & GST Book', badge: 'New', accent: '#1e40af',
     tagline: 'Record sales and purchases, and watch GST payable and real profit update themselves — no software, no monthly fees.',
-    price: 699, fileType: 'Google Sheet', pages: 7, unit: 'tabs',
+    price: 699, fileType: 'Google Sheet', pages: 7, unit: 'tabs', image: '/trackers/small-business.png',
     desc: "A single Google Sheet that runs a small business's books — for Indian shops, traders and small businesses. Record sales and purchases, track who owes you and who you owe, and see GST payable and real profit update themselves, quarter by quarter, on India's GST 2.0 slabs.",
     features: [
       'Dashboard — sales, profit, GST and cash in hand',

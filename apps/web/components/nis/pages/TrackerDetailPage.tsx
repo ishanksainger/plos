@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { ImageSlot } from '@/components/nis/ImageSlot';
 import { TrackerActions } from '@/components/nis/TrackerActions';
@@ -20,13 +21,38 @@ export function TrackerDetailPage({ tracker: t }: { tracker: Tracker }) {
           className="nis-detail-art"
           style={{ background: `linear-gradient(135deg, ${t.accent}22, ${t.accent}06)` }}
         >
-          <ImageSlot
-            id={`tracker-cover-${t.slug}`}
-            shape="rounded"
-            radius={12}
-            placeholder="Drop a sheet screenshot"
-            style={{ position: 'absolute', inset: 24 } as React.CSSProperties}
-          />
+          {t.image ? (
+            <Image
+              src={t.image}
+              alt={`${t.title} cover`}
+              fill
+              sizes="(max-width: 880px) 100vw, 560px"
+              priority
+              style={{ objectFit: 'cover' }}
+            />
+          ) : (
+            <ImageSlot
+              id={`tracker-cover-${t.slug}`}
+              shape="rounded"
+              radius={12}
+              placeholder="Drop a sheet screenshot"
+              style={{ position: 'absolute', inset: 24 } as React.CSSProperties}
+            />
+          )}
+          {t.image && (
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: 96,
+                background: 'linear-gradient(to top, rgba(0,0,0,0.55), transparent)',
+                pointerEvents: 'none',
+              }}
+            />
+          )}
           <div
             style={{
               position: 'absolute',
@@ -38,7 +64,7 @@ export function TrackerDetailPage({ tracker: t }: { tracker: Tracker }) {
               alignItems: 'center',
               fontFamily: 'var(--nis-font-mono)',
               fontSize: 11,
-              color: 'var(--ink-3)',
+              color: t.image ? 'rgba(255,255,255,0.92)' : 'var(--ink-3)',
               textTransform: 'uppercase',
               letterSpacing: '0.16em',
             }}
