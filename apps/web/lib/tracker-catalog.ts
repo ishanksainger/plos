@@ -114,22 +114,29 @@ export const TRACKERS: Tracker[] = [
     slug: 'household',
     title: 'Household Money Planner',
     tagline:
-      'A dual-income spreadsheet for couples who share a calendar but split rent.',
+      "One calm Google Sheet to run your whole household's money — spending, bills, EMIs and savings goals, all auto-totalled.",
     description:
-      'Track shared bills, split them in any ratio, log who paid what, and end every month with a settlement number neither of you has to negotiate.',
-    pricePaise: 19900,
+      "A single, calm Google Sheet that runs a household's everyday money, for Indian families and dual-income couples. Log spending (mostly UPI), stay ahead of every bill and EMI, and watch savings goals fill up — one live dashboard updates itself. Built for FY 2025–26 on the 50/30/20 rule, with Indian lakh formatting, real calendar date pickers and checkbox bill tracking. Pure Google Sheets: copy it once and it's yours, on any device. No app, no subscription.",
+    pricePaise: 99900,
     features: [
-      'Shared + personal bill ledger',
-      'Auto-settlement at month end',
-      'SIP and goal jars',
-      'Festival fund',
-      'Vendor & home-help tracker',
+      'Dashboard — income, spending, savings and net cash at a glance, with budget-vs-actual bars and a 12-month strip',
+      'Spending — log every expense with a payment-method tag (UPI / Card / Cash / Auto-debit); categories total themselves',
+      'Budget Plan — a planned amount per category vs what you actually spent, with over/under flags (50/30/20)',
+      'Savings Goals — goals and sinking funds (emergency, Diwali, trips) with % bars and months-to-go',
+      "Bills & EMIs — every recurring bill, EMI and SIP with due dates and a checkbox to tick off what's paid",
     ],
-    audience: 'Dual-income households, couples splitting expenses.',
-    fileType: 'xlsx',
-    pages: 7,
+    audience: 'Indian families and dual-income couples running a shared household budget.',
+    fileType: 'gsheet',
+    pages: 6,
+    // Staged: sharing on the master sheet isn't set to "Anyone with link →
+    // Viewer" yet (verified owner-only via Drive API 2026-07-01), so the
+    // /copy delivery would 404. Flip to `true` once sharing is confirmed.
     active: false,
-    badge: 'In queue',
+    badge: 'New',
+    // Force-copy Google Sheet (carries a bound Apps Script → can't ship as a
+    // downloadable file). No storage_path; /api/download redirects to this.
+    deliveryUrl:
+      'https://docs.google.com/spreadsheets/d/1yMMClXp35FX-resLdOmTryqrK-94Xnb5b6Xhga8zwnk/copy',
   },
   {
     slug: 'wedding',
