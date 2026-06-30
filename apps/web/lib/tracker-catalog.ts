@@ -128,10 +128,7 @@ export const TRACKERS: Tracker[] = [
     audience: 'Indian families and dual-income couples running a shared household budget.',
     fileType: 'gsheet',
     pages: 6,
-    // Staged: sharing on the master sheet isn't set to "Anyone with link →
-    // Viewer" yet (verified owner-only via Drive API 2026-07-01), so the
-    // /copy delivery would 404. Flip to `true` once sharing is confirmed.
-    active: false,
+    active: true,
     badge: 'New',
     // Force-copy Google Sheet (carries a bound Apps Script → can't ship as a
     // downloadable file). No storage_path; /api/download redirects to this.
