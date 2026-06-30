@@ -230,6 +230,26 @@ on conflict (id) do update set
   price_paise = excluded.price_paise;
 
 -- ----------------------------------------------------------------------------
+-- Household Money Planner — LINK-delivered (force-copy Google Sheet, bound
+-- Apps Script → no downloadable file). storage_path null; the "make a copy"
+-- URL lives on the catalog entry (deliveryUrl); /api/download redirects there.
+-- Row exists so order_items.product_id FK resolves on a sale.
+-- ----------------------------------------------------------------------------
+insert into commerce.products (id, type, title, description, price_paise, storage_path)
+values (
+  'household',
+  'digital',
+  'Household Money Planner',
+  'One Google Sheet to run a household''s everyday money — spending, bills and EMIs, savings goals and a 50/30/20 budget, all auto-totalled on one live dashboard. Delivered as a force-copy Google Sheets link (no stored file).',
+  99900,
+  null
+)
+on conflict (id) do update set
+  title = excluded.title,
+  description = excluded.description,
+  price_paise = excluded.price_paise;
+
+-- ----------------------------------------------------------------------------
 -- E-book seed template (commented until the first PDF actually exists).
 -- E-books reuse the digital pipeline: type='digital', storage_path points at
 -- the file in the `products` bucket under ebooks/<slug>.<ext>. The matching
