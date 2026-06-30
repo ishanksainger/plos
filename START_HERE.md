@@ -130,8 +130,8 @@ npm run dev:web
 | Route | What's there |
 |---|---|
 | `/` | 5-stage cinematic scroll hero (Nest → Sheets → Iridescent Blob → Shop Stack → PLOS Pearl with heartbeat) + intro + stats + marquee + tracker preview cards + testimonial + PLOS feature CTA |
-| `/trackers` | Catalog grid — shows only **live** trackers (4 as of 2026-06-24: `budget-upi` ₹299 + `freelancer-gst` ₹499 + `small-business` ₹699 + `wedding-budget` ₹899); queued/file-less ones are hidden until they have a real file or delivery link |
-| `/trackers/budget-upi` | Live tracker detail page with `What you get` + Buy button. Four live now; `freelancer-gst`, `small-business` + `wedding-budget` are link-delivered via force-copy Google Sheets (no stored file), `budget-upi` ships a stored file |
+| `/trackers` | Catalog grid — shows only **live** trackers (5 as of 2026-07-01: `budget-upi` ₹299 + `freelancer-gst` ₹499 + `small-business` ₹699 + `wedding-budget` ₹899 + `household` ₹999); queued/file-less ones are hidden until they have a real file or delivery link |
+| `/trackers/budget-upi` | Live tracker detail page with `What you get` + Buy button. Five live now; `freelancer-gst`, `small-business`, `wedding-budget` + `household` are link-delivered via force-copy Google Sheets (no stored file), `budget-upi` ships a stored file |
 | `/canvas` | Six original 3D/motion scene tiles |
 | `/shop` | Merch grid with category filter |
 | `/plos` | PLOS pillar page with 42-day StreakChain demo |
@@ -254,7 +254,7 @@ Open Chrome DevTools → toggle device mode. Sweep through:
 ### NIS
 - **Cart + multi-item checkout** — single-product Razorpay only; no Zustand cart
 - **PLOS waitlist form** on `/plos` — placeholder, no POST
-- **More trackers** — 4 live (`budget-upi`, `freelancer-gst`, `small-business`, `wedding-budget`); the queued ones stay hidden until they have a real file/link
+- **More trackers** — 5 live (`budget-upi`, `freelancer-gst`, `small-business`, `wedding-budget`, `household`); the queued ones stay hidden until they have a real file/link
 - **Real Spline 3D embed** for hero (currently CSS conic-gradient placeholder)
 - **Canvas / Shop imagery** — placeholders
 - **SEO** — meta tags exist, no sitemap, no schema.org
