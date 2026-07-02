@@ -448,6 +448,15 @@
   position: relative;
 }
 
+/* ---------- Lookbook gallery ---------- */
+.nis-lookbook-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(24px, 4vw, 40px);
+  margin-top: 12px;
+}
+@media (max-width: 720px) { .nis-lookbook-grid { grid-template-columns: 1fr; } }
+
 /* ---------- About / story ---------- */
 .nis-about-grid {
   display: grid;
