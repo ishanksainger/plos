@@ -72,6 +72,7 @@ export const TRACKERS: Tracker[] = [
     // downloadable file). No storage_path; /api/download redirects to this.
     deliveryUrl:
       'https://docs.google.com/spreadsheets/d/1SbBxWfx58tQbCzS-ruvEFxzdGekGCSEMS60n6FscxOw/copy',
+    welcomePath: 'trackers/freelancer-gst.pdf',
   },
   {
     slug: 'budget-upi',
@@ -152,6 +153,7 @@ export const TRACKERS: Tracker[] = [
     // downloadable file). No storage_path; /api/download redirects to this.
     deliveryUrl:
       'https://docs.google.com/spreadsheets/d/1KzcG7ka4npWR1Pcvt00M857Tx2iPR1l8n_7BIeYEY54/copy',
+    welcomePath: 'trackers/wedding-budget.pdf',
   },
   {
     slug: 'household',
@@ -177,6 +179,7 @@ export const TRACKERS: Tracker[] = [
     // downloadable file). No storage_path; /api/download redirects to this.
     deliveryUrl:
       'https://docs.google.com/spreadsheets/d/1yMMClXp35FX-resLdOmTryqrK-94Xnb5b6Xhga8zwnk/copy',
+    welcomePath: 'trackers/household.pdf',
   },
   {
     slug: 'wedding',
@@ -224,6 +227,7 @@ export const TRACKERS: Tracker[] = [
     // downloadable file). No storage_path; /api/download redirects to this.
     deliveryUrl:
       'https://docs.google.com/spreadsheets/d/1v8Cd3kphOPfJVf-w46lgnDxJ97yHZq1gFpNqEfuGmdw/copy',
+    welcomePath: 'trackers/small-business.pdf',
   },
 ];
 
