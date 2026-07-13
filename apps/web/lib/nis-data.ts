@@ -1,5 +1,7 @@
 /** NIS — site copy data, ported from the design prototype (data.js). */
 
+import { listActiveTrackers } from './tracker-catalog';
+
 export type Pillar = {
   key: 'trackers' | 'canvas' | 'shop' | 'plos';
   num: string;
@@ -152,23 +154,33 @@ export const NIS_MERCH: Merch[] = [
   { name: 'Sticker pack — eight stamps', price: 290,  kind: 'Stickers · 8 pieces',  slot: 'sticker-1' },
 ];
 
-export const NIS_TESTIMONIALS: Testimonial[] = [
-  {
-    quote: 'The tracker did in twenty minutes what my CA charged me four thousand rupees a quarter to do.',
-    who: 'Aanya · UX consultant, Bengaluru',
-    slot: 'q1',
-  },
-  {
-    quote: 'I opened PLOS on a Sunday with two overdue bills and a forgotten passport renewal. By Monday lunch all three were closed.',
-    who: 'Rohan · founder, Mumbai',
-    slot: 'q2',
-  },
-];
+/**
+ * EMPTY ON PURPOSE — do not invent quotes.
+ *
+ * This used to ship two fabricated testimonials ("Aanya · UX consultant,
+ * Bengaluru", "Rohan · founder, Mumbai") on a live site that takes real money
+ * and has never had a customer. That's fabricated social proof: dishonest to
+ * the first real buyer and a misleading-advertisement exposure under India's
+ * Consumer Protection Act.
+ *
+ * Add entries only for REAL customers who gave permission, quoted verbatim.
+ * While this array is empty, the home page and /plos testimonial sections hide
+ * themselves — so an empty list is a safe state, not a broken one.
+ */
+export const NIS_TESTIMONIALS: Testimonial[] = [];
 
+/**
+ * Only claims we can actually stand behind.
+ *
+ * These were previously invented ("4,200 trackers downloaded", "₹14L saved on
+ * CA fees", "38 cities served") while the real numbers were zero. Never put an
+ * unverifiable figure here. The tracker count is derived from the catalog, so
+ * it can't drift out of date and become a lie on its own.
+ */
 export const NIS_STATS: Stat[] = [
-  { fig: '4,200',  label: 'Trackers downloaded' },
-  { fig: '₹ 14L',  label: 'Saved on CA fees by users' },
-  { fig: '38',     label: 'Cities served · India only' },
+  { fig: String(listActiveTrackers().length), label: 'Trackers, live today' },
+  { fig: '₹0/mo', label: 'No subscription — pay once, yours forever' },
+  { fig: 'India', label: 'Built for GST, UPI and lakhs' },
 ];
 
 export const fmtINR = (n: number) =>

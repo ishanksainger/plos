@@ -222,6 +222,9 @@ export function PlosPillarPage() {
         </div>
       </section>
 
+      {/* Hidden until we have REAL user quotes — see NIS_TESTIMONIALS. */}
+      {NIS_TESTIMONIALS.length > 0 && (
+      <>
       <div className="section-divider" />
 
       <section className="nis-section">
@@ -288,6 +291,8 @@ export function PlosPillarPage() {
           ))}
         </div>
       </section>
+      </>
+      )}
 
       <div className="section-divider" />
 

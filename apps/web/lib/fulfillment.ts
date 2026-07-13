@@ -373,6 +373,31 @@ async function persistAndEmailBundle(
   return { fulfilled: true, orderItemId: order.id };
 }
 
+/**
+ * Where a buyer's reply actually lands.
+ *
+ * Our emails told buyers "Questions? Just reply to this email" — but they're
+ * sent FROM notifications@thenispace.com and the domain has **no MX record**,
+ * so nothing on the internet accepts mail for it. Every reply bounced into the
+ * void: a buyer with a broken download had no way to reach us.
+ *
+ * Set SUPPORT_EMAIL to a real inbox and Resend routes replies there. If it's
+ * unset we do NOT print the "reply to this email" promise — better to say
+ * nothing than to promise a channel that silently swallows people.
+ */
+function supportEmail(): string | undefined {
+  const v = process.env.SUPPORT_EMAIL?.trim();
+  return v ? v : undefined;
+}
+
+/** The sign-off line — only promises a reply when a reply can actually arrive. */
+function supportLine(): string {
+  const s = supportEmail();
+  return s
+    ? 'Questions? Just reply to this email. — NIS'
+    : 'Questions? Reach us any time at thenispace.com. — NIS';
+}
+
 function publicSiteUrl(): string {
   return (
     process.env.NEXT_PUBLIC_SITE_URL ??
@@ -418,6 +443,7 @@ async function sendReceiptEmail(opts: {
 
   await resend.emails.send({
     from,
+    replyTo: supportEmail(),
     to: opts.to,
     subject: `Your ${opts.productTitle} download is ready`,
     html: receiptHtml({
@@ -482,6 +508,7 @@ async function sendBundleEmail(opts: {
 
   await resend.emails.send({
     from,
+    replyTo: supportEmail(),
     to: opts.to,
     subject: `Your ${opts.bundle.title} order is confirmed`,
     html: `
@@ -512,7 +539,7 @@ async function sendBundleEmail(opts: {
 
         <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 28px 0;" />
         <p style="font-size: 13px; color: #737373; margin: 0;">
-          Questions? Reply to this email. — NIS
+          ${supportLine()}
         </p>
       </div>
     `,
@@ -526,6 +553,7 @@ async function sendFallbackEmail(to: string, productTitle: string) {
   const from = process.env.RESEND_FROM_EMAIL ?? 'NIS <notifications@thenispace.com>';
   await resend.emails.send({
     from,
+    replyTo: supportEmail(),
     to,
     subject: `Order received: ${productTitle}`,
     html: `<p>Thanks for buying <strong>${escapeHtml(productTitle)}</strong>. We&rsquo;ll email your download link shortly.</p>`,
@@ -583,7 +611,7 @@ function receiptHtml(opts: {
       <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 32px 0;" />
 
       <p style="font-size: 13px; color: #737373; margin: 0;">
-        Questions? Just reply to this email. — NIS
+        ${supportLine()}
       </p>
     </div>
   `;
