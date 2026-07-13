@@ -18,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       : []),
     { url: `${SITE_URL}/ebooks`,   lastModified, changeFrequency: 'weekly',  priority: 0.8 },
     { url: `${SITE_URL}/canvas`,   lastModified, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${SITE_URL}/lookbook`, lastModified, changeFrequency: 'weekly',  priority: 0.6 },
     { url: `${SITE_URL}/shop`,     lastModified, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${SITE_URL}/plos`,     lastModified, changeFrequency: 'weekly',  priority: 0.9 },
     { url: `${SITE_URL}/about`,    lastModified, changeFrequency: 'monthly', priority: 0.5 },

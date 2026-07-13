@@ -10,6 +10,7 @@ const LINKS = [
   { href: '/trackers', label: 'Trackers' },
   { href: '/ebooks',   label: 'E-books' },
   { href: '/canvas',   label: 'Canvas' },
+  { href: '/lookbook', label: 'Lookbook' },
   { href: '/shop',     label: 'Shop' },
   { href: '/plos',     label: 'PLOS' },
   { href: '/about',    label: 'About' },
