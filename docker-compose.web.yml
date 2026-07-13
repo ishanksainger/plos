@@ -34,6 +34,10 @@ services:
       - RAZORPAY_WEBHOOK_SECRET=${RAZORPAY_WEBHOOK_SECRET}
       - RESEND_API_KEY=${RESEND_API_KEY}
       - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-NIS <notifications@thenispace.com>}
+      # Where buyer replies land (Resend replyTo). thenispace.com has no MX
+      # record, so a reply to RESEND_FROM_EMAIL bounces — without this, the
+      # emails stop promising "just reply". Point it at a real inbox.
+      - SUPPORT_EMAIL=${SUPPORT_EMAIL:-}
       # Admin dashboard Basic Auth — leave unset to keep /admin disabled (404).
       - ADMIN_USER=${ADMIN_USER:-}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}

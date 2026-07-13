@@ -82,23 +82,28 @@ export function HomePage() {
           </Reveal>
         </div>
 
-        <div className="section-divider" />
+        {/* Hidden until we have a REAL customer quote — see NIS_TESTIMONIALS. */}
+        {NIS_TESTIMONIALS.length > 0 && (
+          <>
+            <div className="section-divider" />
 
-        <div className="nis-section">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 'clamp(28px, 5vw, 72px)' }}>
-            <Reveal>
-              <div className="nis-section-eyebrow">Why people stay</div>
-            </Reveal>
-            <Reveal delay={1}>
-              <div>
-                <p className="nis-pull">&ldquo;{NIS_TESTIMONIALS[0].quote}&rdquo;</p>
-                <div style={{ marginTop: 24, fontSize: 13, color: 'var(--ink-3)', fontFamily: 'var(--nis-font-mono)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                  — {NIS_TESTIMONIALS[0].who}
-                </div>
+            <div className="nis-section">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 'clamp(28px, 5vw, 72px)' }}>
+                <Reveal>
+                  <div className="nis-section-eyebrow">Why people stay</div>
+                </Reveal>
+                <Reveal delay={1}>
+                  <div>
+                    <p className="nis-pull">&ldquo;{NIS_TESTIMONIALS[0].quote}&rdquo;</p>
+                    <div style={{ marginTop: 24, fontSize: 13, color: 'var(--ink-3)', fontFamily: 'var(--nis-font-mono)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                      — {NIS_TESTIMONIALS[0].who}
+                    </div>
+                  </div>
+                </Reveal>
               </div>
-            </Reveal>
-          </div>
-        </div>
+            </div>
+          </>
+        )}
 
         <div className="section-divider" />
 
