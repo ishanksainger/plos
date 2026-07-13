@@ -34,6 +34,17 @@ export type Tracker = {
    * (still token-gated — only a paid buyer ever reaches the redirect).
    */
   deliveryUrl?: string;
+  /**
+   * Storage path of the "Start Here" welcome guide (a PDF), if one exists.
+   * This is a COMPANION to `deliveryUrl`, never a replacement: the download
+   * link always goes straight to the sheet, and the guide rides along as a
+   * second button in the receipt email (`/api/guide?token=…`).
+   *
+   * It must stay behind the token — the guide contains the force-copy link, so
+   * hosting it publicly would hand out the product for free. Trackers without
+   * a guide simply omit the button.
+   */
+  welcomePath?: string;
 };
 
 export const TRACKERS: Tracker[] = [
@@ -83,6 +94,13 @@ export const TRACKERS: Tracker[] = [
     pages: 6,
     active: true,
     badge: 'New',
+    // Was the ONLY tracker delivered as a stored PDF (the buyer had to open it
+    // and hunt for the sheet link) — a leftover from before `deliveryUrl`
+    // existed. Now link-delivered like every other tracker: straight to the
+    // sheet. Its Welcome PDF stays, but as the email's guide (welcomePath).
+    deliveryUrl:
+      'https://docs.google.com/spreadsheets/d/1_A43NoNVbTjK3tLRw2K4ILChHRYYojiCMQSdaTecVYs/copy',
+    welcomePath: 'trackers/budget-upi.pdf',
   },
   {
     slug: 'habit-tracker',
@@ -107,6 +125,7 @@ export const TRACKERS: Tracker[] = [
     // downloadable file). No storage_path; /api/download redirects to this.
     deliveryUrl:
       'https://docs.google.com/spreadsheets/d/1f-HisJNG8jr_KGhZPhRGO15LyUABMMOkjTj-sRckxYA/copy',
+    welcomePath: 'trackers/habit-tracker.pdf',
   },
   {
     slug: 'wedding-budget',

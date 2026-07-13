@@ -189,6 +189,36 @@ on conflict (id) do update set
   storage_path = excluded.storage_path;
 
 -- ----------------------------------------------------------------------------
+-- Indian Budget & UPI Tracker — LINK-delivered.
+--
+-- HISTORY: this was the ONE tracker delivered as a stored PDF
+-- (storage_path = 'trackers/budget-upi.pdf'), because it shipped before
+-- `deliveryUrl` existed and a Google Sheet had no other way to reach a buyer.
+-- The buyer had to open the PDF and hunt for the sheet link inside it. It is
+-- now link-delivered like every other tracker: storage_path is null, so
+-- /api/download redirects straight to the force-copy sheet.
+--
+-- The Welcome PDF is NOT deleted — it lives on as the catalog entry's
+-- `welcomePath`, served token-gated by /api/guide as the receipt email's
+-- "Start-Here guide" button. Do NOT put it back in storage_path: that column
+-- takes precedence over deliveryUrl and would re-break the flow.
+-- ----------------------------------------------------------------------------
+insert into commerce.products (id, type, title, description, price_paise, storage_path)
+values (
+  'budget-upi',
+  'digital',
+  'Indian Budget & UPI Tracker — 2026',
+  'A budget tracker that runs itself — UPI-app split (GPay/PhonePe/Paytm), 12-month view, budgets, savings goals and 50/30/20. Delivered as a force-copy Google Sheets link (no stored file).',
+  29900,
+  null
+)
+on conflict (id) do update set
+  title = excluded.title,
+  description = excluded.description,
+  price_paise = excluded.price_paise,
+  storage_path = excluded.storage_path;
+
+-- ----------------------------------------------------------------------------
 -- Indian Wedding Budget Planner — LINK-delivered (force-copy Google Sheet).
 -- No storage_path: the sheet carries a bound Apps Script so it can't ship as a
 -- downloadable file. The "make a copy" URL lives on the catalog entry in

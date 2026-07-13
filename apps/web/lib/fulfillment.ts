@@ -98,7 +98,7 @@ export async function resendDownloadForOrderItem(
     .from('order_items')
     .select(
       `id, price_paise,
-       product:products!inner ( title, storage_path ),
+       product:products!inner ( id, title, storage_path ),
        order:orders!inner ( email )`,
     )
     .eq('id', orderItemId)
@@ -108,8 +108,15 @@ export async function resendDownloadForOrderItem(
 
   const product = Array.isArray(data.product) ? data.product[0] : data.product;
   const order = Array.isArray(data.order) ? data.order[0] : data.order;
-  if (!product?.storage_path) {
-    return { ok: false, error: 'This line has no deliverable file (e.g. a bundle SKU row).' };
+
+  // A line is deliverable if it has EITHER a stored file OR a catalog
+  // deliveryUrl (link-delivered Google Sheets have no storage_path). Checking
+  // storage_path alone used to reject every link-delivered tracker, which is
+  // now all of them — so resend was silently broken for the whole catalog.
+  const catalogEntry = product?.id ? getTracker(product.id as string) : undefined;
+  const isDeliverable = Boolean(product?.storage_path) || Boolean(catalogEntry?.deliveryUrl);
+  if (!isDeliverable) {
+    return { ok: false, error: 'This line has no deliverable file or link (e.g. a bundle SKU row).' };
   }
   if (!order?.email) return { ok: false, error: 'No buyer email on the order' };
 
@@ -133,6 +140,7 @@ export async function resendDownloadForOrderItem(
     productTitle: product.title as string,
     pricePaise: data.price_paise as number,
     downloadUrl: downloadLink(token),
+    guideUrl: catalogEntry?.welcomePath ? guideLink(token) : undefined,
     expiresAt,
     maxUses: DOWNLOAD_MAX_USES,
   });
@@ -231,6 +239,7 @@ async function persistAndEmail(input: FulfillmentInput): Promise<FulfillmentResu
     productTitle: tracker.title,
     pricePaise: tracker.pricePaise,
     downloadUrl,
+    guideUrl: tracker.welcomePath ? guideLink(token) : undefined,
     expiresAt,
     maxUses: DOWNLOAD_MAX_USES,
   });
@@ -382,11 +391,22 @@ function downloadLink(token: string): string {
   return `${publicSiteUrl()}/download?token=${encodeURIComponent(token)}`;
 }
 
+/**
+ * The Start-Here guide. Points straight at the API route (unlike the download
+ * link, which goes via a landing page to stop link-scanners spending a use) —
+ * safe here because /api/guide never spends a download.
+ */
+function guideLink(token: string): string {
+  return `${publicSiteUrl()}/api/guide?token=${encodeURIComponent(token)}`;
+}
+
 async function sendReceiptEmail(opts: {
   to: string;
   productTitle: string;
   pricePaise: number;
   downloadUrl: string;
+  /** Optional — only trackers with a `welcomePath` have a guide. */
+  guideUrl?: string;
   expiresAt: Date;
   maxUses: number;
 }) {
@@ -404,6 +424,7 @@ async function sendReceiptEmail(opts: {
       productTitle: opts.productTitle,
       pricePaise: opts.pricePaise,
       downloadUrl: opts.downloadUrl,
+      guideUrl: opts.guideUrl,
       expiresAt: opts.expiresAt,
       maxUses: opts.maxUses,
     }),
@@ -515,6 +536,7 @@ function receiptHtml(opts: {
   productTitle: string;
   pricePaise: number;
   downloadUrl: string;
+  guideUrl?: string;
   expiresAt: Date;
   maxUses: number;
 }): string {
@@ -523,6 +545,21 @@ function receiptHtml(opts: {
     month: 'long',
     year: 'numeric',
   });
+
+  // Secondary CTA — only for trackers that ship a Start-Here guide. Styled as a
+  // quiet outline button so it never competes with the real download.
+  const guideBlock = opts.guideUrl
+    ? `
+      <p style="margin: 24px 0 10px; color: #525252; font-size: 14px;">
+        New to it? The guide walks you through setup in 60 seconds.
+      </p>
+      <a href="${opts.guideUrl}"
+         style="display: inline-block; padding: 12px 22px; background: #ffffff; color: #7c3aed;
+                text-decoration: none; border: 1px solid #ddd6fe; border-radius: 9999px;
+                font-weight: 500; font-size: 14px;">
+        Get your Start-Here guide
+      </a>`
+    : '';
 
   return `
     <div style="font-family: -apple-system, system-ui, sans-serif; max-width: 540px; margin: 0 auto; padding: 32px 24px; color: #0a0a0a;">
@@ -541,6 +578,7 @@ function receiptHtml(opts: {
       <p style="margin: 24px 0 8px; color: #525252; font-size: 14px;">
         Link expires <strong>${escapeHtml(expiresFmt)}</strong> · max ${opts.maxUses} downloads.
       </p>
+      ${guideBlock}
 
       <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 32px 0;" />
 
