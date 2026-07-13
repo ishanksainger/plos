@@ -82,6 +82,19 @@ export const NIS_TRACKERS: Tracker[] = [
     ],
   },
   {
+    slug: 'habit-tracker', title: 'Daily Routine & Habit Tracker 2026', badge: 'New', accent: '#274e37',
+    tagline: 'Build routines that actually stick.',
+    price: 399, fileType: 'Google Sheet', pages: 16, unit: 'tabs', image: '/trackers/habit-tracker.png',
+    desc: 'Choose your habits once, tick a box each day, and watch the whole thing come alive. The Daily Routine & Habit Tracker is a single Google Sheet — no apps, no subscriptions, nothing to install — built to keep you consistent. It flags the habit you skipped yesterday so you never miss twice, celebrates your streaks with a 🔥 counter, and turns your entire year into a wall of green you can see at a glance. Set it up in 60 seconds, then just show up.',
+    features: [
+      'Live Dashboard — Today / This-week / This-month / Streak-King cards, two auto-updating donuts, and a "Don\'t Miss Twice" panel that flags what you skipped yesterday',
+      'Year heatmap — every day of the year as a colour square; greener = more done. The most honest progress bar you\'ll ever keep',
+      "Monthly grids with streaks — tick a box a day; today's column is gold, weekends shaded, traffic-light bars show where you're winning, plus a Daily Progress chart",
+      'Week Planner + smart Settings — 7 day-cards with donuts and extra to-dos; set up to 15 habits with habit-stacking, a 2-minute version, and your identity line',
+      'Yours forever — works on desktop & mobile, no monthly fees, no accounts. One-time purchase, instant copy',
+    ],
+  },
+  {
     slug: 'wedding-budget', title: 'Indian Wedding Budget Planner', badge: 'New', accent: '#f59e0b',
     tagline: 'One Google Sheet to plan a calm, on-budget Indian wedding — every ceremony, vendor, guest and rupee, with totals that update themselves.',
     price: 899, fileType: 'Google Sheet', pages: 11, unit: 'tabs',
