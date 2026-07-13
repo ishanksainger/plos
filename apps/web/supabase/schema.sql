@@ -250,6 +250,28 @@ on conflict (id) do update set
   price_paise = excluded.price_paise;
 
 -- ----------------------------------------------------------------------------
+-- Daily Routine & Habit Tracker — LINK-delivered (force-copy Google Sheet,
+-- bound Apps Script → no downloadable file). storage_path null; the "make a
+-- copy" URL lives on the catalog entry (deliveryUrl); /api/download redirects
+-- there. Row exists so order_items.product_id FK resolves on a sale.
+-- (Catalog entry is staged active:false until the go-live gate clears — see
+-- BACKLOG item 6g — but the row is harmless to seed now.)
+-- ----------------------------------------------------------------------------
+insert into commerce.products (id, type, title, description, price_paise, storage_path)
+values (
+  'habit-tracker',
+  'digital',
+  'Daily Routine & Habit Tracker 2026',
+  'A single Google Sheet that turns one tick a day into visible momentum — streaks, live donuts and a full-year heatmap that fill themselves in. Delivered as a force-copy Google Sheets link (no stored file).',
+  39900,
+  null
+)
+on conflict (id) do update set
+  title = excluded.title,
+  description = excluded.description,
+  price_paise = excluded.price_paise;
+
+-- ----------------------------------------------------------------------------
 -- E-book seed template (commented until the first PDF actually exists).
 -- E-books reuse the digital pipeline: type='digital', storage_path points at
 -- the file in the `products` bucket under ebooks/<slug>.<ext>. The matching
