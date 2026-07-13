@@ -101,10 +101,7 @@ export const TRACKERS: Tracker[] = [
     audience: 'Anyone building daily routines and habits that stick.',
     fileType: 'gsheet',
     pages: 16,
-    // Staged inactive — flip to true once (1) the master sheet is shared
-    // "Anyone with link → Viewer" and (2) the Welcome PDF's {{COPY_LINK}}
-    // placeholder is the real link + re-uploaded. See BACKLOG item 6g.
-    active: false,
+    active: true,
     badge: 'New',
     // Force-copy Google Sheet (carries a bound Apps Script → can't ship as a
     // downloadable file). No storage_path; /api/download redirects to this.
