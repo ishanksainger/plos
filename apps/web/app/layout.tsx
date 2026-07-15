@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import { Sora, Instrument_Serif, Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
+import PageViewBeacon from '@/components/PageViewBeacon';
 
 const PLAUSIBLE_DOMAIN = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
 const PLAUSIBLE_SRC = process.env.NEXT_PUBLIC_PLAUSIBLE_SRC ?? 'https://plausible.io/js/script.js';
@@ -62,6 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body>
         {children}
+        <PageViewBeacon />
         {PLAUSIBLE_DOMAIN && (
           <Script
             defer
