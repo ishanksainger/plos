@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { Carousel } from '@/components/nis/Carousel';
 import { ImageSlot } from '@/components/nis/ImageSlot';
 import { TrackerActions } from '@/components/nis/TrackerActions';
 import { fmtINR, type Tracker } from '@/lib/nis-data';
@@ -70,7 +71,7 @@ export function TrackerDetailPage({ tracker: t }: { tracker: Tracker }) {
             }}
           >
             <span>{t.fileType}</span>
-            <span>{t.pages} {t.unit ?? 'sheets'}</span>
+            {t.pages ? <span>{t.pages} {t.unit ?? 'sheets'}</span> : null}
           </div>
         </div>
 
@@ -169,6 +170,42 @@ export function TrackerDetailPage({ tracker: t }: { tracker: Tracker }) {
           </ul>
         </div>
       </div>
+
+      {t.gallery && t.gallery.length > 0 && (
+        <div style={{ marginTop: 72, maxWidth: 520 }}>
+          <h3 className="nis-h3" style={{ marginBottom: 6 }}>
+            {t.galleryTitle ?? 'A closer look'}
+          </h3>
+          <p style={{ color: 'var(--ink-3)', fontSize: 13, margin: '0 0 18px' }}>
+            {t.gallery.length} designs · sample layouts
+          </p>
+          <Carousel
+            slides={t.gallery.map((g) => g.src)}
+            alt={`${t.title} — preview`}
+            accent={t.accent}
+          />
+          <div
+            aria-live="polite"
+            style={{
+              marginTop: 12,
+              fontFamily: 'var(--nis-font-mono)',
+              fontSize: 11,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: 'var(--ink-3)',
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '6px 14px',
+            }}
+          >
+            {t.gallery.map((g, i) => (
+              <span key={g.src}>
+                {String(i + 1).padStart(2, '0')} · {g.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

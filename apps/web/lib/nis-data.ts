@@ -11,6 +11,14 @@ export type Pillar = {
   meta: string;
 };
 
+/** One preview image in a product's gallery (see `Tracker.gallery`). */
+export type GalleryItem = {
+  /** Path under /public. */
+  src: string;
+  /** Short caption shown under the carousel, e.g. "Save the date". */
+  label: string;
+};
+
 export type Tracker = {
   slug: string;
   title: string;
@@ -21,9 +29,23 @@ export type Tracker = {
   /** Optional "was" price (rupees) shown struck-through next to `price`. */
   mrp?: number;
   fileType: string;
-  pages: number;
+  /**
+   * Tab/sheet count, shown next to `fileType`. Optional: a multi-part product
+   * (a sheet + guides + designs) has no single honest number, so it omits this
+   * rather than inventing one — the meta line then shows `fileType` alone.
+   */
+  pages?: number;
   /** Noun for the `pages` count — defaults to 'sheets'; a single Google Sheet uses 'tabs'. */
   unit?: string;
+  /**
+   * Optional preview images shown as a carousel on the detail page (e.g. the
+   * Wedding Box's four invitation designs). Absent → no gallery section.
+   * These are PUBLIC marketing art committed under /public — never the paid
+   * deliverable, which stays token-gated behind /api/download.
+   */
+  gallery?: GalleryItem[];
+  /** Heading for the gallery section. Defaults to "A closer look". */
+  galleryTitle?: string;
   /**
    * Optional square cover image (served from /public). When set, the shop card
    * + detail page render it (object-fit: cover) instead of the placeholder SVG.
@@ -108,6 +130,33 @@ export const NIS_TRACKERS: Tracker[] = [
       'Guest list & RSVP tracker',
       'Shagun & Neg ledger — every gift, lifafa and gold coin, and who you thanked',
       'Bride / Groom split + 4 switchable colour themes',
+    ],
+  },
+  {
+    // STAGED, NOT LIVE — the commerce entry is `active: false`, so this never
+    // renders anywhere (grid, home, sitemap and the detail page all gate on
+    // getPurchasableTracker). Copy below is a draft describing only what the
+    // box actually contains; replace with Ishank's / Desktop's final wording
+    // before go-live. Couple names on the invitation art ("Aanya & Rohan")
+    // are demo text baked into the designs, not a customer.
+    slug: 'wedding-box', title: 'The Wedding Box', badge: 'New', accent: '#0f4c3a',
+    tagline: 'Everything for the wedding in one box — the budget planner, two guides, and a matching invitation suite.',
+    price: 2499, fileType: 'Google Sheet + PDF guides',
+    image: '/trackers/wedding-box/1.jpg',
+    desc: "The Indian Wedding Budget Planner, plus the pieces that surround it. You get the full 11-tab Google Sheet that does the wedding maths for you, a 12-month planning checklist and a guide to what each ritual actually means, a Start-Here page that tells you where to begin — and a four-piece invitation suite designed to match: save-the-date, invitation, RSVP and thank-you.",
+    features: [
+      'Indian Wedding Budget Planner — the full 11-tab Google Sheet, yours to copy',
+      '12-month wedding checklist — what to book and when, as a printable PDF',
+      'Ritual meanings guide — what each ceremony is for, in plain language',
+      'Start-Here page — where to begin on day one',
+      'Invitation suite — save-the-date, invitation, RSVP and thank-you designs',
+    ],
+    galleryTitle: "What's inside — the invitation suite",
+    gallery: [
+      { src: '/trackers/wedding-box/1.jpg', label: 'Save the date' },
+      { src: '/trackers/wedding-box/2.jpg', label: 'Wedding invitation' },
+      { src: '/trackers/wedding-box/3.jpg', label: 'RSVP card' },
+      { src: '/trackers/wedding-box/4.jpg', label: 'Thank-you card' },
     ],
   },
   {
