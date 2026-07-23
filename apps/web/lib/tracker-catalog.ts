@@ -203,6 +203,48 @@ export const TRACKERS: Tracker[] = [
     badge: 'In queue',
   },
   {
+    // ── The Wedding Box — STAGED, NOT LIVE (active: false) ──────────────────
+    // The premium bundle built around `wedding-budget`: the full sheet + the
+    // 12-month checklist + ritual-meanings guide + a Start-Here page + the
+    // four-piece invitation suite (the reason for this SKU — its preview
+    // gallery lives in nis-data.ts).
+    //
+    // GO-LIVE TODOs (owner: Ishank, do NOT flip active:true before):
+    //   1. Confirm the price. `pricePaise` below is a PLACEHOLDER (₹2,499).
+    //   2. Decide delivery shape. Cloned from wedding-budget for now (single
+    //      link-delivered sheet + one welcome PDF). If the box should also
+    //      hand over the extra guide PDFs as separate download tokens, model
+    //      it as kind:'bundle' with its own components instead — that path
+    //      already exists (persistAndEmailBundle). None of this runs while
+    //      active:false, so it's safe to stage as-is.
+    //   3. Insert the matching commerce.products row in nis-prod so the
+    //      order_items FK resolves (same step as every other go-live).
+    slug: 'wedding-box',
+    title: 'The Wedding Box',
+    tagline:
+      'The wedding, in one box — the budget planner, the guides, and a matching invitation suite.',
+    description:
+      'The Indian Wedding Budget Planner plus the pieces around it: a 12-month checklist, a ritual-meanings guide, a Start-Here page, and a four-part invitation suite (save-the-date, invitation, RSVP, thank-you) designed to match.',
+    // PLACEHOLDER price — Ishank to confirm before go-live. ₹2,499.
+    pricePaise: 249900,
+    features: [
+      'Indian Wedding Budget Planner — the full 11-tab Google Sheet',
+      '12-month wedding checklist (PDF)',
+      'Ritual meanings guide (PDF)',
+      'Start-Here page',
+      'Four-part invitation suite — save-the-date, invitation, RSVP, thank-you',
+    ],
+    audience: 'Indian families and couples planning a wedding who want everything in one place.',
+    fileType: 'gsheet',
+    active: false,
+    badge: 'New',
+    // Cloned from wedding-budget (see TODO #2). No storage_path; inert while
+    // active:false. Same force-copy sheet as the standalone planner.
+    deliveryUrl:
+      'https://docs.google.com/spreadsheets/d/1KzcG7ka4npWR1Pcvt00M857Tx2iPR1l8n_7BIeYEY54/copy',
+    welcomePath: 'trackers/wedding-budget.pdf',
+  },
+  {
     slug: 'small-business',
     title: 'Small Business Accounts & GST Book',
     tagline:
