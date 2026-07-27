@@ -135,7 +135,8 @@ export const TRACKERS: Tracker[] = [
       'One Google Sheet to plan a calm, on-budget Indian wedding — every ceremony, vendor, guest and rupee, with totals that update themselves.',
     description:
       "A single, beautifully designed Google Sheet that does the wedding maths for you. Set your budget, tick the ceremonies you're having, and type real costs into each tab — everything rolls up into one live dashboard automatically. Pure Google Sheets: works the moment you copy it, on any device, yours forever. No app, no subscription, no ads.",
-    pricePaise: 89900,
+    // Repriced ₹899 → ₹299 (2026-07-28) as the "tracker alone" tier below the ₹999 Wedding Box.
+    pricePaise: 29900,
     features: [
       'Live budget dashboard — auto-totals, progress bars and status',
       '7 ceremony tabs — Roka, Pre-wedding, Sagan, Haldi, Mehendi & Sangeet, Wedding, Reception',
@@ -210,7 +211,7 @@ export const TRACKERS: Tracker[] = [
     // gallery lives in nis-data.ts).
     //
     // GO-LIVE TODOs (owner: Ishank, do NOT flip active:true before):
-    //   1. Confirm the price. `pricePaise` below is a PLACEHOLDER (₹2,499).
+    //   1. Price CONFIRMED ₹999 (locked 2026-07-28). Still gated on the rest.
     //   2. Decide delivery shape. Cloned from wedding-budget for now (single
     //      link-delivered sheet + one welcome PDF). If the box should also
     //      hand over the extra guide PDFs as separate download tokens, model
@@ -225,8 +226,9 @@ export const TRACKERS: Tracker[] = [
       'The wedding, in one box — the budget planner, the guides, and a matching invitation suite.',
     description:
       'The Indian Wedding Budget Planner plus the pieces around it: a 12-month checklist, a ritual-meanings guide, a Start-Here page, and a four-part invitation suite (save-the-date, invitation, RSVP, thank-you) designed to match.',
-    // PLACEHOLDER price — Ishank to confirm before go-live. ₹2,499.
-    pricePaise: 249900,
+    // Confirmed ₹999 (locked 2026-07-28). Still active:false until contents
+    // (incl. the 4 video invites) are final + the commerce.products row exists.
+    pricePaise: 99900,
     features: [
       'Indian Wedding Budget Planner — the full 11-tab Google Sheet',
       '12-month wedding checklist (PDF)',

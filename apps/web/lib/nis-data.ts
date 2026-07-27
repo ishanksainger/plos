@@ -121,7 +121,7 @@ export const NIS_TRACKERS: Tracker[] = [
   {
     slug: 'wedding-budget', title: 'Indian Wedding Budget Planner', badge: 'New', accent: '#f59e0b',
     tagline: 'One Google Sheet to plan a calm, on-budget Indian wedding — every ceremony, vendor, guest and rupee, with totals that update themselves.',
-    price: 899, fileType: 'Google Sheet', pages: 11, unit: 'tabs',
+    price: 299, fileType: 'Google Sheet', pages: 11, unit: 'tabs',
     desc: "A single, beautifully designed Google Sheet that does the wedding maths for you. Set your budget, tick the ceremonies you're having, and type real costs into each tab — everything rolls up into one live dashboard automatically. Pure Google Sheets: works the moment you copy it, on any device, yours forever. No app, no subscription.",
     features: [
       'Live budget dashboard — auto-totals, progress bars and status',
@@ -141,7 +141,7 @@ export const NIS_TRACKERS: Tracker[] = [
     // are demo text baked into the designs, not a customer.
     slug: 'wedding-box', title: 'The Wedding Box', badge: 'New', accent: '#0f4c3a',
     tagline: 'Everything for the wedding in one box — the budget planner, two guides, and a matching invitation suite.',
-    price: 2499, fileType: 'Google Sheet + PDF guides',
+    price: 999, fileType: 'Google Sheet + PDF guides',
     image: '/trackers/wedding-box/1.jpg',
     desc: "The Indian Wedding Budget Planner, plus the pieces that surround it. You get the full 11-tab Google Sheet that does the wedding maths for you, a 12-month planning checklist and a guide to what each ritual actually means, a Start-Here page that tells you where to begin — and a four-piece invitation suite designed to match: save-the-date, invitation, RSVP and thank-you.",
     features: [
