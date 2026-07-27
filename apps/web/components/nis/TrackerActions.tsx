@@ -109,7 +109,9 @@ export function TrackerActions({ slug }: { slug: string }) {
           }
           setStatus({
             kind: 'success',
-            message: 'Payment received. Check your email for the download link (also check spam).',
+            message: tracker!.madeToOrder
+              ? 'Payment received. Check your email — we’ll ask for your wedding details to personalise your order (also check spam).'
+              : 'Payment received. Check your email for the download link (also check spam).',
           });
         },
       });
@@ -147,7 +149,7 @@ export function TrackerActions({ slug }: { slug: string }) {
       {showBuyNow && (
         <div className="nis-tracker-buynow">
           <label className="nis-cart-email" style={{ width: '100%' }}>
-            <span>Email for the download link</span>
+            <span>{tracker.madeToOrder ? 'Email for your order' : 'Email for the download link'}</span>
             <input
               type="email"
               required
