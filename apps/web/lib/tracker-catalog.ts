@@ -45,6 +45,15 @@ export type Tracker = {
    * a guide simply omit the button.
    */
   welcomePath?: string;
+  /**
+   * Made-to-order SKUs (the Wedding Box + video invites) are personalised by
+   * hand AFTER payment, so they have NO instant deliverable. On purchase the
+   * order is recorded and left `paid` (awaiting fulfilment) and the buyer gets
+   * a "send us your details" email (see WEDDING_DETAILS_FORM_URL) instead of a
+   * download token. They must have no `deliveryUrl`/`welcomePath` so the admin
+   * resend action correctly refuses (there is nothing to auto-deliver).
+   */
+  madeToOrder?: boolean;
 };
 
 export const TRACKERS: Tracker[] = [
@@ -204,47 +213,67 @@ export const TRACKERS: Tracker[] = [
     badge: 'In queue',
   },
   {
-    // ── The Wedding Box — STAGED, NOT LIVE (active: false) ──────────────────
-    // The premium bundle built around `wedding-budget`: the full sheet + the
-    // 12-month checklist + ritual-meanings guide + a Start-Here page + the
-    // four-piece invitation suite (the reason for this SKU — its preview
-    // gallery lives in nis-data.ts).
+    // ── The Wedding Box — STAGED, made to order (active: false) ─────────────
+    // The full personalised suite: 4 WhatsApp invite videos + 4 matching cards
+    // + the Wedding Budget Planner + its guides. `madeToOrder: true` → paying
+    // does NOT auto-deliver a file; the buyer is emailed a details form and we
+    // craft the suite by hand (see fulfillment.ts persistMadeToOrder). Its
+    // preview gallery lives in nis-data.ts.
     //
     // GO-LIVE TODOs (owner: Ishank, do NOT flip active:true before):
-    //   1. Price CONFIRMED ₹999 (locked 2026-07-28). Still gated on the rest.
-    //   2. Decide delivery shape. Cloned from wedding-budget for now (single
-    //      link-delivered sheet + one welcome PDF). If the box should also
-    //      hand over the extra guide PDFs as separate download tokens, model
-    //      it as kind:'bundle' with its own components instead — that path
-    //      already exists (persistAndEmailBundle). None of this runs while
-    //      active:false, so it's safe to stage as-is.
+    //   1. Price CONFIRMED ₹999 (locked 2026-07-28).
+    //   2. Set WEDDING_DETAILS_FORM_URL on the VPS to the Google Form that
+    //      collects names/dates/venue/side/custom request (until then the
+    //      order email falls back to "reply with your details"). SUPPORT_EMAIL
+    //      must be set for that reply path (it already is).
     //   3. Insert the matching commerce.products row in nis-prod so the
     //      order_items FK resolves (same step as every other go-live).
+    //   4. Deliberately NO deliveryUrl/welcomePath — made-to-order has no
+    //      instant deliverable, and their absence makes admin "resend" refuse.
     slug: 'wedding-box',
     title: 'The Wedding Box',
     tagline:
-      'The wedding, in one box — the budget planner, the guides, and a matching invitation suite.',
+      'The whole wedding in one box — four personalised invite videos, four matching cards, the budget planner and its guides.',
     description:
-      'The Indian Wedding Budget Planner plus the pieces around it: a 12-month checklist, a ritual-meanings guide, a Start-Here page, and a four-part invitation suite (save-the-date, invitation, RSVP, thank-you) designed to match.',
-    // Confirmed ₹999 (locked 2026-07-28). Still active:false until contents
-    // (incl. the 4 video invites) are final + the commerce.products row exists.
+      'Everything for the wedding, personalised by hand: four WhatsApp invite videos (Main Wedding, Haldi, Mehendi & Sangeet, Sagan), four matching cards (save-the-date, invitation, RSVP, thank-you), the full 11-tab Indian Wedding Budget Planner, the ritual-meanings keepsake guide and a 12-month checklist. You check out, send us your names, dates and venue, and we craft the suite around them.',
     pricePaise: 99900,
     features: [
+      'Four personalised WhatsApp invite videos — Main Wedding, Haldi, Mehendi & Sangeet, Sagan',
+      'Four matching cards — save-the-date, invitation, RSVP, thank-you',
       'Indian Wedding Budget Planner — the full 11-tab Google Sheet',
-      '12-month wedding checklist (PDF)',
-      'Ritual meanings guide (PDF)',
-      'Start-Here page',
-      'Four-part invitation suite — save-the-date, invitation, RSVP, thank-you',
+      'The Meaning Behind Every Ritual — keepsake guide (PDF)',
+      '12-month wedding planning checklist (PDF)',
+      'Personalisation done for you — your names, dates and venue added by hand',
     ],
     audience: 'Indian families and couples planning a wedding who want everything in one place.',
     fileType: 'gsheet',
     active: false,
-    badge: 'New',
-    // Cloned from wedding-budget (see TODO #2). No storage_path; inert while
-    // active:false. Same force-copy sheet as the standalone planner.
-    deliveryUrl:
-      'https://docs.google.com/spreadsheets/d/1KzcG7ka4npWR1Pcvt00M857Tx2iPR1l8n_7BIeYEY54/copy',
-    welcomePath: 'trackers/wedding-budget.pdf',
+    badge: 'Made to order',
+    madeToOrder: true,
+  },
+  {
+    // ── ₹199 à-la-carte video invite — STAGED, made to order ────────────────
+    // One personalised WhatsApp invite video (ceremony chosen in the details
+    // form) + all four matching cards. Same made-to-order flow as the box; go
+    // live alongside it (needs its own commerce.products row in nis-prod).
+    slug: 'wedding-video-invite',
+    title: 'Wedding Invite Video + Cards',
+    tagline:
+      'One personalised WhatsApp invite video for your ceremony, with all four matching cards.',
+    description:
+      'A single personalised invite video — your choice of Main Wedding, Haldi, Mehendi & Sangeet or Sagan — in vertical 9:16 for WhatsApp, with all four matching cards (save-the-date, invitation, RSVP, thank-you). You check out, tell us your names, date and venue and pick the ceremony, and we craft it around you.',
+    pricePaise: 19900,
+    features: [
+      'One personalised WhatsApp invite video (9:16) — you choose the ceremony',
+      'All four matching cards — save-the-date, invitation, RSVP, thank-you',
+      'Made with your names, date and venue',
+      'Ready to forward on WhatsApp',
+    ],
+    audience: 'Couples who want one standout ceremony invite to share on WhatsApp.',
+    fileType: 'gsheet',
+    active: false,
+    badge: 'Made to order',
+    madeToOrder: true,
   },
   {
     slug: 'small-business',

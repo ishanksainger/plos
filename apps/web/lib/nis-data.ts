@@ -54,6 +54,14 @@ export type Tracker = {
   image?: string;
   desc: string;
   features: string[];
+  /**
+   * Made-to-order products (e.g. the Wedding Box + video invites) are
+   * personalised by hand AFTER checkout — they are not an instant download.
+   * When true, the detail page swaps the "instant · lifetime access" line for a
+   * "made to order" note + a How-it-works block, and the buy flow tells the
+   * buyer to expect a details request rather than a download link.
+   */
+  madeToOrder?: boolean;
 };
 
 export type Merch = {
@@ -139,19 +147,48 @@ export const NIS_TRACKERS: Tracker[] = [
     // box actually contains; replace with Ishank's / Desktop's final wording
     // before go-live. Couple names on the invitation art ("Aanya & Rohan")
     // are demo text baked into the designs, not a customer.
-    slug: 'wedding-box', title: 'The Wedding Box', badge: 'New', accent: '#0f4c3a',
-    tagline: 'Everything for the wedding in one box — the budget planner, two guides, and a matching invitation suite.',
-    price: 999, fileType: 'Google Sheet + PDF guides',
+    slug: 'wedding-box', title: 'The Wedding Box', badge: 'Made to order', accent: '#0f4c3a',
+    madeToOrder: true,
+    tagline: 'The whole wedding in one box — four personalised invite videos, four matching cards, the budget planner and its guides.',
+    price: 999, fileType: 'Videos, cards & planner',
     image: '/trackers/wedding-box/1.jpg',
-    desc: "The Indian Wedding Budget Planner, plus the pieces that surround it. You get the full 11-tab Google Sheet that does the wedding maths for you, a 12-month planning checklist and a guide to what each ritual actually means, a Start-Here page that tells you where to begin — and a four-piece invitation suite designed to match: save-the-date, invitation, RSVP and thank-you.",
+    desc: "Everything for the wedding, personalised for you by hand. Four WhatsApp invite videos — Main Wedding, Haldi, Mehendi & Sangeet, and Sagan — plus four matching cards (save-the-date, invitation, RSVP, thank-you), the full 11-tab Indian Wedding Budget Planner, the ritual-meanings keepsake guide and your 12-month checklist. You check out, tell us your names, dates and venue, and we craft the whole suite around them.",
     features: [
+      'Four personalised WhatsApp invite videos — Main Wedding, Haldi, Mehendi & Sangeet, Sagan (9:16, ready to share)',
+      'Four matching cards — save-the-date, invitation, RSVP and thank-you, print-ready',
       'Indian Wedding Budget Planner — the full 11-tab Google Sheet, yours to copy',
-      '12-month wedding checklist — what to book and when, as a printable PDF',
-      'Ritual meanings guide — what each ceremony is for, in plain language',
-      'Start-Here page — where to begin on day one',
-      'Invitation suite — save-the-date, invitation, RSVP and thank-you designs',
+      'The Meaning Behind Every Ritual — keepsake guide (PDF)',
+      'Your 12-month wedding planning checklist (PDF)',
+      'Personalisation done for you — we add your names, dates and venue by hand',
     ],
     galleryTitle: "What's inside — the invitation suite",
+    gallery: [
+      { src: '/trackers/wedding-box/1.jpg', label: 'Save the date' },
+      { src: '/trackers/wedding-box/2.jpg', label: 'Wedding invitation' },
+      { src: '/trackers/wedding-box/3.jpg', label: 'RSVP card' },
+      { src: '/trackers/wedding-box/4.jpg', label: 'Thank-you card' },
+    ],
+  },
+  {
+    // ── ₹199 à-la-carte video invite — STAGED, made to order ────────────────
+    // One personalised WhatsApp invite video (buyer picks the ceremony in the
+    // details form) + all four matching cards. Staged active:false in the
+    // commerce catalog; go live alongside the box. Video preview stills would
+    // strengthen this page (Claude Desktop's lane) — for now the gallery shows
+    // the four cards that ship with it.
+    slug: 'wedding-video-invite', title: 'Wedding Invite Video + Cards', badge: 'Made to order', accent: '#f59e0b',
+    madeToOrder: true,
+    tagline: 'One personalised WhatsApp invite video for your ceremony, with all four matching cards.',
+    price: 199, fileType: 'Video + 4 cards',
+    image: '/trackers/wedding-box/2.jpg',
+    desc: "A single personalised invite video — your choice of Main Wedding, Haldi, Mehendi & Sangeet or Sagan — made in vertical 9:16 to share straight on WhatsApp, and it comes with all four matching cards (save-the-date, invitation, RSVP, thank-you). You check out, tell us your names, date and venue, and pick the ceremony, and we craft it around you.",
+    features: [
+      'One personalised WhatsApp invite video (9:16) — you choose the ceremony',
+      'All four matching cards — save-the-date, invitation, RSVP and thank-you',
+      'Made with your names, date and venue',
+      'Ready to forward on WhatsApp',
+    ],
+    galleryTitle: 'The four cards you get',
     gallery: [
       { src: '/trackers/wedding-box/1.jpg', label: 'Save the date' },
       { src: '/trackers/wedding-box/2.jpg', label: 'Wedding invitation' },

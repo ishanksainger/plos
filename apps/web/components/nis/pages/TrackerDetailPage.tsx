@@ -129,7 +129,9 @@ export function TrackerDetailPage({ tracker: t }: { tracker: Tracker }) {
               </span>
             )}
             <span style={{ color: 'var(--ink-3)', fontSize: 13 }}>
-              one-time · lifetime access · GST inclusive
+              {t.madeToOrder
+                ? 'made to order · personalised after checkout · GST inclusive'
+                : 'one-time · lifetime access · GST inclusive'}
             </span>
           </div>
 
@@ -168,6 +170,43 @@ export function TrackerDetailPage({ tracker: t }: { tracker: Tracker }) {
               </li>
             ))}
           </ul>
+
+          {t.madeToOrder && (
+            <div style={{ marginTop: 32 }}>
+              <h3 className="nis-h3" style={{ marginBottom: 14 }}>How it works</h3>
+              <ol
+                style={{
+                  listStyle: 'none',
+                  padding: 0,
+                  margin: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 10,
+                }}
+              >
+                {[
+                  'Check out securely here.',
+                  'We email you a short form for your names, dates and venue.',
+                  'We personalise your videos and cards by hand.',
+                  'You get everything by email, ready to share on WhatsApp.',
+                ].map((step, i) => (
+                  <li key={i} style={{ display: 'flex', gap: 12, fontSize: 14, color: 'var(--ink-2)' }}>
+                    <span
+                      style={{
+                        fontFamily: 'var(--nis-font-mono)',
+                        fontSize: 11,
+                        color: t.accent,
+                        minWidth: 24,
+                      }}
+                    >
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    {step}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
         </div>
       </div>
 

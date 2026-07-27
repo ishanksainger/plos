@@ -40,6 +40,14 @@ export async function fulfillDigitalOrder(input: FulfillmentInput): Promise<Fulf
     return { fulfilled: false };
   }
 
+  // Made-to-order first: personalised products (the Wedding Box, video invites)
+  // have no instant deliverable, so they must NOT fall through to the bundle or
+  // single-download paths — those would mint a token / email a file we can't
+  // hand over. Instead we record the paid order and email a details request.
+  if (tracker.madeToOrder) {
+    return await persistMadeToOrder(input, tracker);
+  }
+
   if (tracker.kind === 'bundle') {
     return await persistAndEmailBundle(input, tracker);
   }
@@ -69,10 +77,13 @@ export async function fulfillDigitalOrderIdempotent(
     return { fulfilled: true };
   }
 
-  // Route bundles to the bundle path — otherwise a bundle fulfilled via the
-  // webhook safety net (buyer closed the tab before /verify) would be treated
-  // as a single product: a token for the bundle slug, which has no file.
+  // Same routing as /verify: made-to-order before bundle before single, so the
+  // webhook safety net (buyer closed the tab before /verify) doesn't mint a
+  // token for a personalised SKU that has nothing to download.
   const tracker = getTracker(input.productSlug);
+  if (tracker?.madeToOrder) {
+    return await persistMadeToOrder(input, tracker);
+  }
   if (tracker?.kind === 'bundle') {
     return await persistAndEmailBundle(input, tracker);
   }
@@ -374,6 +385,84 @@ async function persistAndEmailBundle(
 }
 
 /**
+ * Made-to-order fulfilment: personalised products (the Wedding Box, video
+ * invites) have no instant deliverable. We record the paid order and its line
+ * (so it shows in the admin dashboard and revenue), leave the order `paid`
+ * (i.e. awaiting manual fulfilment — NOT `fulfilled`), mint NO download token,
+ * and email the buyer a request for the details we need to craft their suite.
+ */
+async function persistMadeToOrder(
+  input: FulfillmentInput,
+  tracker: Tracker,
+): Promise<FulfillmentResult> {
+  const supabase = getServiceSupabase();
+  const now = new Date();
+
+  const { data: order, error: orderErr } = await supabase
+    .schema('commerce')
+    .from('orders')
+    .upsert(
+      {
+        email: input.email,
+        total_paise: input.orderTotalPaise ?? tracker.pricePaise,
+        status: 'paid',
+        razorpay_order_id: input.razorpayOrderId,
+        razorpay_payment_id: input.razorpayPaymentId,
+        paid_at: now.toISOString(),
+      },
+      { onConflict: 'razorpay_order_id' },
+    )
+    .select('id')
+    .single();
+
+  if (orderErr || !order) {
+    throw new Error(`Made-to-order persist failed: ${orderErr?.message ?? 'no row'}`);
+  }
+
+  // Idempotency: if this SKU is already a line on the order, it's a re-run
+  // (retried /verify or the webhook safety net) — don't insert a duplicate line
+  // or send a second details request.
+  const { data: already } = await supabase
+    .schema('commerce')
+    .from('order_items')
+    .select('id')
+    .eq('order_id', order.id)
+    .eq('product_id', tracker.slug)
+    .maybeSingle();
+
+  if (already) {
+    return { fulfilled: true, orderItemId: already.id as string };
+  }
+
+  const { data: item, error: itemErr } = await supabase
+    .schema('commerce')
+    .from('order_items')
+    .insert({
+      order_id: order.id,
+      product_id: tracker.slug,
+      quantity: 1,
+      price_paise: tracker.pricePaise,
+    })
+    .select('id')
+    .single();
+
+  if (itemErr || !item) {
+    throw new Error(`Made-to-order item persist failed: ${itemErr?.message ?? 'no row'}`);
+  }
+
+  // Deliberately NO download token and NO status → 'fulfilled'. The order stays
+  // `paid` until it's personalised and sent by hand.
+  await sendMadeToOrderEmail({
+    to: input.email,
+    productTitle: tracker.title,
+    pricePaise: tracker.pricePaise,
+    formUrl: weddingDetailsFormUrl(),
+  });
+
+  return { fulfilled: true, orderItemId: item.id };
+}
+
+/**
  * Where a buyer's reply actually lands.
  *
  * Our emails told buyers "Questions? Just reply to this email" — but they're
@@ -387,6 +476,16 @@ async function persistAndEmailBundle(
  */
 function supportEmail(): string | undefined {
   const v = process.env.SUPPORT_EMAIL?.trim();
+  return v ? v : undefined;
+}
+
+/**
+ * The Google Form that collects a made-to-order buyer's wedding details (names,
+ * dates, venue, side, custom request). When unset, the details-request email
+ * falls back to "reply to this email with…", which still reaches SUPPORT_EMAIL.
+ */
+function weddingDetailsFormUrl(): string | undefined {
+  const v = process.env.WEDDING_DETAILS_FORM_URL?.trim();
   return v ? v : undefined;
 }
 
@@ -454,6 +553,73 @@ async function sendReceiptEmail(opts: {
       expiresAt: opts.expiresAt,
       maxUses: opts.maxUses,
     }),
+  });
+}
+
+async function sendMadeToOrderEmail(opts: {
+  to: string;
+  productTitle: string;
+  pricePaise: number;
+  /** Google Form for the buyer's details. Undefined → reply-to fallback. */
+  formUrl?: string;
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return; // dev mode: skip silently. /verify still returns success.
+
+  const resend = new Resend(apiKey);
+  const from = process.env.RESEND_FROM_EMAIL ?? 'NIS <notifications@thenispace.com>';
+  const canReply = Boolean(supportEmail());
+
+  // The details we need, listed in the email so a buyer can send them however
+  // they reach us (form or reply).
+  const detailsList = `
+    <ul style="margin: 8px 0 0; padding-left: 20px; color: #525252; font-size: 14px; line-height: 1.7;">
+      <li>Your name, email and phone number</li>
+      <li>Bride&rsquo;s and groom&rsquo;s names</li>
+      <li>Wedding date(s) and venue(s) for the ceremonies you&rsquo;re inviting to</li>
+      <li>Is it from the bride&rsquo;s side, the groom&rsquo;s side, or both?</li>
+      <li>Anything you&rsquo;d like customised (a special request)</li>
+    </ul>`;
+
+  // Preferred intake: the form. Otherwise fall back to replying (only promised
+  // when SUPPORT_EMAIL is set, so we never point at a channel that bounces).
+  const intakeBlock = opts.formUrl
+    ? `
+      <a href="${opts.formUrl}"
+         style="display: inline-block; margin: 20px 0 8px; padding: 14px 24px; background: #7c3aed;
+                color: white; text-decoration: none; border-radius: 9999px; font-weight: 500;">
+        Send your wedding details
+      </a>
+      ${canReply ? `<p style="margin: 8px 0 0; color: #737373; font-size: 13px;">…or just reply to this email with the list above.</p>` : ''}`
+    : canReply
+      ? `<p style="margin: 20px 0 0; color: #525252; font-size: 14px;"><strong>Just reply to this email</strong> with the list above and we&rsquo;ll get started.</p>`
+      : `<p style="margin: 20px 0 0; color: #525252; font-size: 14px;">We&rsquo;ll email you shortly to collect these details.</p>`;
+
+  await resend.emails.send({
+    from,
+    replyTo: supportEmail(),
+    to: opts.to,
+    subject: `Your ${opts.productTitle} order is confirmed — one quick step`,
+    html: `
+      <div style="font-family: -apple-system, system-ui, sans-serif; max-width: 540px; margin: 0 auto; padding: 32px 24px; color: #0a0a0a;">
+        <h1 style="font-size: 22px; margin: 0 0 16px;">Order confirmed 🎉</h1>
+        <p style="margin: 0 0 8px; color: #525252;">
+          Thanks for buying <strong>${escapeHtml(opts.productTitle)}</strong>
+          (${escapeHtml(formatINR(opts.pricePaise))}).
+        </p>
+        <p style="margin: 0 0 4px; color: #525252;">
+          This one is <strong>made to order</strong> — we personalise it by hand. To get
+          started we just need a few details:
+        </p>
+        ${detailsList}
+        ${intakeBlock}
+        <p style="margin: 24px 0 0; color: #737373; font-size: 13px;">
+          Once we have them, we&rsquo;ll craft your videos and cards and email everything to you.
+        </p>
+        <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 28px 0;" />
+        <p style="font-size: 13px; color: #737373; margin: 0;">${supportLine()}</p>
+      </div>
+    `,
   });
 }
 
