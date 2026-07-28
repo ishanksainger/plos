@@ -1,4 +1,6 @@
 import crypto from 'node:crypto';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { Resend } from 'resend';
 import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
 import { getTracker, formatINR, type Tracker } from '@/lib/tracker-catalog';
@@ -457,6 +459,7 @@ async function persistMadeToOrder(
     productTitle: tracker.title,
     pricePaise: tracker.pricePaise,
     formUrl: weddingDetailsFormUrl(),
+    attachmentPath: tracker.emailAttachmentPath,
   });
 
   return { fulfilled: true, orderItemId: item.id };
@@ -487,6 +490,27 @@ function supportEmail(): string | undefined {
 function weddingDetailsFormUrl(): string | undefined {
   const v = process.env.WEDDING_DETAILS_FORM_URL?.trim();
   return v ? v : undefined;
+}
+
+/**
+ * Loads a repo-bundled PDF (path relative to apps/web, e.g.
+ * `assets/welcome-wedding-box.pdf`) as a Resend attachment. The file ships in
+ * the Docker image (`COPY apps/web ./apps/web`) and is read from
+ * `process.cwd()` (= /app/apps/web at runtime). Best-effort: any failure
+ * (missing file, read error) returns an empty list so the confirmation email
+ * is never blocked on the attachment.
+ */
+async function loadEmailAttachments(
+  attachmentPath?: string,
+): Promise<Array<{ filename: string; content: Buffer }>> {
+  if (!attachmentPath) return [];
+  try {
+    const content = await readFile(path.join(process.cwd(), attachmentPath));
+    return [{ filename: path.basename(attachmentPath), content }];
+  } catch (err) {
+    console.error(`[fulfillment] welcome attachment read failed (${attachmentPath})`, err);
+    return [];
+  }
 }
 
 /** The sign-off line — only promises a reply when a reply can actually arrive. */
@@ -562,6 +586,8 @@ async function sendMadeToOrderEmail(opts: {
   pricePaise: number;
   /** Google Form for the buyer's details. Undefined → reply-to fallback. */
   formUrl?: string;
+  /** Repo-relative (to apps/web) path to a welcome PDF to attach, if any. */
+  attachmentPath?: string;
 }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return; // dev mode: skip silently. /verify still returns success.
@@ -569,6 +595,11 @@ async function sendMadeToOrderEmail(opts: {
   const resend = new Resend(apiKey);
   const from = process.env.RESEND_FROM_EMAIL ?? 'NIS <notifications@thenispace.com>';
   const canReply = Boolean(supportEmail());
+
+  // Optional welcome PDF (the Wedding Box's warm touch). Bundled in the image
+  // and read at send time — never block the confirmation email on it: if the
+  // file is missing or unreadable, we send the email without the attachment.
+  const attachments = await loadEmailAttachments(opts.attachmentPath);
 
   // The details we need, listed in the email so a buyer can send them however
   // they reach us (form or reply).
@@ -600,6 +631,7 @@ async function sendMadeToOrderEmail(opts: {
     replyTo: supportEmail(),
     to: opts.to,
     subject: `Your ${opts.productTitle} order is confirmed — one quick step`,
+    ...(attachments.length ? { attachments } : {}),
     html: `
       <div style="font-family: -apple-system, system-ui, sans-serif; max-width: 540px; margin: 0 auto; padding: 32px 24px; color: #0a0a0a;">
         <h1 style="font-size: 22px; margin: 0 0 16px;">Order confirmed 🎉</h1>

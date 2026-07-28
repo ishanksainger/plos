@@ -38,6 +38,10 @@ services:
       # record, so a reply to RESEND_FROM_EMAIL bounces — without this, the
       # emails stop promising "just reply". Point it at a real inbox.
       - SUPPORT_EMAIL=${SUPPORT_EMAIL:-}
+      # Google Form that collects a made-to-order (Wedding Box / video invite)
+      # buyer's details. Unset → the confirmation email falls back to
+      # "reply with your details" (needs SUPPORT_EMAIL, which is set above).
+      - WEDDING_DETAILS_FORM_URL=${WEDDING_DETAILS_FORM_URL:-}
       # Admin dashboard Basic Auth — leave unset to keep /admin disabled (404).
       - ADMIN_USER=${ADMIN_USER:-}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}

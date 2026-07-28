@@ -54,6 +54,16 @@ export type Tracker = {
    * resend action correctly refuses (there is nothing to auto-deliver).
    */
   madeToOrder?: boolean;
+  /**
+   * A PDF bundled in the repo (path relative to `apps/web`, e.g.
+   * `assets/welcome-wedding-box.pdf`) that is attached to the made-to-order
+   * confirmation email. Unlike `welcomePath` (a token-gated Storage guide that
+   * rides a receipt as a link), this is a warm welcome the buyer keeps
+   * immediately — it does NOT gate a deliverable, so it never affects the
+   * admin resend logic. Read at send time via `fs`; if the read fails we still
+   * send the email, just without the attachment.
+   */
+  emailAttachmentPath?: string;
 };
 
 export const TRACKERS: Tracker[] = [
@@ -213,23 +223,18 @@ export const TRACKERS: Tracker[] = [
     badge: 'In queue',
   },
   {
-    // ── The Wedding Box — STAGED, made to order (active: false) ─────────────
+    // ── The Wedding Box — LIVE, made to order (₹999, locked 2026-07-28) ──────
     // The full personalised suite: 4 WhatsApp invite videos + 4 matching cards
     // + the Wedding Budget Planner + its guides. `madeToOrder: true` → paying
     // does NOT auto-deliver a file; the buyer is emailed a details form and we
     // craft the suite by hand (see fulfillment.ts persistMadeToOrder). Its
-    // preview gallery lives in nis-data.ts.
-    //
-    // GO-LIVE TODOs (owner: Ishank, do NOT flip active:true before):
-    //   1. Price CONFIRMED ₹999 (locked 2026-07-28).
-    //   2. Set WEDDING_DETAILS_FORM_URL on the VPS to the Google Form that
-    //      collects names/dates/venue/side/custom request (until then the
-    //      order email falls back to "reply with your details"). SUPPORT_EMAIL
-    //      must be set for that reply path (it already is).
-    //   3. Insert the matching commerce.products row in nis-prod so the
-    //      order_items FK resolves (same step as every other go-live).
-    //   4. Deliberately NO deliveryUrl/welcomePath — made-to-order has no
-    //      instant deliverable, and their absence makes admin "resend" refuse.
+    // preview gallery lives in nis-data.ts. Went live in the go-live PR:
+    //   • WEDDING_DETAILS_FORM_URL set on the VPS (Google Form intake).
+    //   • commerce.products row inserted in nis-prod (id=wedding-box, 99900).
+    //   • Deliberately NO deliveryUrl/welcomePath — made-to-order has no instant
+    //     deliverable, and their absence makes admin "resend" correctly refuse.
+    //   • emailAttachmentPath rides a "Welcome to your Wedding Box" PDF along
+    //     with the confirmation email (bundled in the image, fs-read at send).
     slug: 'wedding-box',
     title: 'The Wedding Box',
     tagline:
@@ -247,15 +252,18 @@ export const TRACKERS: Tracker[] = [
     ],
     audience: 'Indian families and couples planning a wedding who want everything in one place.',
     fileType: 'gsheet',
-    active: false,
+    active: true,
     badge: 'Made to order',
     madeToOrder: true,
+    // Warm welcome PDF attached to the confirmation email (wedding-box only).
+    emailAttachmentPath: 'assets/welcome-wedding-box.pdf',
   },
   {
-    // ── ₹199 à-la-carte video invite — STAGED, made to order ────────────────
+    // ── ₹199 à-la-carte video invite — LIVE, made to order ──────────────────
     // One personalised WhatsApp invite video (ceremony chosen in the details
-    // form) + all four matching cards. Same made-to-order flow as the box; go
-    // live alongside it (needs its own commerce.products row in nis-prod).
+    // form) + all four matching cards. Same made-to-order flow as the box.
+    // Went live alongside it (commerce.products row id=wedding-video-invite,
+    // 19900). No welcome-PDF attachment — that's the full box's touch.
     slug: 'wedding-video-invite',
     title: 'Wedding Invite Video + Cards',
     tagline:
@@ -271,7 +279,7 @@ export const TRACKERS: Tracker[] = [
     ],
     audience: 'Couples who want one standout ceremony invite to share on WhatsApp.',
     fileType: 'gsheet',
-    active: false,
+    active: true,
     badge: 'Made to order',
     madeToOrder: true,
   },
