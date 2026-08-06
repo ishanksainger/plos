@@ -5,7 +5,7 @@ import { LookbookPage } from '@/components/nis/pages/LookbookPage';
 export const metadata: Metadata = {
   title: 'Lookbook',
   description:
-    "A gallery of NIS's own designs — the posts, carousels and canvases we make, and the design quality behind every tracker and template.",
+    "NIS's flat design work — Instagram carousels, posts and ad creative, and the design quality behind every tracker and template.",
 };
 
 export default function Page() {
