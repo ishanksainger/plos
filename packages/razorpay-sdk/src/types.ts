@@ -19,6 +19,14 @@ export type VerifySignatureOptions = {
   keySecret: string;
 };
 
+export type FetchOrderResult = {
+  orderId: string;
+  amountPaise: number;
+  status: string;
+  /** The server-set notes we attached at order creation (productSlug, etc.). */
+  notes: Record<string, string>;
+};
+
 export type RazorpayCheckoutHandlerPayload = {
   razorpay_payment_id: string;
   razorpay_order_id: string;

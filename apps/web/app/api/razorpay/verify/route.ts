@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { verifySignature, requireServerEnv } from '@nis/razorpay-sdk/server';
-import { fulfillDigitalOrder } from '@/lib/fulfillment';
+import { verifySignature, requireServerEnv, fetchOrder } from '@nis/razorpay-sdk/server';
+import { fulfillDigitalOrder, sanitizeMadeToOrderDetails, type MadeToOrderDetail } from '@/lib/fulfillment';
 
 export const runtime = 'nodejs';
 
@@ -8,8 +8,14 @@ type VerifyRequest = {
   razorpay_order_id: string;
   razorpay_payment_id: string;
   razorpay_signature: string;
-  productSlug: string;
-  email: string;
+  // Client-echoed — kept only as a last-resort fallback for logging. The
+  // authoritative product + email come from the order's server-set notes.
+  productSlug?: string;
+  email?: string;
+  // Buyer's own personalisation answers (made-to-order). Safe to accept from
+  // the client: they can only alter their own wedding details, and the product
+  // (which decides what they receive) is bound server-side below.
+  details?: MadeToOrderDetail[];
 };
 
 export async function POST(req: Request) {
@@ -20,13 +26,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  if (
-    !body.razorpay_order_id ||
-    !body.razorpay_payment_id ||
-    !body.razorpay_signature ||
-    !body.productSlug ||
-    !body.email
-  ) {
+  if (!body.razorpay_order_id || !body.razorpay_payment_id || !body.razorpay_signature) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
   }
 
@@ -48,12 +48,32 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
+  // Bind the product to the SERVER order, not the client echo. This closes the
+  // gap where a buyer could pay for a ₹199 order and claim a ₹999 slug here.
+  let productSlug: string;
+  let email: string;
+  try {
+    const order = await fetchOrder(body.razorpay_order_id);
+    productSlug = order.notes?.productSlug ?? '';
+    email = order.notes?.buyerEmail ?? body.email ?? '';
+  } catch {
+    // Razorpay fetch failed. The payment.captured webhook reads the same
+    // authoritative notes and will fulfil — so report success (the buyer DID
+    // pay) rather than fulfilling off an untrusted client slug.
+    return NextResponse.json({ ok: true, fulfilled: false, deferred: true });
+  }
+
+  if (!productSlug || !email) {
+    return NextResponse.json({ ok: true, fulfilled: false, error: 'Order missing product/email notes' });
+  }
+
   try {
     const result = await fulfillDigitalOrder({
-      productSlug: body.productSlug,
-      email: body.email,
+      productSlug,
+      email,
       razorpayOrderId: body.razorpay_order_id,
       razorpayPaymentId: body.razorpay_payment_id,
+      details: sanitizeMadeToOrderDetails(body.details),
     });
     return NextResponse.json({ ok: true, ...result });
   } catch (err) {

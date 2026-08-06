@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { openCheckout } from '@nis/razorpay-sdk/client';
 import { useCart } from '@/lib/cart-store';
 import { getPurchasableTracker, formatINR } from '@/lib/tracker-catalog';
+import { MadeToOrderForm } from '@/components/nis/MadeToOrderForm';
+import type { MtoDetail } from '@/lib/made-to-order-fields';
 
 type BuyStatus =
   | { kind: 'idle' }
@@ -26,6 +28,8 @@ export function TrackerActions({ slug }: { slug: string }) {
   const [showBuyNow, setShowBuyNow] = useState(false);
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<BuyStatus>({ kind: 'idle' });
+  // Made-to-order only: which action revealed the personalisation form.
+  const [mtoMode, setMtoMode] = useState<'cart' | 'buy' | null>(null);
 
   if (!tracker) {
     return (
@@ -54,18 +58,14 @@ export function TrackerActions({ slug }: { slug: string }) {
     status.kind === 'awaiting_payment' ||
     status.kind === 'verifying';
 
-  async function buyNow() {
-    if (!isValidEmail(email)) {
-      setStatus({ kind: 'collecting_email' });
-      return;
-    }
+  async function runCheckout(buyerEmail: string, details?: MtoDetail[]) {
     setStatus({ kind: 'creating_order' });
 
     try {
       const orderRes = await fetch('/api/razorpay/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productSlug: slug, email }),
+        body: JSON.stringify({ productSlug: slug, email: buyerEmail }),
       });
       if (orderRes.status === 503) {
         setStatus({ kind: 'unconfigured' });
@@ -89,7 +89,7 @@ export function TrackerActions({ slug }: { slug: string }) {
         amountPaise: order.amountPaise,
         name: 'NIS',
         description: tracker!.title,
-        prefill: { email },
+        prefill: { email: buyerEmail },
         themeColor: '#7c3aed',
         onDismiss: () => setStatus({ kind: 'idle' }),
         handler: async (payload) => {
@@ -97,7 +97,10 @@ export function TrackerActions({ slug }: { slug: string }) {
           const verifyRes = await fetch('/api/razorpay/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...payload, productSlug: slug, email }),
+            // `details` is the buyer's own personalisation info (safe to carry
+            // from the client). The PRODUCT is bound server-side to the order's
+            // notes in /verify — the client-echoed slug is not trusted there.
+            body: JSON.stringify({ ...payload, productSlug: slug, email: buyerEmail, details }),
           });
           if (!verifyRes.ok) {
             const data = (await verifyRes.json().catch(() => ({}))) as { error?: string };
@@ -110,7 +113,7 @@ export function TrackerActions({ slug }: { slug: string }) {
           setStatus({
             kind: 'success',
             message: tracker!.madeToOrder
-              ? 'Payment received. Check your email — we’ll ask for your wedding details to personalise your order (also check spam).'
+              ? 'Payment received 🎉 Thanks — we have your details and will personalise your order and email it to you shortly (also check spam).'
               : 'Payment received. Check your email for the download link (also check spam).',
           });
         },
@@ -121,6 +124,76 @@ export function TrackerActions({ slug }: { slug: string }) {
         message: err instanceof Error ? err.message : 'Something went wrong',
       });
     }
+  }
+
+  async function buyNow() {
+    if (!isValidEmail(email)) {
+      setStatus({ kind: 'collecting_email' });
+      return;
+    }
+    await runCheckout(email);
+  }
+
+  // Made-to-order: BOTH Add-to-cart and Buy-now open the scoped personalisation
+  // form — details are collected up front, never after payment. Add-to-cart
+  // stores them on the cart line; Buy-now goes straight to Razorpay.
+  if (tracker.madeToOrder) {
+    return (
+      <div className="nis-tracker-actions">
+        {mtoMode === null ? (
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <button
+              className="nis-btn nis-btn-primary"
+              style={{ padding: '12px 22px', fontSize: 14 }}
+              type="button"
+              onClick={() => setMtoMode('cart')}
+              disabled={isWorking}
+            >
+              {inCart ? 'In cart · edit details' : 'Add to cart'}
+            </button>
+            <button
+              className="nis-btn"
+              style={{ padding: '12px 22px', fontSize: 14 }}
+              type="button"
+              onClick={() => setMtoMode('buy')}
+              disabled={isWorking}
+            >
+              {`Buy now · ${formatINR(tracker.pricePaise)}`}
+            </button>
+          </div>
+        ) : (
+          <>
+            <MadeToOrderForm
+              slug={slug}
+              disabled={isWorking}
+              collectEmail={mtoMode === 'buy'}
+              submitLabel={mtoMode === 'buy' ? labelFor(status, tracker.pricePaise) : 'Add to cart'}
+              onSubmit={(det, em) => {
+                if (mtoMode === 'buy') {
+                  setEmail(em);
+                  void runCheckout(em, det);
+                } else {
+                  add(slug, 1, det);
+                  setMtoMode(null);
+                }
+              }}
+            />
+            {status.kind !== 'success' && (
+              <button
+                type="button"
+                className="nis-btn"
+                style={{ padding: '8px 16px', fontSize: 13 }}
+                onClick={() => setMtoMode(null)}
+                disabled={isWorking}
+              >
+                ← Back
+              </button>
+            )}
+            <BuyStatusLine status={status} />
+          </>
+        )}
+      </div>
+    );
   }
 
   return (

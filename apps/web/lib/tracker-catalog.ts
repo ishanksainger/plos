@@ -47,11 +47,12 @@ export type Tracker = {
   welcomePath?: string;
   /**
    * Made-to-order SKUs (the Wedding Box + video invites) are personalised by
-   * hand AFTER payment, so they have NO instant deliverable. On purchase the
-   * order is recorded and left `paid` (awaiting fulfilment) and the buyer gets
-   * a "send us your details" email (see WEDDING_DETAILS_FORM_URL) instead of a
-   * download token. They must have no `deliveryUrl`/`welcomePath` so the admin
-   * resend action correctly refuses (there is nothing to auto-deliver).
+   * hand, so they have NO instant deliverable. Personalisation details are
+   * collected ON-SITE before payment (a per-SKU form, see made-to-order-fields),
+   * then the order is recorded and left `paid` (awaiting fulfilment): the buyer
+   * gets a confirmation, ops gets the build brief. No download token is minted.
+   * They must have no `deliveryUrl`/`welcomePath` so the admin resend action
+   * correctly refuses (there is nothing to auto-deliver).
    */
   madeToOrder?: boolean;
   /**
@@ -226,10 +227,10 @@ export const TRACKERS: Tracker[] = [
     // ── The Wedding Box — LIVE, made to order (₹999, locked 2026-07-28) ──────
     // The full personalised suite: 4 WhatsApp invite videos + 4 matching cards
     // + the Wedding Budget Planner + its guides. `madeToOrder: true` → paying
-    // does NOT auto-deliver a file; the buyer is emailed a details form and we
-    // craft the suite by hand (see fulfillment.ts persistMadeToOrder). Its
-    // preview gallery lives in nis-data.ts. Went live in the go-live PR:
-    //   • WEDDING_DETAILS_FORM_URL set on the VPS (Google Form intake).
+    // does NOT auto-deliver a file; the buyer fills a per-SKU details form BEFORE
+    // payment and we craft the suite by hand (see fulfillment.ts persistMadeToOrder
+    // + made-to-order-fields.ts). Its preview gallery lives in nis-data.ts. Live:
+    //   • Details collected on-site pre-payment (no Google Form); ops gets the brief.
     //   • commerce.products row inserted in nis-prod (id=wedding-box, 99900).
     //   • Deliberately NO deliveryUrl/welcomePath — made-to-order has no instant
     //     deliverable, and their absence makes admin "resend" correctly refuse.
