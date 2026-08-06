@@ -28,6 +28,8 @@ export function TrackerActions({ slug }: { slug: string }) {
   const [showBuyNow, setShowBuyNow] = useState(false);
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<BuyStatus>({ kind: 'idle' });
+  // Made-to-order only: which action revealed the personalisation form.
+  const [mtoMode, setMtoMode] = useState<'cart' | 'buy' | null>(null);
 
   if (!tracker) {
     return (
@@ -132,33 +134,61 @@ export function TrackerActions({ slug }: { slug: string }) {
     await runCheckout(email);
   }
 
-  // Made-to-order: no cart (details must be collected up front, per SKU), so
-  // it's Buy-now only. The button reveals the scoped personalisation form; the
-  // form collects details BEFORE Razorpay opens.
+  // Made-to-order: BOTH Add-to-cart and Buy-now open the scoped personalisation
+  // form — details are collected up front, never after payment. Add-to-cart
+  // stores them on the cart line; Buy-now goes straight to Razorpay.
   if (tracker.madeToOrder) {
     return (
       <div className="nis-tracker-actions">
-        {!showBuyNow ? (
-          <button
-            className="nis-btn nis-btn-primary"
-            style={{ padding: '12px 22px', fontSize: 14 }}
-            type="button"
-            onClick={() => setShowBuyNow(true)}
-            disabled={isWorking}
-          >
-            {`Personalise & buy · ${formatINR(tracker.pricePaise)}`}
-          </button>
+        {mtoMode === null ? (
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <button
+              className="nis-btn nis-btn-primary"
+              style={{ padding: '12px 22px', fontSize: 14 }}
+              type="button"
+              onClick={() => setMtoMode('cart')}
+              disabled={isWorking}
+            >
+              {inCart ? 'In cart · edit details' : 'Add to cart'}
+            </button>
+            <button
+              className="nis-btn"
+              style={{ padding: '12px 22px', fontSize: 14 }}
+              type="button"
+              onClick={() => setMtoMode('buy')}
+              disabled={isWorking}
+            >
+              {`Buy now · ${formatINR(tracker.pricePaise)}`}
+            </button>
+          </div>
         ) : (
           <>
             <MadeToOrderForm
               slug={slug}
               disabled={isWorking}
-              submitLabel={labelFor(status, tracker.pricePaise)}
-              onSubmit={(em, det) => {
-                setEmail(em);
-                void runCheckout(em, det);
+              collectEmail={mtoMode === 'buy'}
+              submitLabel={mtoMode === 'buy' ? labelFor(status, tracker.pricePaise) : 'Add to cart'}
+              onSubmit={(det, em) => {
+                if (mtoMode === 'buy') {
+                  setEmail(em);
+                  void runCheckout(em, det);
+                } else {
+                  add(slug, 1, det);
+                  setMtoMode(null);
+                }
               }}
             />
+            {status.kind !== 'success' && (
+              <button
+                type="button"
+                className="nis-btn"
+                style={{ padding: '8px 16px', fontSize: 13 }}
+                onClick={() => setMtoMode(null)}
+                disabled={isWorking}
+              >
+                ← Back
+              </button>
+            )}
             <BuyStatusLine status={status} />
           </>
         )}

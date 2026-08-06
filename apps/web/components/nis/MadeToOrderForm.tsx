@@ -21,12 +21,15 @@ export function MadeToOrderForm({
   slug,
   disabled,
   submitLabel,
+  collectEmail = true,
   onSubmit,
 }: {
   slug: string;
   disabled: boolean;
   submitLabel: string;
-  onSubmit: (email: string, details: MtoDetail[]) => void;
+  /** Buy-now needs an email up front; Add-to-cart collects it at checkout. */
+  collectEmail?: boolean;
+  onSubmit: (details: MtoDetail[], email: string) => void;
 }) {
   const spec = madeToOrderSpec(slug);
   const [email, setEmail] = useState('');
@@ -38,7 +41,7 @@ export function MadeToOrderForm({
   const set = (name: string, v: string) => setAnswers((a) => ({ ...a, [name]: v }));
 
   function submit() {
-    if (!isValidEmail(email)) {
+    if (collectEmail && !isValidEmail(email)) {
       setErr('Enter a valid email so we can send your order.');
       return;
     }
@@ -49,24 +52,26 @@ export function MadeToOrderForm({
       return;
     }
     setErr(null);
-    onSubmit(email.trim(), buildDetailsSummary(spec!, answers));
+    onSubmit(buildDetailsSummary(spec!, answers), email.trim());
   }
 
   return (
     <div className="nis-tracker-buynow" style={{ display: 'grid', gap: 12 }}>
       <p style={{ margin: 0, fontSize: 13, lineHeight: 1.5, color: 'var(--nis-fg-muted)' }}>{spec.intro}</p>
 
-      <label className="nis-cart-email" style={{ width: '100%' }}>
-        <span>Email for your order</span>
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-          disabled={disabled}
-        />
-      </label>
+      {collectEmail && (
+        <label className="nis-cart-email" style={{ width: '100%' }}>
+          <span>Email for your order</span>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            disabled={disabled}
+          />
+        </label>
+      )}
 
       {spec.fields.map((f) => (
         <label key={f.name} className="nis-cart-email" style={{ width: '100%' }}>

@@ -10,6 +10,19 @@ const DOWNLOAD_MAX_USES = 5;
 
 export type MadeToOrderDetail = { label: string; value: string };
 
+/** Defensive: cap count + lengths on client-supplied personalisation details. */
+export function sanitizeMadeToOrderDetails(details: unknown): MadeToOrderDetail[] | undefined {
+  if (!Array.isArray(details)) return undefined;
+  const clean = details
+    .filter(
+      (d): d is MadeToOrderDetail =>
+        !!d && typeof d.label === 'string' && typeof d.value === 'string' && d.value.trim().length > 0,
+    )
+    .slice(0, 30)
+    .map((d) => ({ label: d.label.slice(0, 120), value: d.value.slice(0, 500) }));
+  return clean.length ? clean : undefined;
+}
+
 type FulfillmentInput = {
   productSlug: string;
   email: string;

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifySignature, requireServerEnv } from '@nis/razorpay-sdk/server';
-import { fulfillDigitalOrder } from '@/lib/fulfillment';
+import { fulfillDigitalOrder, sanitizeMadeToOrderDetails, type MadeToOrderDetail } from '@/lib/fulfillment';
 import { getPurchasableTracker } from '@/lib/tracker-catalog';
 
 export const runtime = 'nodejs';
@@ -8,7 +8,7 @@ export const runtime = 'nodejs';
 // Same clamp the fulfillment loop uses — keep the total and the loop in sync.
 const clampQty = (qty: number) => Math.max(1, Math.min(5, Math.floor(qty) || 1));
 
-type VerifyItem = { slug: string; qty: number };
+type VerifyItem = { slug: string; qty: number; details?: MadeToOrderDetail[] };
 
 type VerifyRequest = {
   razorpay_order_id: string;
@@ -68,6 +68,7 @@ export async function POST(req: Request) {
   // whole order vanished — the failed slugs are flagged in `partial`.
   const results: Array<{ slug: string; ok: boolean; error?: string }> = [];
   for (const item of body.items) {
+    const details = sanitizeMadeToOrderDetails(item.details);
     for (let i = 0; i < clampQty(item.qty); i++) {
       try {
         await fulfillDigitalOrder({
@@ -76,6 +77,7 @@ export async function POST(req: Request) {
           razorpayOrderId: body.razorpay_order_id,
           razorpayPaymentId: body.razorpay_payment_id,
           orderTotalPaise,
+          details,
         });
         results.push({ slug: item.slug, ok: true });
       } catch (err) {

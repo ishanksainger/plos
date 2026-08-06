@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifySignature, requireServerEnv, fetchOrder } from '@nis/razorpay-sdk/server';
-import { fulfillDigitalOrder, type MadeToOrderDetail } from '@/lib/fulfillment';
+import { fulfillDigitalOrder, sanitizeMadeToOrderDetails, type MadeToOrderDetail } from '@/lib/fulfillment';
 
 export const runtime = 'nodejs';
 
@@ -17,19 +17,6 @@ type VerifyRequest = {
   // (which decides what they receive) is bound server-side below.
   details?: MadeToOrderDetail[];
 };
-
-/** Defensive: cap count + lengths on client-supplied personalisation details. */
-function sanitizeDetails(details: unknown): MadeToOrderDetail[] | undefined {
-  if (!Array.isArray(details)) return undefined;
-  const clean = details
-    .filter(
-      (d): d is MadeToOrderDetail =>
-        !!d && typeof d.label === 'string' && typeof d.value === 'string' && d.value.trim().length > 0,
-    )
-    .slice(0, 30)
-    .map((d) => ({ label: d.label.slice(0, 120), value: d.value.slice(0, 500) }));
-  return clean.length ? clean : undefined;
-}
 
 export async function POST(req: Request) {
   let body: VerifyRequest;
@@ -86,7 +73,7 @@ export async function POST(req: Request) {
       email,
       razorpayOrderId: body.razorpay_order_id,
       razorpayPaymentId: body.razorpay_payment_id,
-      details: sanitizeDetails(body.details),
+      details: sanitizeMadeToOrderDetails(body.details),
     });
     return NextResponse.json({ ok: true, ...result });
   } catch (err) {

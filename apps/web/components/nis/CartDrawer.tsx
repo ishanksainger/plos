@@ -79,7 +79,11 @@ export function CartDrawer() {
     setStatus({ kind: 'creating_order' });
     try {
       const payload = {
-        items: lines.map(({ line }) => ({ slug: line.slug, qty: line.qty })),
+        items: lines.map(({ line }) => ({
+          slug: line.slug,
+          qty: line.qty,
+          ...(line.details ? { details: line.details } : {}),
+        })),
         email,
       };
       const orderRes = await fetch('/api/razorpay/cart-order', {
@@ -223,27 +227,34 @@ export function CartDrawer() {
                   <div className="nis-cart-line-main">
                     <div className="nis-cart-line-title">{tracker.title}</div>
                     <div className="nis-cart-line-sub">
-                      {tracker.fileType.toUpperCase()}
-                      {tracker.pages ? ` · ${tracker.pages} sheets` : ''}
+                      {tracker.madeToOrder
+                        ? 'Made to order · personalised'
+                        : `${tracker.fileType.toUpperCase()}${tracker.pages ? ` · ${tracker.pages} sheets` : ''}`}
                     </div>
                   </div>
-                  <div className="nis-cart-line-qty">
-                    <button
-                      type="button"
-                      onClick={() => setQty(line.slug, line.qty - 1)}
-                      aria-label="Decrease quantity"
-                    >
-                      −
-                    </button>
-                    <span aria-live="polite">{line.qty}</span>
-                    <button
-                      type="button"
-                      onClick={() => setQty(line.slug, line.qty + 1)}
-                      aria-label="Increase quantity"
-                    >
-                      +
-                    </button>
-                  </div>
+                  {tracker.madeToOrder ? (
+                    <div className="nis-cart-line-qty" aria-label="Quantity 1 (made to order)">
+                      <span>1</span>
+                    </div>
+                  ) : (
+                    <div className="nis-cart-line-qty">
+                      <button
+                        type="button"
+                        onClick={() => setQty(line.slug, line.qty - 1)}
+                        aria-label="Decrease quantity"
+                      >
+                        −
+                      </button>
+                      <span aria-live="polite">{line.qty}</span>
+                      <button
+                        type="button"
+                        onClick={() => setQty(line.slug, line.qty + 1)}
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
+                  )}
                   <div className="nis-cart-line-price">
                     {formatINR(tracker.pricePaise * line.qty)}
                   </div>
