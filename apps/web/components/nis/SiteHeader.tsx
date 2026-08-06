@@ -5,12 +5,12 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { CartButton } from './CartButton';
 
-const LINKS = [
+const LINKS: { href: string; label: string; title?: string }[] = [
   { href: '/',         label: 'Home' },
   { href: '/trackers', label: 'Trackers' },
   { href: '/ebooks',   label: 'E-books' },
-  { href: '/canvas',   label: 'Canvas' },
-  { href: '/lookbook', label: 'Lookbook' },
+  { href: '/canvas',   label: 'Canvas',   title: '3D & motion scenes' },
+  { href: '/lookbook', label: 'Lookbook', title: 'Social & marketing design' },
   { href: '/shop',     label: 'Shop' },
   { href: '/plos',     label: 'PLOS' },
   { href: '/about',    label: 'About' },
@@ -67,6 +67,7 @@ export function SiteHeader() {
             <Link
               key={l.href}
               href={l.href}
+              title={l.title}
               className={`nis-nav-link ${isActive(pathname, l.href) ? 'active' : ''}`}
             >
               {l.label}
