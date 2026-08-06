@@ -7,6 +7,7 @@ import Razorpay from 'razorpay';
 import type {
   CreateOrderOptions,
   CreateOrderResult,
+  FetchOrderResult,
   VerifySignatureOptions,
 } from './types';
 
@@ -53,6 +54,28 @@ export async function createOrder(opts: CreateOrderOptions): Promise<CreateOrder
       typeof order.amount === 'number' ? order.amount : Number.parseInt(String(order.amount), 10),
     currency: 'INR',
     keyId,
+  };
+}
+
+/**
+ * Fetches an order from Razorpay so callers can read the server-set `notes`
+ * (e.g. the authoritative productSlug attached at creation). Use this in
+ * /verify instead of trusting a client-echoed product — the signature only
+ * proves the payment matches the order, not which product was paid for.
+ */
+export async function fetchOrder(orderId: string): Promise<FetchOrderResult> {
+  const { keyId, keySecret } = requireServerEnv();
+  const client = getClient(keyId, keySecret);
+
+  const order = await client.orders.fetch(orderId);
+  const notes = (order.notes ?? {}) as Record<string, string>;
+
+  return {
+    orderId: order.id,
+    amountPaise:
+      typeof order.amount === 'number' ? order.amount : Number.parseInt(String(order.amount), 10),
+    status: String(order.status),
+    notes,
   };
 }
 

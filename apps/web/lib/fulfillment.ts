@@ -8,11 +8,15 @@ import { getTracker, formatINR, type Tracker } from '@/lib/tracker-catalog';
 const DOWNLOAD_EXPIRY_DAYS = 7;
 const DOWNLOAD_MAX_USES = 5;
 
+export type MadeToOrderDetail = { label: string; value: string };
+
 type FulfillmentInput = {
   productSlug: string;
   email: string;
   razorpayOrderId: string;
   razorpayPaymentId: string;
+  /** Buyer's personalisation answers (made-to-order); undefined otherwise. */
+  details?: MadeToOrderDetail[];
   // Authoritative amount charged for the whole order (server-computed). For a
   // multi-item cart, fulfillment runs once per line and each call upserts the
   // same order row — so without this every call would overwrite total_paise
@@ -454,13 +458,33 @@ async function persistMadeToOrder(
 
   // Deliberately NO download token and NO status → 'fulfilled'. The order stays
   // `paid` until it's personalised and sent by hand.
-  await sendMadeToOrderEmail({
-    to: input.email,
-    productTitle: tracker.title,
-    pricePaise: tracker.pricePaise,
-    formUrl: weddingDetailsFormUrl(),
-    attachmentPath: tracker.emailAttachmentPath,
-  });
+  if (input.details?.length) {
+    // Details collected up front (the pre-payment flow): confirm to the buyer,
+    // and hand the build brief to ops so a human can personalise it.
+    await sendMadeToOrderConfirmedEmail({
+      to: input.email,
+      productTitle: tracker.title,
+      pricePaise: tracker.pricePaise,
+      details: input.details,
+      attachmentPath: tracker.emailAttachmentPath,
+    });
+    await sendMadeToOrderOpsEmail({
+      buyerEmail: input.email,
+      productTitle: tracker.title,
+      pricePaise: tracker.pricePaise,
+      razorpayOrderId: input.razorpayOrderId,
+      details: input.details,
+    });
+  } else {
+    // No details (e.g. the payment.captured webhook fulfilled before /verify
+    // could pass them). Ask by reply — never the old general Google Form.
+    await sendMadeToOrderDetailsNeededEmail({
+      to: input.email,
+      productTitle: tracker.title,
+      pricePaise: tracker.pricePaise,
+      attachmentPath: tracker.emailAttachmentPath,
+    });
+  }
 
   return { fulfilled: true, orderItemId: item.id };
 }
@@ -483,13 +507,26 @@ function supportEmail(): string | undefined {
 }
 
 /**
- * The Google Form that collects a made-to-order buyer's wedding details (names,
- * dates, venue, side, custom request). When unset, the details-request email
- * falls back to "reply to this email with…", which still reaches SUPPORT_EMAIL.
+ * Internal inbox that receives a made-to-order build brief (buyer + details) so
+ * a human can personalise and send it. Defaults to SUPPORT_EMAIL when its own
+ * var is unset; when neither exists the ops email is skipped (best-effort).
  */
-function weddingDetailsFormUrl(): string | undefined {
-  const v = process.env.WEDDING_DETAILS_FORM_URL?.trim();
-  return v ? v : undefined;
+function opsEmail(): string | undefined {
+  return process.env.OPS_NOTIFY_EMAIL?.trim() || supportEmail();
+}
+
+/** Renders the buyer's personalisation answers as an HTML table for emails. */
+function detailsRecapHtml(details: MadeToOrderDetail[]): string {
+  const rows = details
+    .map(
+      (d) => `
+        <tr>
+          <td style="padding: 6px 12px 6px 0; color: #737373; font-size: 13px; vertical-align: top; white-space: nowrap;">${escapeHtml(d.label)}</td>
+          <td style="padding: 6px 0; color: #0a0a0a; font-size: 14px;">${escapeHtml(d.value)}</td>
+        </tr>`,
+    )
+    .join('');
+  return `<table style="margin: 8px 0 0; border-collapse: collapse;">${rows}</table>`;
 }
 
 /**
@@ -580,12 +617,11 @@ async function sendReceiptEmail(opts: {
   });
 }
 
-async function sendMadeToOrderEmail(opts: {
+async function sendMadeToOrderConfirmedEmail(opts: {
   to: string;
   productTitle: string;
   pricePaise: number;
-  /** Google Form for the buyer's details. Undefined → reply-to fallback. */
-  formUrl?: string;
+  details: MadeToOrderDetail[];
   /** Repo-relative (to apps/web) path to a welcome PDF to attach, if any. */
   attachmentPath?: string;
 }) {
@@ -594,37 +630,66 @@ async function sendMadeToOrderEmail(opts: {
 
   const resend = new Resend(apiKey);
   const from = process.env.RESEND_FROM_EMAIL ?? 'NIS <notifications@thenispace.com>';
-  const canReply = Boolean(supportEmail());
-
-  // Optional welcome PDF (the Wedding Box's warm touch). Bundled in the image
-  // and read at send time — never block the confirmation email on it: if the
-  // file is missing or unreadable, we send the email without the attachment.
   const attachments = await loadEmailAttachments(opts.attachmentPath);
 
-  // The details we need, listed in the email so a buyer can send them however
-  // they reach us (form or reply).
+  await resend.emails.send({
+    from,
+    replyTo: supportEmail(),
+    to: opts.to,
+    subject: `Order confirmed — your ${opts.productTitle} is on the way`,
+    ...(attachments.length ? { attachments } : {}),
+    html: `
+      <div style="font-family: -apple-system, system-ui, sans-serif; max-width: 540px; margin: 0 auto; padding: 32px 24px; color: #0a0a0a;">
+        <h1 style="font-size: 22px; margin: 0 0 16px;">Payment received 🎉</h1>
+        <p style="margin: 0 0 8px; color: #525252;">
+          Thanks for buying <strong>${escapeHtml(opts.productTitle)}</strong>
+          (${escapeHtml(formatINR(opts.pricePaise))}). This one is <strong>made to order</strong> —
+          we already have your details, so there&rsquo;s nothing more you need to do.
+        </p>
+        <p style="margin: 16px 0 4px; color: #525252;">Here&rsquo;s what you told us:</p>
+        ${detailsRecapHtml(opts.details)}
+        <p style="margin: 20px 0 0; color: #525252; font-size: 14px;">
+          We&rsquo;ll personalise everything by hand and email it to you shortly. If anything
+          above looks wrong, just reply and we&rsquo;ll fix it.
+        </p>
+        <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 28px 0;" />
+        <p style="font-size: 13px; color: #737373; margin: 0;">${supportLine()}</p>
+      </div>
+    `,
+  });
+}
+
+/**
+ * Fallback when a made-to-order payment lands WITHOUT details — e.g. the
+ * payment.captured webhook fulfilled before /verify could pass them. We ask by
+ * reply (never the old Google Form), and only promise a reply when SUPPORT_EMAIL
+ * can actually receive it.
+ */
+async function sendMadeToOrderDetailsNeededEmail(opts: {
+  to: string;
+  productTitle: string;
+  pricePaise: number;
+  attachmentPath?: string;
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return;
+
+  const resend = new Resend(apiKey);
+  const from = process.env.RESEND_FROM_EMAIL ?? 'NIS <notifications@thenispace.com>';
+  const canReply = Boolean(supportEmail());
+  const attachments = await loadEmailAttachments(opts.attachmentPath);
+
   const detailsList = `
     <ul style="margin: 8px 0 0; padding-left: 20px; color: #525252; font-size: 14px; line-height: 1.7;">
-      <li>Your name, email and phone number</li>
       <li>Bride&rsquo;s and groom&rsquo;s names</li>
-      <li>Wedding date(s) and venue(s) for the ceremonies you&rsquo;re inviting to</li>
-      <li>Is it from the bride&rsquo;s side, the groom&rsquo;s side, or both?</li>
+      <li>Which ceremony (or ceremonies) the invite is for</li>
+      <li>Date(s) and venue(s)</li>
       <li>Anything you&rsquo;d like customised (a special request)</li>
     </ul>`;
 
-  // Preferred intake: the form. Otherwise fall back to replying (only promised
-  // when SUPPORT_EMAIL is set, so we never point at a channel that bounces).
-  const intakeBlock = opts.formUrl
-    ? `
-      <a href="${opts.formUrl}"
-         style="display: inline-block; margin: 20px 0 8px; padding: 14px 24px; background: #7c3aed;
-                color: white; text-decoration: none; border-radius: 9999px; font-weight: 500;">
-        Send your wedding details
-      </a>
-      ${canReply ? `<p style="margin: 8px 0 0; color: #737373; font-size: 13px;">…or just reply to this email with the list above.</p>` : ''}`
-    : canReply
-      ? `<p style="margin: 20px 0 0; color: #525252; font-size: 14px;"><strong>Just reply to this email</strong> with the list above and we&rsquo;ll get started.</p>`
-      : `<p style="margin: 20px 0 0; color: #525252; font-size: 14px;">We&rsquo;ll email you shortly to collect these details.</p>`;
+  const intakeBlock = canReply
+    ? `<p style="margin: 20px 0 0; color: #525252; font-size: 14px;"><strong>Just reply to this email</strong> with the list above and we&rsquo;ll get started.</p>`
+    : `<p style="margin: 20px 0 0; color: #525252; font-size: 14px;">We&rsquo;ll email you shortly to collect these details.</p>`;
 
   await resend.emails.send({
     from,
@@ -645,11 +710,42 @@ async function sendMadeToOrderEmail(opts: {
         </p>
         ${detailsList}
         ${intakeBlock}
-        <p style="margin: 24px 0 0; color: #737373; font-size: 13px;">
-          Once we have them, we&rsquo;ll craft your videos and cards and email everything to you.
-        </p>
         <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 28px 0;" />
         <p style="font-size: 13px; color: #737373; margin: 0;">${supportLine()}</p>
+      </div>
+    `,
+  });
+}
+
+/** Internal build brief so a human can personalise + send the order. */
+async function sendMadeToOrderOpsEmail(opts: {
+  buyerEmail: string;
+  productTitle: string;
+  pricePaise: number;
+  razorpayOrderId: string;
+  details: MadeToOrderDetail[];
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const to = opsEmail();
+  if (!apiKey || !to) return; // best-effort; skip if no ops inbox is configured.
+
+  const resend = new Resend(apiKey);
+  const from = process.env.RESEND_FROM_EMAIL ?? 'NIS <notifications@thenispace.com>';
+
+  await resend.emails.send({
+    from,
+    replyTo: opts.buyerEmail,
+    to,
+    subject: `🎬 Make: ${opts.productTitle} — ${opts.buyerEmail}`,
+    html: `
+      <div style="font-family: -apple-system, system-ui, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #0a0a0a;">
+        <h1 style="font-size: 18px; margin: 0 0 12px;">New made-to-order to build</h1>
+        <p style="margin: 0 0 4px; color: #525252; font-size: 14px;">
+          <strong>${escapeHtml(opts.productTitle)}</strong> · ${escapeHtml(formatINR(opts.pricePaise))}
+          · buyer <a href="mailto:${escapeHtml(opts.buyerEmail)}">${escapeHtml(opts.buyerEmail)}</a>
+        </p>
+        <p style="margin: 0 0 12px; color: #737373; font-size: 12px;">Razorpay order ${escapeHtml(opts.razorpayOrderId)}</p>
+        ${detailsRecapHtml(opts.details)}
       </div>
     `,
   });

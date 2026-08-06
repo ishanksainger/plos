@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { openCheckout } from '@nis/razorpay-sdk/client';
 import { useCart } from '@/lib/cart-store';
 import { getPurchasableTracker, formatINR } from '@/lib/tracker-catalog';
+import { MadeToOrderForm } from '@/components/nis/MadeToOrderForm';
+import type { MtoDetail } from '@/lib/made-to-order-fields';
 
 type BuyStatus =
   | { kind: 'idle' }
@@ -54,18 +56,14 @@ export function TrackerActions({ slug }: { slug: string }) {
     status.kind === 'awaiting_payment' ||
     status.kind === 'verifying';
 
-  async function buyNow() {
-    if (!isValidEmail(email)) {
-      setStatus({ kind: 'collecting_email' });
-      return;
-    }
+  async function runCheckout(buyerEmail: string, details?: MtoDetail[]) {
     setStatus({ kind: 'creating_order' });
 
     try {
       const orderRes = await fetch('/api/razorpay/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productSlug: slug, email }),
+        body: JSON.stringify({ productSlug: slug, email: buyerEmail }),
       });
       if (orderRes.status === 503) {
         setStatus({ kind: 'unconfigured' });
@@ -89,7 +87,7 @@ export function TrackerActions({ slug }: { slug: string }) {
         amountPaise: order.amountPaise,
         name: 'NIS',
         description: tracker!.title,
-        prefill: { email },
+        prefill: { email: buyerEmail },
         themeColor: '#7c3aed',
         onDismiss: () => setStatus({ kind: 'idle' }),
         handler: async (payload) => {
@@ -97,7 +95,10 @@ export function TrackerActions({ slug }: { slug: string }) {
           const verifyRes = await fetch('/api/razorpay/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...payload, productSlug: slug, email }),
+            // `details` is the buyer's own personalisation info (safe to carry
+            // from the client). The PRODUCT is bound server-side to the order's
+            // notes in /verify — the client-echoed slug is not trusted there.
+            body: JSON.stringify({ ...payload, productSlug: slug, email: buyerEmail, details }),
           });
           if (!verifyRes.ok) {
             const data = (await verifyRes.json().catch(() => ({}))) as { error?: string };
@@ -110,7 +111,7 @@ export function TrackerActions({ slug }: { slug: string }) {
           setStatus({
             kind: 'success',
             message: tracker!.madeToOrder
-              ? 'Payment received. Check your email — we’ll ask for your wedding details to personalise your order (also check spam).'
+              ? 'Payment received 🎉 Thanks — we have your details and will personalise your order and email it to you shortly (also check spam).'
               : 'Payment received. Check your email for the download link (also check spam).',
           });
         },
@@ -121,6 +122,48 @@ export function TrackerActions({ slug }: { slug: string }) {
         message: err instanceof Error ? err.message : 'Something went wrong',
       });
     }
+  }
+
+  async function buyNow() {
+    if (!isValidEmail(email)) {
+      setStatus({ kind: 'collecting_email' });
+      return;
+    }
+    await runCheckout(email);
+  }
+
+  // Made-to-order: no cart (details must be collected up front, per SKU), so
+  // it's Buy-now only. The button reveals the scoped personalisation form; the
+  // form collects details BEFORE Razorpay opens.
+  if (tracker.madeToOrder) {
+    return (
+      <div className="nis-tracker-actions">
+        {!showBuyNow ? (
+          <button
+            className="nis-btn nis-btn-primary"
+            style={{ padding: '12px 22px', fontSize: 14 }}
+            type="button"
+            onClick={() => setShowBuyNow(true)}
+            disabled={isWorking}
+          >
+            {`Personalise & buy · ${formatINR(tracker.pricePaise)}`}
+          </button>
+        ) : (
+          <>
+            <MadeToOrderForm
+              slug={slug}
+              disabled={isWorking}
+              submitLabel={labelFor(status, tracker.pricePaise)}
+              onSubmit={(em, det) => {
+                setEmail(em);
+                void runCheckout(em, det);
+              }}
+            />
+            <BuyStatusLine status={status} />
+          </>
+        )}
+      </div>
+    );
   }
 
   return (

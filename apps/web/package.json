@@ -8,6 +8,7 @@
     "start": "next start --port 3000",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "test": "node --test lib/__tests__/*.test.ts",
     "test:e2e": "playwright test",
     "test:e2e:visual": "playwright test visual.spec.ts",
     "test:e2e:update": "playwright test --update-snapshots"
