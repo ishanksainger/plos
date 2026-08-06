@@ -444,12 +444,37 @@ async function persistMadeToOrder(
   const { data: already } = await supabase
     .schema('commerce')
     .from('order_items')
-    .select('id')
+    .select('id, details')
     .eq('order_id', order.id)
     .eq('product_id', tracker.slug)
     .maybeSingle();
 
   if (already) {
+    // Idempotent re-run. If details arrived now but weren't stored (e.g. the
+    // webhook fulfilled first, without them), backfill the row and send the
+    // confirmation + ops brief once — so neither the admin view nor the emails
+    // are lost to a verify/webhook race.
+    if (input.details?.length && !already.details) {
+      await supabase
+        .schema('commerce')
+        .from('order_items')
+        .update({ details: input.details })
+        .eq('id', already.id as string);
+      await sendMadeToOrderConfirmedEmail({
+        to: input.email,
+        productTitle: tracker.title,
+        pricePaise: tracker.pricePaise,
+        details: input.details,
+        attachmentPath: tracker.emailAttachmentPath,
+      });
+      await sendMadeToOrderOpsEmail({
+        buyerEmail: input.email,
+        productTitle: tracker.title,
+        pricePaise: tracker.pricePaise,
+        razorpayOrderId: input.razorpayOrderId,
+        details: input.details,
+      });
+    }
     return { fulfilled: true, orderItemId: already.id as string };
   }
 
@@ -461,6 +486,7 @@ async function persistMadeToOrder(
       product_id: tracker.slug,
       quantity: 1,
       price_paise: tracker.pricePaise,
+      details: input.details ?? null,
     })
     .select('id')
     .single();
