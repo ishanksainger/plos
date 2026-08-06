@@ -15,11 +15,13 @@ export const metadata: Metadata = {
 const ORDER_LIMIT = 100;
 
 type TokenRow = { used_count: number; max_uses: number; expires_at: string };
+type DetailRow = { label: string; value: string };
 type ItemRow = {
   id: string;
   product_id: string;
   quantity: number;
   price_paise: number;
+  details: DetailRow[] | null;
   tokens: TokenRow[] | null;
 };
 type OrderRow = {
@@ -157,7 +159,7 @@ export default async function AdminOrdersPage({
       `id, email, total_paise, status, razorpay_order_id, razorpay_payment_id,
        created_at, paid_at, fulfilled_at,
        items:order_items (
-         id, product_id, quantity, price_paise,
+         id, product_id, quantity, price_paise, details,
          tokens:download_tokens ( used_count, max_uses, expires_at )
        )`,
     )
@@ -243,6 +245,35 @@ export default async function AdminOrdersPage({
                                   </span>
                                 )}
                                 {tok ? <ResendButton orderItemId={it.id} /> : null}
+                                {it.details && it.details.length > 0 ? (
+                                  <table
+                                    style={{
+                                      margin: '6px 0 2px',
+                                      borderCollapse: 'collapse',
+                                      fontSize: '12px',
+                                    }}
+                                  >
+                                    <tbody>
+                                      {it.details.map((d, i) => (
+                                        <tr key={i}>
+                                          <td
+                                            style={{
+                                              color: '#6b7280',
+                                              padding: '1px 10px 1px 0',
+                                              verticalAlign: 'top',
+                                              whiteSpace: 'nowrap',
+                                            }}
+                                          >
+                                            {d.label}
+                                          </td>
+                                          <td style={{ color: '#111827', padding: '1px 0' }}>
+                                            {d.value}
+                                          </td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                ) : null}
                               </li>
                             );
                           })}

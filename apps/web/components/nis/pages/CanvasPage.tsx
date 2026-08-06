@@ -23,11 +23,12 @@ export function CanvasPage() {
     <section className="nis-section">
       <div className="nis-section-head">
         <div>
-          <div className="nis-section-eyebrow">02 · Canvas</div>
+          <div className="nis-section-eyebrow">Canvas · 3D &amp; motion</div>
           <h1 className="nis-h2">Scenes that hold a feeling.</h1>
         </div>
         <p className="nis-section-body">
-          Nikita&apos;s room. Six original 3D and motion scenes — built in Spline, rendered in browsers, exported for slides, posters, and merch. Each one drops into a marketing page through a single iframe.
+          Nikita&apos;s room — the moving, three-dimensional side of NIS. Six original 3D and motion scenes, built in Spline and rendered live in the browser, then exported for slides, posters and merch. For the flat design work — carousels, posts, ad creative — see the{' '}
+          <a href="/lookbook" style={{ color: 'var(--accent)' }}>Lookbook</a>.
         </p>
       </div>
 

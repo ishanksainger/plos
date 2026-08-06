@@ -8,13 +8,14 @@ export function LookbookPage() {
     <section className="nis-section">
       <div className="nis-section-head">
         <div>
-          <div className="nis-section-eyebrow">Lookbook</div>
+          <div className="nis-section-eyebrow">Lookbook · Social &amp; marketing design</div>
           <h1 className="nis-h2">Designs from the nest.</h1>
         </div>
         <p className="nis-section-body">
-          A living gallery of the posts, carousels and canvases we make for NIS
-          — the same design quality that goes into every tracker and template.
-          Swipe through any set. New drops land here first.
+          The flat design work — Instagram carousels, posts and ad creative — that shows
+          the craft behind every tracker and template. Swipe through any set; new drops land
+          here first. For our 3D &amp; motion scenes, see{' '}
+          <a href="/canvas" style={{ color: 'var(--accent)' }}>Canvas</a>.
         </p>
       </div>
 

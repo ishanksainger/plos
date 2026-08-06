@@ -69,6 +69,12 @@ alter table commerce.order_items
 alter table commerce.order_items
   add constraint order_items_order_product_uniq unique (order_id, product_id);
 
+-- Personalisation answers for made-to-order lines (Wedding Box, video invite),
+-- collected on-site before payment as a [{label, value}] array. Null for normal
+-- digital products. Surfaced in /admin/orders so the suite can be built by hand.
+alter table commerce.order_items
+  add column if not exists details jsonb;
+
 -- ----------------------------------------------------------------------------
 -- download_tokens: signed download access for digital purchases.
 -- ----------------------------------------------------------------------------
