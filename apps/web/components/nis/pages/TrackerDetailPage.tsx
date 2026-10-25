@@ -5,9 +5,21 @@ import Link from 'next/link';
 import { Carousel } from '@/components/nis/Carousel';
 import { ImageSlot } from '@/components/nis/ImageSlot';
 import { TrackerActions } from '@/components/nis/TrackerActions';
+import { useEffect } from 'react';
 import { fmtINR, type Tracker } from '@/lib/nis-data';
+import { trackViewContent } from '@/lib/meta-pixel';
 
 export function TrackerDetailPage({ tracker: t }: { tracker: Tracker }) {
+  // Meta Pixel: product viewed. `t.price` is already in rupees.
+  useEffect(() => {
+    trackViewContent({
+      contentName: t.title,
+      contentIds: [t.slug],
+      value: t.price,
+      currency: 'INR',
+    });
+  }, [t.slug, t.title, t.price]);
+
   return (
     <section className="nis-section">
       <Link href="/trackers" className="nis-btn" style={{ marginBottom: 28 }}>

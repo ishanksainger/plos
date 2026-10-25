@@ -3,6 +3,7 @@ import Script from 'next/script';
 import { Sora, Instrument_Serif, Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import PageViewBeacon from '@/components/PageViewBeacon';
+import MetaPixel from '@/components/MetaPixel';
 
 const PLAUSIBLE_DOMAIN = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
 const PLAUSIBLE_SRC = process.env.NEXT_PUBLIC_PLAUSIBLE_SRC ?? 'https://plausible.io/js/script.js';
@@ -62,6 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${sora.variable} ${instrumentSerif.variable} ${geist.variable} ${geistMono.variable}`}
     >
       <body>
+        <MetaPixel />
         {children}
         <PageViewBeacon />
         {PLAUSIBLE_DOMAIN && (
