@@ -6,6 +6,7 @@ import { useCart } from '@/lib/cart-store';
 import { getPurchasableTracker, formatINR } from '@/lib/tracker-catalog';
 import { MadeToOrderForm } from '@/components/nis/MadeToOrderForm';
 import type { MtoDetail } from '@/lib/made-to-order-fields';
+import { trackInitiateCheckout, trackPurchase } from '@/lib/meta-pixel';
 
 type BuyStatus =
   | { kind: 'idle' }
@@ -83,6 +84,15 @@ export function TrackerActions({ slug }: { slug: string }) {
 
       setStatus({ kind: 'awaiting_payment' });
 
+      // Meta Pixel: entering checkout, before the Razorpay sheet opens.
+      trackInitiateCheckout({
+        contentName: tracker!.title,
+        contentIds: [slug],
+        numItems: 1,
+        value: order.amountPaise / 100,
+        currency: 'INR',
+      });
+
       await openCheckout({
         keyId: order.keyId,
         orderId: order.orderId,
@@ -110,6 +120,14 @@ export function TrackerActions({ slug }: { slug: string }) {
             });
             return;
           }
+          // Meta Pixel: payment verified — Purchase, deduped once per order id.
+          trackPurchase({
+            orderId: order.orderId,
+            contentName: tracker!.title,
+            contentIds: [slug],
+            value: order.amountPaise / 100,
+            currency: 'INR',
+          });
           setStatus({
             kind: 'success',
             message: tracker!.madeToOrder

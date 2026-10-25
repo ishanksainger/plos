@@ -9,6 +9,7 @@ import {
   totalCount,
 } from '@/lib/cart-store';
 import { formatINR } from '@/lib/tracker-catalog';
+import { trackInitiateCheckout, trackPurchase } from '@/lib/meta-pixel';
 
 type Status =
   | { kind: 'idle' }
@@ -109,6 +110,16 @@ export function CartDrawer() {
 
       setStatus({ kind: 'awaiting_payment' });
 
+      // Meta Pixel: entering checkout, before the Razorpay sheet opens.
+      trackInitiateCheckout({
+        contentName:
+          lines.length === 1 ? lines[0].tracker.title : `${lines.length} items · NIS Trackers`,
+        contentIds: lines.map(({ line }) => line.slug),
+        numItems: count,
+        value: order.amountPaise / 100,
+        currency: 'INR',
+      });
+
       await openCheckout({
         keyId: order.keyId,
         orderId: order.orderId,
@@ -143,6 +154,16 @@ export function CartDrawer() {
             return;
           }
           const data = (await verifyRes.json()) as { ok: boolean; partial?: boolean };
+          // Meta Pixel: payment verified — Purchase, deduped once per order id.
+          // (captured `lines`/`count` survive the clear() below via closure.)
+          trackPurchase({
+            orderId: order.orderId,
+            contentName:
+              lines.length === 1 ? lines[0].tracker.title : `${lines.length} items · NIS Trackers`,
+            contentIds: lines.map(({ line }) => line.slug),
+            value: order.amountPaise / 100,
+            currency: 'INR',
+          });
           if (data.partial) {
             setStatus({
               kind: 'partial',
