@@ -8,6 +8,10 @@ import MetaPixel from '@/components/MetaPixel';
 const PLAUSIBLE_DOMAIN = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
 const PLAUSIBLE_SRC = process.env.NEXT_PUBLIC_PLAUSIBLE_SRC ?? 'https://plausible.io/js/script.js';
 
+// Meta (Facebook) Pixel id. Env override with a hardcoded fallback so the tag
+// works without a build-arg change (mirrors NEXT_PUBLIC_PLOS_URL).
+const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? '1150082800937167';
+
 const sora = Sora({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
@@ -63,6 +67,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${sora.variable} ${instrumentSerif.variable} ${geist.variable} ${geistMono.variable}`}
     >
       <body>
+        {/* Meta Pixel base code — a parse-time inline script (not next/script),
+            so window.fbq exists before any React effect (e.g. a product page's
+            ViewContent) can run and get dropped. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${META_PIXEL_ID}');fbq('track','PageView');`,
+          }}
+        />
+        <noscript>
+          {/* eslint-disable-next-line @next/next/no-img-element -- Meta tracking pixel must be a bare 1x1 img */}
+          <img
+            height="1"
+            width="1"
+            style={{ display: 'none' }}
+            alt=""
+            src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
+          />
+        </noscript>
         <MetaPixel />
         {children}
         <PageViewBeacon />
