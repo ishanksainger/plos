@@ -129,7 +129,7 @@ export const NIS_TRACKERS: Tracker[] = [
   {
     slug: 'wedding-budget', title: 'Indian Wedding Budget Planner', badge: 'New', accent: '#f59e0b',
     tagline: 'One Google Sheet to plan a calm, on-budget Indian wedding — every ceremony, vendor, guest and rupee, with totals that update themselves.',
-    price: 299, fileType: 'Google Sheet', pages: 11, unit: 'tabs',
+    price: 299, fileType: 'Google Sheet', pages: 11, unit: 'tabs', image: '/trackers/wedding-budget.png',
     desc: "A single, beautifully designed Google Sheet that does the wedding maths for you. Set your budget, tick the ceremonies you're having, and type real costs into each tab — everything rolls up into one live dashboard automatically. Pure Google Sheets: works the moment you copy it, on any device, yours forever. No app, no subscription.",
     features: [
       'Live budget dashboard — auto-totals, progress bars and status',
