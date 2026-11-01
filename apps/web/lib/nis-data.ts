@@ -132,12 +132,12 @@ export const NIS_TRACKERS: Tracker[] = [
     price: 299, fileType: 'Google Sheet', pages: 11, unit: 'tabs', image: '/trackers/wedding-budget.png',
     desc: "A single, beautifully designed Google Sheet that does the wedding maths for you. Set your budget, tick the ceremonies you're having, and type real costs into each tab — everything rolls up into one live dashboard automatically. Pure Google Sheets: works the moment you copy it, on any device, yours forever. No app, no subscription.",
     features: [
-      'Live budget dashboard — auto-totals, progress bars and status',
+      'Live dashboard — countdown, what’s next, two charts and totals that update themselves',
       '7 ceremony tabs — Roka, Pre-wedding, Sagan, Haldi, Mehendi & Sangeet, Wedding, Reception',
       'Vendors & Payments log — advance, balance, due dates, GST',
       'Guest list & RSVP tracker',
       'Shagun & Neg ledger — every gift, lifafa and gold coin, and who you thanked',
-      'Bride / Groom split + 4 switchable colour themes',
+      'Bride, Groom or Both — plus 5 colour themes: Rani, Blush, Marigold, Sage, Royal',
     ],
   },
   {

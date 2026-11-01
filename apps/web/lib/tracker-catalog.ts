@@ -158,12 +158,12 @@ export const TRACKERS: Tracker[] = [
     // Repriced ₹899 → ₹299 (2026-07-28) as the "tracker alone" tier below the ₹999 Wedding Box.
     pricePaise: 29900,
     features: [
-      'Live budget dashboard — auto-totals, progress bars and status',
+      'Live dashboard — countdown, what’s next, two charts and totals that update themselves',
       '7 ceremony tabs — Roka, Pre-wedding, Sagan, Haldi, Mehendi & Sangeet, Wedding, Reception',
       'Vendors & Payments log — advance, balance, due dates, GST',
       'Guest list & RSVP tracker',
       'Shagun & Neg ledger — every gift, lifafa and gold coin, and who you thanked',
-      'Bride / Groom split + 4 switchable colour themes',
+      'Bride, Groom or Both — plus 5 colour themes: Rani, Blush, Marigold, Sage, Royal',
     ],
     audience: 'Indian families and couples planning a wedding.',
     fileType: 'gsheet',
