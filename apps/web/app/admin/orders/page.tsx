@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { notFound } from 'next/navigation';
+import { isAdminAuthorized } from '@/lib/admin-auth';
 import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
 import { formatINR } from '@/lib/tracker-catalog';
 
 // Reads live commerce data via the service-role client — Node runtime, never
-// cached. Access is gated by Basic Auth in middleware.ts.
+// cached. Access is gated by Basic Auth in middleware.ts and checked again
+// here, so the page never relies on middleware alone.
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
@@ -140,6 +144,8 @@ export default async function AdminOrdersPage({
 }: {
   searchParams: { resent?: string; error?: string };
 }) {
+  if (!isAdminAuthorized(headers().get('authorization'))) notFound();
+
   if (!isSupabaseConfigured()) {
     return (
       <Shell>
