@@ -11,8 +11,8 @@
 
 declare global {
   interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- fbq's real signature is variadic/overloaded; Meta ships no types.
-    fbq?: (...args: any[]) => void;
+    // fbq's real signature is variadic/overloaded and Meta ships no types, so take any arguments.
+    fbq?: (...args: unknown[]) => void;
     _fbq?: unknown;
   }
 }

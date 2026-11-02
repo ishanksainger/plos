@@ -13,7 +13,7 @@ export default function Page() {
     <NisShell pillar="legal">
       <LegalPage
         title="Privacy notice."
-        lastUpdated="2026-06-09"
+        lastUpdated="2026-11-03"
         intro={
           <>
             NIS (&ldquo;Nest of Innovative Space&rdquo;) is operated by Ishank
@@ -43,6 +43,13 @@ export default function Page() {
                   <strong>We log automatically:</strong> request IP, user agent,
                   and timing — used for security, fraud prevention, and to keep
                   the service honest. We don&rsquo;t use this for advertising.
+                </p>
+                <p>
+                  <strong>The Meta Pixel records:</strong> the pages you view
+                  on this site and, if you check out, which product and the
+                  amount — sent to Meta so we can measure our Instagram and
+                  Facebook ads (see &ldquo;Who we share with&rdquo; and
+                  &ldquo;Cookies&rdquo;).
                 </p>
                 <p>
                   We do <strong>not</strong> knowingly collect sensitive
@@ -120,11 +127,25 @@ export default function Page() {
                     for product and PLOS data. Configured in the{' '}
                     <em>ap-south-1</em> (Mumbai) region.
                   </li>
+                  <li>
+                    <strong>Hostinger</strong> — the server that runs this
+                    website, including its short-lived security logs.
+                  </li>
+                  <li>
+                    <strong>Meta (Facebook / Instagram)</strong> — the Meta
+                    Pixel on our pages tells Meta which pages were viewed and
+                    when a checkout starts or a purchase completes (product and
+                    amount), so we can measure our ads. Meta also receives the
+                    technical details any website visit carries (IP address,
+                    browser). Our code doesn&rsquo;t send Meta your name,
+                    email, or phone.{' '}
+                    <a href="https://www.facebook.com/privacy/policy/" rel="noreferrer">Meta privacy</a>.
+                  </li>
                 </ul>
                 <p>
-                  We do not share your data with advertising networks or data
-                  brokers, and we do not allow third parties to set tracking
-                  cookies through our site. We may disclose data if compelled by
+                  We don&rsquo;t sell your data or share it with data brokers,
+                  and apart from the Meta Pixel above no advertising network
+                  gets data from our site. We may disclose data if compelled by
                   a valid Indian legal order.
                 </p>
               </>
@@ -134,7 +155,7 @@ export default function Page() {
             heading: 'International transfers',
             body: (
               <p>
-                Some of our processors (e.g. Razorpay, Resend, Qikink) may
+                Some of our processors (e.g. Razorpay, Resend, Qikink, Meta) may
                 process or store data on servers outside India. Where that
                 happens we rely on the processor&rsquo;s own safeguards and only
                 use providers that are not in any country restricted for transfer
@@ -147,9 +168,13 @@ export default function Page() {
             heading: 'Cookies',
             body: (
               <p>
-                We use only the cookies needed to keep you logged in and to keep
-                the site secure. We don&rsquo;t run third-party advertising or
-                cross-site tracking cookies. Any product analytics we use are
+                We use the cookies needed to keep you logged in and to keep the
+                site secure. We also use the Meta Pixel, which sets Meta&rsquo;s
+                own cookie (<code>_fbp</code>) to measure our ads. You can block
+                it with your browser&rsquo;s privacy settings or an ad blocker,
+                or limit ad tracking in your Facebook and Instagram ad
+                settings. We don&rsquo;t run any other third-party advertising
+                or cross-site tracking cookies. Any product analytics we use are
                 aggregate and privacy-respecting (no selling of personal data).
               </p>
             ),
