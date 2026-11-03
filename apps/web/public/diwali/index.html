@@ -20,7 +20,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;600;800&family=Great+Vibes&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet" />
 <style>
   /* DIYA: a river ghat seen from a boat. 26,17,215 diyas (Ayodhya Deepotsav record, 2025) light up in a wave
-     that spreads out from one spot. Every diya is one GPU point; the counter counts exactly the lit ones. */
+     that spreads out from one spot. Near diyas are one GPU point each, far ones smaller than a pixel are merged
+     (same light, far fewer points); the counter counts exactly the lit ones. */
   :root { --gold: #ffd28a; --ink: #fff6e6; --muted: rgba(255, 236, 205, 0.62); }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; background: #03040a; overflow: hidden; }
@@ -31,18 +32,22 @@
   .counter .num { font-weight: 800; font-size: clamp(44px, 7.2vw, 118px); line-height: 0.95; letter-spacing: -0.02em; color: var(--gold);
     font-variant-numeric: tabular-nums; text-shadow: 0 0 28px rgba(255, 170, 60, 0.35); margin-top: 6px; }
   .counter .note { margin-top: 10px; font-size: clamp(12px, 1.1vw, 15px); color: var(--muted); }
-  .greet { position: fixed; left: 0; right: 0; top: 30%; transform: translateY(-50%); text-align: center; pointer-events: none; opacity: 0; }
+  .greet { position: fixed; left: 0; right: 0; top: 30%; transform: translateY(-50%); text-align: center; pointer-events: none; opacity: 0; will-change: transform, opacity; }
   .greet .shubh { font-family: "Tiro Devanagari Hindi", serif; font-size: clamp(22px, 2.6vw, 44px); letter-spacing: 0.04em; color: #ffd98f;
     text-shadow: 0 0 18px rgba(255, 170, 60, 0.55), 0 2px 12px rgba(0, 0, 0, 0.9); }
-  .greet h1 { font-family: "Great Vibes", cursive; font-weight: 400; font-size: clamp(76px, 12vw, 210px); line-height: 1.02; padding: 0 0.12em;
+  .greet .hdw { position: relative; }
+  .greet h1, .greet .hdglow { font-family: "Great Vibes", cursive; font-weight: 400; font-size: clamp(76px, 12vw, 210px); line-height: 1.02; padding: 0 0.12em; will-change: transform; }
+  .greet h1 { position: relative;
     background: linear-gradient(100deg, #b8741f 0%, #f6c56a 28%, #fff3c4 var(--shine, 45%), #f6c56a calc(var(--shine, 45%) + 14%), #c9852b 92%);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  /* the glow sits on its own still copy of the words, so the moving shine never re-runs the blur */
+  .greet .hdglow { position: absolute; inset: 0; color: #f6c56a;
     filter: drop-shadow(0 0 22px rgba(255, 166, 60, 0.45)) drop-shadow(0 3px 10px rgba(0, 0, 0, 0.85)); }
   .greet .from { margin-top: 4px; font-family: "Instrument Serif", serif; font-style: italic; font-size: clamp(24px, 3vw, 50px); color: var(--ink);
     text-shadow: 0 0 20px rgba(0, 0, 0, 0.9), 0 2px 14px rgba(0, 0, 0, 0.8); }
   .brand { position: fixed; right: clamp(16px, 3vw, 40px); bottom: clamp(14px, 3vh, 32px); font-size: 12px; letter-spacing: 0.12em; color: rgba(255, 236, 205, 0.45); pointer-events: none; }
   .share { position: fixed; left: 50%; bottom: clamp(20px, 6vh, 60px); transform: translate(-50%, 20px); display: flex; gap: 8px; opacity: 0; pointer-events: none;
-    background: rgba(12, 10, 24, 0.72); border: 1px solid rgba(255, 210, 140, 0.25); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    background: rgba(12, 10, 24, 0.86); border: 1px solid rgba(255, 210, 140, 0.25);   /* no backdrop blur: it re-blurs the moving scene every frame */
     padding: 8px; border-radius: 999px; transition: opacity 0.6s ease, transform 0.6s ease; }
   .share.on { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
   .share input { width: min(52vw, 220px); background: transparent; border: 0; outline: 0; color: var(--ink); font: 500 16px "Inter Tight", sans-serif; padding: 10px 14px; }
@@ -55,7 +60,7 @@
 <body>
 <canvas id="gl"></canvas>
 <div class="counter"><div class="label">Diyas lit</div><div class="num" id="num">0</div><div class="note">Ayodhya's record, Diwali 2025: 26,17,215</div></div>
-<div class="greet" id="greet"><div class="shubh">शुभ दीपावली</div><h1 id="hd">Happy Diwali</h1><div class="from" id="from"></div></div>
+<div class="greet" id="greet"><div class="shubh">शुभ दीपावली</div><div class="hdw"><div class="hdglow" aria-hidden="true">Happy Diwali</div><h1 id="hd">Happy Diwali</h1></div><div class="from" id="from"></div></div>
 <div class="share" id="share"><input id="name" maxlength="28" placeholder="Your name" autocomplete="given-name" /><button id="send">Send to family</button></div>
 <div class="brand">Every flame is code · thenispace.com</div>
 
@@ -80,7 +85,7 @@ const $ = (id) => document.getElementById(id);
 // ---------- renderer, camera, post ----------
 const canvas = $("gl");
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: "high-performance" });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(devicePixelRatio, matchMedia("(pointer: coarse)").matches ? 1.5 : 2));   // phones: a soft glow needs no 3x pixels
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.0;
 const scene = new THREE.Scene();
@@ -94,45 +99,79 @@ composer.addPass(new OutputPass());
 
 // ---------- the ghat, seen from a boat at its near end ----------
 // Steps rise out of the river to the right and the bank runs away from the camera. Diyas are stored in
-// lighting order (nearest first), so "light the first N" is exactly gl_VertexID < N: the counter is honest.
+// lighting order (nearest first) and each point keeps its diya number, so "light the first N" is exactly
+// aId < N: the counter is honest.
 const POINTS = TOTAL - 1;                    // diya #1 is the big clay one floating by the boat
 const STEPS = 40, ROWS = 3, RISE = 0.15, RUN = 0.32, SPACING = 0.12, X0 = -1.6;  // per step: 65,430 diyas over ~2.6 km
 // Lighting order: the bottom step first (racing away along the bank), then the next step up, and so on,
 // so 1,000 is a line along the water, 1 lakh is the first step to the horizon and 26 lakh fills the ghat.
 const perStep = Math.ceil(POINTS / STEPS);
-const pos = new Float32Array(POINTS * 3);
 let seed = 7;
 const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-let k = 0;
-for (let s = 0; s < STEPS && k < POINTS; s++) {
-  for (let j = 0; j < perStep && k < POINTS; j++) {
-    const sl = Math.floor(j / ROWS), r = j % ROWS;
-    const z = 2.4 + sl * SPACING;
-    const bend = 0.00004 * z * z;                  // the bank curves gently to the left far away
-    pos[k * 3] = X0 - s * RUN - r * (RUN / ROWS) + bend + (rnd() - 0.5) * 0.025;
-    pos[k * 3 + 1] = 0.05 + s * RISE + (rnd() - 0.5) * 0.008;
-    pos[k * 3 + 2] = z + (rnd() - 0.5) * SPACING * 0.6;
-    k++;
+const hash01 = (n) => { n = Math.imul(n ^ (n >>> 16), 0x7feb352d); n = Math.imul(n ^ (n >>> 15), 0x846ca68b); return ((n ^ (n >>> 16)) >>> 0) / 4294967296; };
+const camBase = new THREE.Vector3(0.15, 0.62, 0), look = new THREE.Vector3(-2.2, 1.55, 26);
+const isTall = () => innerHeight > innerWidth * 1.05;
+const viewScale = () => innerHeight * renderer.getPixelRatio() * (isTall() ? 0.75 : 1.0);
+// Far away most diyas are smaller than a pixel. Those are merged: each one is kept with a chance equal to
+// KEEP x its brightness and drawn brighter by the same factor, so the screen gets the same light from ~15x
+// fewer points. Near diyas are all drawn. This is what keeps the page smooth on a phone.
+const KEEP = 3;
+function buildGhat(scale) {
+  seed = 7;                                  // the stars, fireworks and lanterns carry on from where this leaves it
+  const fwd = new THREE.Vector3().subVectors(look, camBase).normalize();
+  let cap = 1 << 18, n = 0, pos = new Float32Array(cap * 3), ids = new Float32Array(cap), wts = new Float32Array(cap);
+  const grow = () => {
+    cap *= 2;
+    const p = new Float32Array(cap * 3), i = new Float32Array(cap), w = new Float32Array(cap);
+    p.set(pos); i.set(ids); w.set(wts); pos = p; ids = i; wts = w;
+  };
+  let k = 0;
+  for (let s = 0; s < STEPS && k < POINTS; s++) {
+    for (let j = 0; j < perStep && k < POINTS; j++, k++) {
+      const sl = Math.floor(j / ROWS), r = j % ROWS;
+      const z = 2.4 + sl * SPACING;
+      const bend = 0.00004 * z * z;                // the bank curves gently to the left far away
+      const x = X0 - s * RUN - r * (RUN / ROWS) + bend + (rnd() - 0.5) * 0.025;
+      const y = 0.05 + s * RISE + (rnd() - 0.5) * 0.008;
+      const zz = z + (rnd() - 0.5) * SPACING * 0.6;
+      const d = Math.max(0.05, (x - camBase.x) * fwd.x + (y - camBase.y) * fwd.y + (zz - camBase.z) * fwd.z);
+      const size = scale * 0.045 / d;
+      const keep = Math.min(1, KEEP * 0.6 * size * size);
+      if (keep < 1 && hash01(k) >= keep) continue;
+      if (n === cap) grow();
+      pos[n * 3] = x; pos[n * 3 + 1] = y; pos[n * 3 + 2] = zz; ids[n] = k; wts[n] = 1 / keep; n++;
+    }
   }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(pos.slice(0, n * 3), 3));
+  geometry.setAttribute("aId", new THREE.BufferAttribute(ids.slice(0, n), 1));
+  geometry.setAttribute("aW", new THREE.BufferAttribute(wts.slice(0, n), 1));
+  geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), 1e5);
+  return { geometry, ids: geometry.attributes.aId.array, scale };
 }
-const geo = new THREE.BufferGeometry();
-geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), 1e5);
+let ghat = buildGhat(viewScale());
+function fitDrawRange() {                    // draw only the lit diyas: the first kept point whose number is >= uLit
+  const ids = ghat.ids, lit = shared.uLit.value;
+  let lo = 0, hi = ids.length;
+  while (lo < hi) { const mid = (lo + hi) >> 1; if (ids[mid] < lit) lo = mid + 1; else hi = mid; }
+  ghat.geometry.setDrawRange(0, lo);
+}
 
 const shared = { uLit: { value: 0 }, uTime: { value: 0 }, uScale: { value: 1 }, uGlow: { value: 0 } };
 const vert = /* glsl */ `
   uniform float uLit, uTime, uScale, uReflect;
+  in float aId; in float aW;
   out float vFlick; out float vAlpha;
   float hash(float n) { return fract(sin(n * 12.9898) * 43758.5453); }
   void main() {
-    float id = float(gl_VertexID);
+    float id = aId;
     vec3 p = position;
     float h = hash(id);
     if (uReflect > 0.5) { p.y = -p.y; p.x += sin(uTime * 1.3 + p.z * 0.6 + h * 6.0) * 0.03; }
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
     float d = -mv.z;
     float size = uScale * 0.045 / d;
-    vAlpha = min(1.0, size * size * 0.6);                 // sub-pixel diyas give only their share of light
+    vAlpha = min(1.0, size * size * 0.6 * aW);            // sub-pixel diyas give only their share of light (aW: plus the merged ones')
     float front = clamp((uLit - id) / max(1.0, min(uLit * 0.02, 4000.0)), 0.0, 1.0);   // soft wave front
     vAlpha *= front;
     vFlick = 0.78 + 0.22 * sin(uTime * (5.0 + h * 5.0) + h * 6.2831);
@@ -160,8 +199,8 @@ function lampMaterial(reflect) {
     blending: THREE.AdditiveBlending, depthWrite: false, depthTest: false, transparent: true,
   });
 }
-const lamps = new THREE.Points(geo, lampMaterial(false));
-const reflections = new THREE.Points(geo, lampMaterial(true));
+const lamps = new THREE.Points(ghat.geometry, lampMaterial(false));
+const reflections = new THREE.Points(ghat.geometry, lampMaterial(true));
 lamps.frustumCulled = reflections.frustumCulled = false;
 scene.add(reflections, lamps);
 
@@ -320,15 +359,20 @@ hero.position.set(0.55, 0.0, 2.6); hero.rotation.y = 0.6;
 scene.add(hero);
 
 // ---------- framing ----------
-const camBase = new THREE.Vector3(0.15, 0.62, 0), look = new THREE.Vector3(-2.2, 1.55, 26);
 function frame() {
-  const w = innerWidth, h = innerHeight, tall = h > w * 1.05;
+  const w = innerWidth, h = innerHeight, tall = isTall();
   renderer.setSize(w, h, false); composer.setSize(w, h); bloom.setSize(w, h);
   camera.aspect = w / h;
   camera.fov = Number(params.get("fov")) || (tall ? 64 : 42);
   camera.updateProjectionMatrix();
-  shared.uScale.value = h * renderer.getPixelRatio() * (tall ? 0.75 : 1.0);
+  shared.uScale.value = viewScale();
   hero.position.x = tall ? 0.25 : 0.55;
+  if (shared.uScale.value > ghat.scale * 1.3) {           // a much bigger screen: far diyas grew, merge fewer
+    const old = ghat.geometry;
+    ghat = buildGhat(shared.uScale.value);
+    lamps.geometry = reflections.geometry = ghat.geometry;
+    old.dispose(); fitDrawRange();
+  }
 }
 addEventListener("resize", frame); frame();
 
@@ -339,6 +383,7 @@ function show() {
   const lit = Math.min(TOTAL, Math.round(state.lit));
   const heroOn = Math.min(1, state.lit);
   shared.uLit.value = Math.max(0, lit - 1);               // diya #1 is the clay one
+  fitDrawRange();
   shared.uGlow.value = state.glow;
   $("num").textContent = fmt.format(lit);
   flameMat.uniforms.uOn.value = heroOn;
@@ -376,12 +421,24 @@ if (!STILL && !params.has("lit") && !params.has("end")) {
     .call(() => $("share").classList.add("on"), null, 9.8);
 }
 $("name").value = name;
+// The card's own link. On the live site it is always the clean thenispace.com/diwali, wherever it was opened from.
+const CARD = /(^|\.)thenispace\.com$/.test(location.hostname) ? "https://thenispace.com/diwali" : location.origin + location.pathname;
 $("send").addEventListener("click", async () => {
   const n = $("name").value.trim().slice(0, 28);
-  const url = location.origin + location.pathname + (n ? "?name=" + encodeURIComponent(n) : "");
-  const text = n ? `Happy Diwali from ${n} 🪔 26 lakh diyas, every flame made of code.` : "Happy Diwali 🪔 26 lakh diyas, every flame made of code.";
-  try { if (navigator.share) { await navigator.share({ title: "Happy Diwali", text, url }); return; } } catch (e) {}
-  try { await navigator.clipboard.writeText(text + " " + url); $("send").textContent = "Link copied ✓"; } catch (e) { location.href = url; }
+  const url = CARD + (n ? "?name=" + encodeURIComponent(n) : "");
+  const text = (n ? `Happy Diwali from ${n} 🪔` : "Happy Diwali 🪔") + " 26 lakh diyas, every flame made of code.";
+  $("from").textContent = n ? "from " + n : "";            // they see their card at once, the way family will
+  try { history.replaceState(null, "", n ? "?name=" + encodeURIComponent(n) : location.pathname); } catch (e) {}
+  if (navigator.share) {                                   // phones: the share sheet (WhatsApp, Instagram, ...)
+    try { await navigator.share({ title: "Happy Diwali", text, url }); return; } catch (e) { if (e.name === "AbortError") return; }
+  }
+  // No share sheet (a laptop, or Instagram's in-app browser on Android): open WhatsApp with the message and
+  // the link on its own line, and put the bare link on the clipboard too.
+  try { await navigator.clipboard.writeText(url); } catch (e) {}
+  const btn = $("send"), label = btn.textContent;
+  btn.textContent = "Opening WhatsApp…"; setTimeout(() => (btn.textContent = label), 4000);
+  const wa = "https://wa.me/?text=" + encodeURIComponent(text + "\n" + url);
+  if (!window.open(wa, "_blank")) location.href = wa;
 });
 
 // ---------- render loop (performance.now, so capture can drive a virtual clock) ----------
