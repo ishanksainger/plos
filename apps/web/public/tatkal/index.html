@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Tatkal Rush · Can you beat Tatkal?</title>
+<meta name="description" content="Tatkal opens at 10:00:00 and every berth is gone in seconds. Grab one and book it before it vanishes. Then challenge a friend." />
+<link rel="canonical" href="https://thenispace.com/tatkal" />
+<meta name="theme-color" content="#060914" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="NIS · The Nest of Innovative Space" />
+<meta property="og:url" content="https://thenispace.com/tatkal" />
+<meta property="og:title" content="Tatkal Rush 🚆 Can you beat Tatkal?" />
+<meta property="og:description" content="Berths open at 10:00:00 and vanish in seconds. Grab one, book it, and see if you get CNF, RAC or WL. Then challenge a friend." />
+<meta property="og:image" content="https://thenispace.com/tatkal/og.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter+Tight:wght@500;600;700;800&family=JetBrains+Mono:wght@700;800&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet" />
+<style>
+  /* TATKAL RUSH: the 10 AM Tatkal booking race as a game. An AC 3-tier coach of 72 berths opens at 10:00:00 sharp (AC Tatkal
+     opens at 10, Sleeper at 11)
+     and empties in a couple of seconds. Grab a green berth, book it, and see your time and status (CNF / RAC / WL). */
+  :root {
+    --bg: #060914; --panel: #0f1631; --steel: #1a2550; --line: rgba(160, 180, 255, 0.14);
+    --ink: #f3f6ff; --muted: rgba(205, 215, 245, 0.62);
+    --amber: #ffb31a; --green: #26d870; --green-d: #0f9a4c; --red: #ff4655; --red-d: #b3121f; --gold: #ffd166;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; background: var(--bg); overflow: hidden; }
+  body { font-family: "Inter Tight", system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; user-select: none; }
+  #bg { position: fixed; inset: 0; background: radial-gradient(80% 60% at 50% 0%, #17224d 0%, #0a1024 55%, var(--bg) 100%); }
+  #bg::after { content: ""; position: absolute; inset: 0; opacity: 0.5;
+    background-image: radial-gradient(rgba(150, 170, 255, 0.16) 1px, transparent 1.4px); background-size: 28px 28px; }
+  .app { position: fixed; inset: 0; display: grid; grid-template-rows: auto 1fr; }
+
+  /* ---------- header: brand, the clock, berths left ---------- */
+  .top { position: relative; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 24px; padding: clamp(14px, 3vh, 34px) clamp(16px, 3vw, 48px) 0; z-index: 2; }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand .logo { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; font-size: 28px;
+    background: linear-gradient(180deg, #24346d, #151f45); border: 1px solid var(--line); }
+  .brand .name { font: 800 clamp(20px, 2vw, 30px)/1 "Bricolage Grotesque", sans-serif; letter-spacing: 0.02em; }
+  .brand .name i { font-style: normal; color: var(--amber); }
+  .brand .sub { margin-top: 6px; font-size: clamp(12px, 1vw, 15px); color: var(--muted); font-weight: 600; }
+  .clockwrap { text-align: center; }
+  .clock { display: inline-flex; align-items: center; gap: clamp(4px, 0.5vw, 8px); }
+  .clock .d { position: relative; width: clamp(40px, 5.6vw, 92px); height: clamp(58px, 8vw, 128px); border-radius: 12px; overflow: hidden;
+    background: linear-gradient(180deg, #18224a 0%, #10183a 49.5%, #0c1330 50.5%, #0a1029 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 24px rgba(0, 0, 0, 0.45); }
+  .clock .d::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: rgba(0, 0, 0, 0.55); }
+  .clock .d i { position: absolute; inset: 0; display: grid; place-items: center; font: 800 clamp(38px, 5.6vw, 92px)/1 "JetBrains Mono", monospace;
+    font-style: normal; color: var(--amber); text-shadow: 0 0 22px rgba(255, 170, 20, 0.45); }
+  .clock .c { font: 800 clamp(30px, 4.2vw, 70px)/1 "JetBrains Mono", monospace; color: var(--amber); opacity: 0.85; margin: 0 1px 8px; }
+  .clock.open .d i { color: #fff3c4; }
+  .note { margin-top: 12px; font-weight: 700; font-size: clamp(14px, 1.5vw, 24px); color: var(--muted); letter-spacing: 0.02em; min-height: 1.3em; }
+  .note b { color: var(--ink); }
+  .note .timer { display: inline-block; padding: 2px 14px; border-radius: 999px; font: 800 1.2em "JetBrains Mono", monospace; color: var(--amber);
+    background: rgba(255, 179, 26, 0.14); border: 1px solid rgba(255, 179, 26, 0.45); }
+  .avail { justify-self: end; text-align: right; }
+  .avail .lab { font-size: clamp(12px, 1vw, 15px); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+  .avail .num { font: 800 clamp(44px, 5vw, 84px)/1 "Bricolage Grotesque", sans-serif; color: var(--green); text-shadow: 0 0 30px rgba(38, 216, 112, 0.35);
+    font-variant-numeric: tabular-nums; margin-top: 4px; }
+  .avail .num.zero { color: var(--red); text-shadow: 0 0 30px rgba(255, 70, 85, 0.4); }
+  .avail .cls { margin-top: 6px; font-size: clamp(12px, 1vw, 14px); font-weight: 700; color: var(--muted); }
+
+  /* ---------- the coach, seen from above and tilted ---------- */
+  .stage { position: relative; display: grid; place-items: center; perspective: 1700px; z-index: 1; min-height: 0; }
+  .plane { position: relative; transform: rotateX(24deg); }   /* flat inside: one tilted layer, no 3D sorting (berths vanished mid-flip with preserve-3d) */
+  .rails { position: absolute; left: -12%; right: -12%; top: 50%; height: 64%; transform: translateY(-50%); pointer-events: none;
+    background:
+      linear-gradient(transparent calc(14% - 2px), #4a5478 calc(14% - 2px), #4a5478 14%, transparent 14%, transparent calc(86% - 2px), #4a5478 calc(86% - 2px), #4a5478 86%, transparent 86%),
+      repeating-linear-gradient(90deg, transparent 0 34px, rgba(110, 90, 70, 0.55) 34px 48px); opacity: 0.6;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+  .coach { position: relative; padding: 30px 28px 30px 92px; border-radius: 30px; background: linear-gradient(180deg, #20306a 0%, #172352 48%, #131d45 100%);
+    border: 2px solid #31448a; box-shadow: 0 50px 90px rgba(0, 0, 0, 0.55), inset 0 2px 0 rgba(255, 255, 255, 0.07); }
+  .coach::before, .coach::after { content: ""; position: absolute; left: 92px; right: 28px; height: 8px; border-radius: 4px; opacity: 0.55;
+    background: repeating-linear-gradient(90deg, #9fb4ff 0 46px, transparent 46px 62px); }
+  .coach::before { top: 11px; } .coach::after { bottom: 11px; }
+  .plate { position: absolute; left: 22px; top: 50%; transform: translate(-50%, -50%) rotate(-90deg) translateY(28px); white-space: nowrap;
+    font: 800 15px "Inter Tight", sans-serif; letter-spacing: 0.22em; color: #c7d3ff; opacity: 0.8; }
+  .plate b { color: var(--amber); }
+  .grid { display: grid; gap: 7px 12px; }
+  .berth { position: relative; border-radius: 9px; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer;
+    width: clamp(92px, 8.6vw, 136px); height: clamp(32px, 5.2vh, 58px);
+    background: linear-gradient(180deg, #3cf08a, var(--green-d)); color: #03250f; font: 800 17px "Inter Tight", sans-serif;
+    box-shadow: 0 4px 0 #0a6c34, 0 8px 16px rgba(0, 0, 0, 0.35); }
+  .berth small { font-size: 12px; font-weight: 700; opacity: 0.7; }
+  .berth.taken { background: linear-gradient(180deg, #ff6b76, var(--red-d)); color: #3d0008; box-shadow: 0 4px 0 #6f0a13, 0 8px 16px rgba(0, 0, 0, 0.35); cursor: default; }
+  .berth.mine { background: linear-gradient(180deg, #ffe08a, #f5a300); color: #3a2400; box-shadow: 0 4px 0 #8f5c00, 0 0 0 3px #fff3c4, 0 0 30px rgba(255, 200, 60, 0.7); }
+  .berth.gone { background: linear-gradient(180deg, #ff6b76, var(--red-d)); color: #3d0008; box-shadow: 0 4px 0 #6f0a13, 0 0 0 3px #ffd7da; }
+
+  .stamp { position: absolute; left: 50%; top: 50%; z-index: 3; pointer-events: none; opacity: 0; text-align: center;
+    transform: translate(-50%, -50%) rotate(-11deg); padding: 10px 34px 14px; border: 7px solid var(--red); border-radius: 22px; color: var(--red);
+    background: rgba(14, 4, 9, 0.9); box-shadow: 0 0 60px rgba(255, 50, 70, 0.4); white-space: nowrap; text-shadow: 0 0 24px rgba(255, 70, 85, 0.45); }
+  .stamp b { display: block; font: 800 clamp(64px, 9vw, 150px)/1 "Bricolage Grotesque", sans-serif; letter-spacing: 0.01em; }
+  .stamp small { display: block; margin-top: 4px; font: 800 clamp(14px, 1.6vw, 24px) "Inter Tight", sans-serif; letter-spacing: 0.4em; }
+  .flash { position: fixed; inset: 0; z-index: 4; pointer-events: none; opacity: 0; background: radial-gradient(60% 50% at 50% 35%, rgba(255, 210, 120, 0.55), transparent 70%); }
+  .banner { position: fixed; left: 50%; top: 46%; z-index: 5; pointer-events: none; opacity: 0; transform: translate(-50%, -50%);
+    font: 800 clamp(36px, 7vw, 120px)/1 "Bricolage Grotesque", sans-serif; color: #fff3c4; white-space: nowrap; text-shadow: 0 0 40px rgba(255, 170, 20, 0.7), 0 6px 20px rgba(0, 0, 0, 0.7); }
+
+  /* ---------- cards over the coach ---------- */
+  .card { position: fixed; left: 50%; z-index: 6; opacity: 0; pointer-events: none; border-radius: 26px; text-align: center;
+    background: rgba(12, 18, 42, 0.95); border: 1px solid rgba(170, 190, 255, 0.22); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6); }
+  .card.on { pointer-events: auto; }
+  .start { top: 50%; transform: translate(-50%, -50%); width: min(660px, 92vw); padding: 38px 38px 34px; overflow: hidden; }
+  .start .deva { position: absolute; right: -10px; top: -30px; font: 140px/1 "Tiro Devanagari Hindi", serif; color: rgba(255, 179, 26, 0.08); pointer-events: none; }
+  .start h1 { position: relative; font: 800 clamp(34px, 4.6vw, 66px)/1.02 "Bricolage Grotesque", sans-serif; }
+  .start h1 em { font-style: normal; color: var(--amber); }
+  .start p { position: relative; margin: 14px auto 0; max-width: 500px; font-size: clamp(16px, 1.4vw, 20px); line-height: 1.45; color: var(--muted); font-weight: 600; }
+  .start p b { color: var(--ink); }
+  .friend { margin: 16px auto 0; max-width: 430px; padding: 10px 14px; border-radius: 14px; background: rgba(255, 179, 26, 0.12); border: 1px solid rgba(255, 179, 26, 0.35);
+    color: #ffe2a6; font-weight: 700; font-size: 15px; display: none; }
+  .btn { border: 0; border-radius: 999px; cursor: pointer; font: 800 18px "Inter Tight", sans-serif; padding: 16px 34px; color: #2a1700;
+    background: linear-gradient(180deg, #ffd36b, #ffa915); box-shadow: 0 8px 0 #9b5f00, 0 14px 30px rgba(255, 160, 20, 0.35); }
+  .btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #9b5f00, 0 8px 18px rgba(255, 160, 20, 0.3); }
+  .btn.ghost { color: var(--ink); background: linear-gradient(180deg, #2b3b78, #1d2a5a); box-shadow: 0 8px 0 #0e1535, 0 14px 30px rgba(0, 0, 0, 0.3); }
+  .start .btn { position: relative; margin-top: 24px; }
+  .pay { bottom: clamp(18px, 5vh, 54px); transform: translate(-50%, 0); width: min(640px, 92vw); padding: 18px 18px 18px 26px; display: flex; align-items: center; gap: 18px; text-align: left; }
+  .pay .who { flex: 1; }
+  .pay .who b { display: block; font: 800 clamp(20px, 2vw, 28px) "Bricolage Grotesque", sans-serif; }
+  .pay .who span { font-size: 14px; color: var(--muted); font-weight: 600; }
+  .pay .btn { padding: 18px 32px; font-size: clamp(18px, 1.8vw, 24px); }
+  .proc { top: 50%; transform: translate(-50%, -50%); width: min(430px, 90vw); padding: 30px 26px; }
+  .proc .spin { width: 54px; height: 54px; margin: 0 auto 16px; border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.12); border-top-color: var(--amber); }
+  .proc b { display: block; font: 800 22px "Bricolage Grotesque", sans-serif; }
+  .proc span { display: block; margin-top: 6px; color: var(--muted); font-weight: 600; }
+  .result { top: 50%; transform: translate(-50%, -50%); width: min(640px, 92vw); padding: 32px 32px 30px; }
+  .rstamp { display: inline-block; padding: 6px 28px 10px; border: 6px solid currentColor; border-radius: 18px; transform: rotate(-6deg);
+    font: 800 clamp(58px, 8vw, 118px)/1 "Bricolage Grotesque", sans-serif; }
+  .rstamp.wl { color: var(--red); } .rstamp.rac { color: var(--amber); } .rstamp.cnf { color: var(--green); } .rstamp.gone { color: var(--red); font-size: clamp(40px, 5vw, 64px); }
+  .rline { margin-top: 16px; font: 800 clamp(24px, 2.4vw, 34px) "Bricolage Grotesque", sans-serif; }
+  .rtime { margin-top: 14px; display: flex; align-items: baseline; justify-content: center; gap: 12px; color: var(--muted); font-weight: 700; }
+  .rtime b { font: 800 clamp(40px, 4vw, 60px) "JetBrains Mono", monospace; color: var(--amber); }
+  .rsplit { margin-top: 4px; color: var(--muted); font-weight: 600; font-size: 15px; }
+  .rbtns { margin-top: 22px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .rbtns .btn { font-size: 17px; padding: 14px 24px; }
+
+  .finger { position: fixed; left: 0; top: 0; z-index: 9; width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%; opacity: 0; pointer-events: none;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 34%, rgba(255, 255, 255, 0.35) 36% 60%, transparent 62%); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45); }
+  .ripple { position: fixed; z-index: 8; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; border: 4px solid #fff; pointer-events: none; opacity: 0; }
+  .foot { position: fixed; right: clamp(14px, 2.5vw, 36px); bottom: clamp(12px, 2.4vh, 26px); z-index: 2; font-size: 12px; letter-spacing: 0.12em; color: rgba(205, 215, 245, 0.42); pointer-events: none; }
+  .mute { position: fixed; left: clamp(14px, 2.5vw, 36px); bottom: clamp(10px, 2.2vh, 24px); z-index: 7; border: 0; background: transparent; font-size: 20px; opacity: 0.55; cursor: pointer; }
+  body.still .foot, body.still .mute { display: none; }
+
+  /* ---------- phones: the coach turns to run down the screen, one bay per row ---------- */
+  @media (max-aspect-ratio: 1/1) {
+    .top { grid-template-columns: 1fr auto; grid-template-rows: auto auto; gap: 14px 12px; }
+    .brand { grid-column: 1; } .avail { grid-column: 2; grid-row: 1; }
+    .brand .logo { width: 44px; height: 44px; font-size: 24px; }
+    .avail .num { font-size: 46px; }
+    .clockwrap { grid-column: 1 / -1; grid-row: 2; }
+    .clock .d { width: 12vw; height: 17vw; max-width: 64px; max-height: 92px; }
+    .clock .d i { font-size: min(11.5vw, 62px); }
+    .clock .c { font-size: min(8vw, 42px); margin: 0 0 6px; }
+    .plane { transform: rotateX(16deg); }
+    .rails { display: none; }
+    .coach { padding: 54px 12px 14px; border-radius: 24px; }
+    .coach::before, .coach::after { display: none; }
+    .plate { left: 50%; top: 14px; transform: translateX(-50%); font-size: 13px; }
+    .grid { gap: 6px 5px; }
+    .berth { width: calc((min(100vw, 520px) - 84px) / 8); height: min(5.4vh, 46px); flex-direction: column; gap: 0; font-size: 13px; border-radius: 8px; }
+    .berth small { font-size: 9px; }
+    .stamp { padding: 8px 22px 12px; }
+    .stamp b { font-size: 64px; }
+  }
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<div class="app">
+  <header class="top">
+    <div class="brand"><div class="logo">🚆</div><div><div class="name">TATKAL <i>RUSH</i></div><div class="sub">Tomorrow · AC 3-tier · Tatkal quota</div></div></div>
+    <div class="clockwrap"><div class="clock" id="clock"></div><div class="note" id="note">Tatkal opens at <b>10:00:00</b></div></div>
+    <div class="avail"><div class="lab">Berths left</div><div class="num" id="avail">72</div><div class="cls">Coach B4</div></div>
+  </header>
+  <main class="stage" id="stage">
+    <div class="plane" id="plane"><div class="rails"></div><div class="coach" id="coach"><div class="plate"><b>B4</b> · AC 3-TIER</div><div class="grid" id="grid"></div></div></div>
+    <div class="stamp" id="stamp"><b id="stampTxt">WL 147</b><small>WAITING LIST</small></div>
+  </main>
+</div>
+<div class="flash" id="flash"></div>
+<div class="banner" id="banner"></div>
+
+<div class="card start" id="start">
+  <div class="deva">तत्काल</div>
+  <h1>Can you beat <em>Tatkal</em>?</h1>
+  <p>Berths open at <b>10:00:00</b> and vanish in seconds. Grab a green one and book it before it's gone.</p>
+  <div class="friend" id="friend"></div>
+  <button class="btn" id="go">Start ▸</button>
+</div>
+<div class="card pay" id="pay"><div class="who"><b id="payWho">Berth 27 · UB</b><span>Coach B4 · Tatkal quota</span></div><button class="btn" id="payBtn">BOOK NOW</button></div>
+<div class="card proc" id="proc"><div class="spin" id="spin"></div><b>Booking…</b><span>Please don't press back 🙏</span></div>
+<div class="card result" id="result">
+  <div class="rstamp wl" id="rstamp">WL 32</div>
+  <div class="rline" id="rline">Phir bhi waiting! 😭</div>
+  <div class="rtime"><span>Your time</span><b id="rtime">4.2 s</b></div>
+  <div class="rsplit" id="rsplit">Picked a berth at 1.3 s · booked at 4.2 s</div>
+  <div class="rbtns"><button class="btn ghost" id="again">Try again</button><button class="btn" id="share">Challenge a friend</button></div>
+</div>
+<div class="finger" id="finger"></div>
+<div class="ripple" id="ripple"></div>
+<div class="foot">Built with Claude Code · thenispace.com</div>
+<button class="mute" id="mute" aria-label="Sound on or off">🔊</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(() => {
+const $ = (id) => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const STILL = params.has("still");
+if (STILL) document.body.classList.add("still");
+const N = 72, BAYS = 9, TYPES = ["LB", "MB", "UB", "LB", "MB", "UB", "SL", "SU"];
+const ALL_GONE = 2.4;             // seconds after 10:00:00 until the last berth goes in a round
+const now = () => performance.now() / 1000;
+// seeded randomness only, so a round (and a screen recording) plays the same every time
+const rng = (seed) => () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const shuffled = (arr, seed) => { const r = rng(seed), a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+// ---------- the coach: 9 bays of 8 berths (LB MB UB LB MB UB | SL SU) ----------
+const grid = $("grid"), berths = [];
+for (let b = 0; b < BAYS; b++) for (let k = 0; k < 8; k++) {
+  const no = b * 8 + k + 1, el = document.createElement("div");
+  el.className = "berth"; el.innerHTML = `${no}<small>${TYPES[k]}</small>`;
+  const berth = { no, type: TYPES[k], bay: b, k, el, state: "free" };
+  el.addEventListener("pointerdown", () => tapBerth(berth));
+  grid.appendChild(el); berths.push(berth);
+}
+const portrait = matchMedia("(max-aspect-ratio: 1/1)");
+function layout() {             // landscape: bays left to right; phones: one bay per row
+  const p = portrait.matches;
+  grid.style.gridTemplateColumns = p ? "repeat(6, auto) 10px repeat(2, auto)" : `repeat(${BAYS}, auto)`;
+  grid.style.gridTemplateRows = p ? `repeat(${BAYS}, auto)` : "repeat(6, auto) 12px repeat(2, auto)";
+  for (const s of berths) {
+    const line = s.k < 6 ? s.k + 1 : s.k + 2;
+    s.el.style.gridArea = p ? `${s.bay + 1} / ${line}` : `${line} / ${s.bay + 1}`;
+  }
+}
+portrait.addEventListener("change", layout); layout();
+
+// ---------- the split-flap clock ----------
+const clock = $("clock"), digits = [];
+for (let i = 0; i < 8; i++) {
+  if (i === 2 || i === 5) { const c = document.createElement("span"); c.className = "c"; c.textContent = ":"; clock.appendChild(c); continue; }
+  const d = document.createElement("span"); d.className = "d"; d.innerHTML = "<i>0</i>"; clock.appendChild(d); digits.push(d);
+}
+let shown = "";
+function setClock(text, flip = true) {   // text "095957"
+  for (let i = 0; i < 6; i++) {
+    if (shown[i] === text[i]) continue;
+    const d = digits[i], olds = [...d.children], nu = document.createElement("i");
+    nu.textContent = text[i]; d.appendChild(nu);
+    if (!flip) { olds.forEach((o) => o.remove()); continue; }
+    gsap.fromTo(nu, { yPercent: 70, rotationX: -70, opacity: 0 }, { yPercent: 0, rotationX: 0, opacity: 1, duration: 0.28, ease: "back.out(1.6)" });
+    olds.forEach((o) => gsap.to(o, { yPercent: -70, rotationX: 70, opacity: 0, duration: 0.22, ease: "power2.in", onComplete: () => o.remove() }));
+  }
+  shown = text; clock.classList.toggle("open", text === "100000");
+}
+
+// ---------- sound (made in the browser, only after a tap) ----------
+let ac = null, muted = false;
+const audio = () => { if (!ac && !STILL) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } return ac; };
+function tone(f, d = 0.08, type = "sine", v = 0.06, f2 = null) {
+  const a = ac; if (!a || muted) return;
+  const o = a.createOscillator(), g = a.createGain(), t = a.currentTime;
+  o.type = type; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+  g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+  o.connect(g).connect(a.destination); o.start(t); o.stop(t + d + 0.02);
+}
+const sfx = {
+  tick: () => tone(1250, 0.05, "square", 0.025),
+  open: () => { tone(660, 0.12, "triangle", 0.07); setTimeout(() => tone(990, 0.2, "triangle", 0.07), 90); },
+  take: () => tone(320 + Math.random() * 80, 0.03, "square", 0.012),
+  pick: () => tone(880, 0.1, "sine", 0.08, 1320),
+  stamp: () => tone(110, 0.35, "sine", 0.22, 45),
+  win: () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f, 0.18, "triangle", 0.07), i * 90)),
+};
+$("mute").addEventListener("click", () => { muted = !muted; $("mute").textContent = muted ? "🔇" : "🔊"; });
+
+// ---------- shared pieces ----------
+const avail = $("avail");
+const counter = { v: N };
+function showAvail() { const v = Math.max(0, Math.round(counter.v)); avail.textContent = v; avail.classList.toggle("zero", v === 0); }
+function freeCount() { return berths.filter((s) => s.state === "free" || s.state === "mine").length; }
+function take(s, quiet) {        // someone else books this berth: a quick flip to red
+  if (s.state !== "free") return;
+  s.state = "taken";
+  gsap.timeline().to(s.el, { rotationX: 88, duration: 0.07, ease: "power1.in" })
+    .call(() => s.el.classList.add("taken")).to(s.el, { rotationX: 0, duration: 0.16, ease: "back.out(2)" });
+  if (!quiet) { counter.v = freeCount(); showAvail(); if (Math.random() < 0.35) sfx.take(); }
+}
+function card(id, on) { const el = $(id); el.classList.toggle("on", on); gsap.to(el, { opacity: on ? 1 : 0, duration: on ? 0.3 : 0.2, ease: "power2.out" }); }
+function note(html) { $("note").innerHTML = html; }
+function flash() { gsap.fromTo("#flash", { opacity: 0.9 }, { opacity: 0, duration: 0.7, ease: "power2.out" }); }
+function banner(text, hold = 0.7) {
+  $("banner").textContent = text;
+  gsap.timeline().fromTo("#banner", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(2)" })
+    .to("#banner", { opacity: 0, scale: 1.08, duration: 0.3, ease: "power2.in" }, `+=${hold}`);
+}
+function shake(el = "#plane", amp = 10) {
+  gsap.timeline().to(el, { x: amp, y: -amp * 0.6, duration: 0.05 }).to(el, { x: -amp * 0.8, y: amp * 0.4, duration: 0.05 })
+    .to(el, { x: amp * 0.5, y: amp * 0.3, duration: 0.05 }).to(el, { x: 0, y: 0, duration: 0.08 });
+}
+function stamp(text, show = true) {
+  $("stampTxt").textContent = text;
+  if (!show) { gsap.set("#stamp", { opacity: 0 }); return; }
+  gsap.fromTo("#stamp", { opacity: 0, scale: 2.6 }, { opacity: 1, scale: 1, duration: 0.22, ease: "power3.in", onComplete: () => { shake("#stage", 12); sfx.stamp(); } });
+}
+function verdict(t) {             // the faster you book after 10:00:00, the better your status
+  if (t <= 1.2) return { cls: "cnf", big: "CNF", line: "Bach gaye! Confirmed 🎉" };
+  if (t <= 2.0) return { cls: "rac", big: `RAC ${Math.round((t - 1.2) * 15) + 3}`, line: "So close! RAC 😬" };
+  return { cls: "wl", big: `WL ${Math.round(8 + (t - 2) * 11)}`, line: "Phir bhi waiting! 😭" };
+}
+
+// ---------- state ----------
+let phase = "idle", round = 0, openAt = 0, pickAt = 0, payAt = 0, mine = null, takeTl = null, flowTl = null, procTl = null, timerOn = false, last = null;
+function reset() {
+  for (const tl of [takeTl, flowTl, procTl]) if (tl) tl.kill();
+  gsap.killTweensOf(["#stamp", "#banner", "#flash"]);
+  clearBoard();
+}
+function clearBoard() {
+  for (const s of berths) { s.state = "free"; s.el.className = "berth"; gsap.set(s.el, { rotationX: 0 }); }
+  counter.v = N; showAvail(); stamp("WL 147", false); mine = null; timerOn = false;
+  for (const id of ["start", "pay", "proc", "result"]) { $(id).classList.remove("on"); gsap.set("#" + id, { opacity: 0 }); }
+  setClock("095957", false); note("Tatkal opens at <b>10:00:00</b>"); phase = "idle";
+}
+gsap.ticker.add(() => {            // the race timer under the clock
+  if (!timerOn) return;
+  note(`<span class="timer">⏱ ${(now() - openAt).toFixed(2)} s</span> &nbsp; ${phase === "open" ? "Grab a green berth!" : `Berth ${mine.no} is yours. <b>Book now!</b>`}`);
+});
+
+// ---------- the opening: 10:00:00 and every berth is gone ----------
+// pre: seconds of ticking before 10:00:00; wave: how long the berths take to go
+function intro({ pre = 2.6, wave = 0.95, then = !STILL } = {}) {
+  reset(); phase = "intro";
+  const order = shuffled(berths, 11);
+  flowTl = gsap.timeline();
+  flowTl.call(() => { setClock("095958"); sfx.tick(); }, null, pre - 2).call(() => { setClock("095959"); sfx.tick(); }, null, pre - 1)
+    .call(() => { setClock("100000"); flash(); sfx.open(); note("<b>10:00:00</b> · Tatkal is open"); }, null, pre);
+  order.forEach((s, i) => flowTl.call(() => take(s, true), null, pre + 0.06 + wave * Math.pow((i + 1) / N, 0.8)));
+  flowTl.to(counter, { v: 0, duration: wave, ease: "power1.in", onUpdate: showAvail }, pre + 0.06)
+    .call(() => { stamp("WL 147"); note("All 72 berths gone in <b>0.9 s</b>"); }, null, pre + wave + 0.3);
+  if (then) flowTl.call(showStart, null, pre + wave + 1.9);
+  return flowTl;
+}
+function showStart() {
+  gsap.to("#stamp", { opacity: 0, duration: 0.3 });
+  const t = Number(params.get("t"));
+  if (t > 0 && t < 60) { const v = verdict(t); $("friend").style.display = "block"; $("friend").textContent = `Your friend took ${t.toFixed(1)} s and got ${v.big}. Beat that! 🚆`; }
+  card("start", true); phase = "start";
+}
+// the recording API returns nothing: a timeline handed back to the recorder would be serialised and stall it
+window.intro = (o) => { intro(o); }; window.title = () => { reset(); showStart(); }; window.reset = () => { reset(); };
+
+// ---------- a round: countdown, 10:00:00, grab a berth, pay ----------
+function startRound() {
+  audio(); reset(); round++; phase = "countdown";
+  setClock("095958", false); note("Get ready… opens at <b>10:00:00</b>");
+  flowTl = gsap.timeline().call(() => { setClock("095959"); sfx.tick(); }, null, 1).call(open, null, 2);
+}
+function open() {
+  phase = "open"; openAt = now(); timerOn = true; setClock("100000"); flash(); sfx.open(); banner("TATKAL OPEN!", 0.45);
+  const order = shuffled(berths, 100 + round);
+  takeTl = gsap.timeline();
+  order.forEach((s, i) => takeTl.call(() => take(s), null, ALL_GONE * Math.pow((i + 1) / N, 0.75)));
+  takeTl.call(() => { if (phase === "open") finish({ gone: true }); }, null, ALL_GONE + 0.25);
+}
+function tapBerth(s, at) {       // at: the recording's exact time, instead of the clock
+  if (phase === "countdown") { banner("Not open yet! 😤", 0.4); shake("#plane", 6); return; }
+  if (phase !== "open" || s.state !== "free") return;
+  s.state = "mine"; s.el.classList.add("mine"); mine = s; pickAt = at ?? now() - openAt; phase = "picked"; sfx.pick();
+  gsap.fromTo(s.el, { scale: 1.25 }, { scale: 1, duration: 0.3, ease: "back.out(3)" });
+  $("payWho").textContent = `Berth ${s.no} · ${s.type}`; card("pay", true);
+}
+function pay(at, proc = 1.4) {
+  if (phase !== "picked") return;
+  payAt = at ?? now() - openAt; phase = "processing"; timerOn = false; sfx.pick();
+  note(`<span class="timer">⏱ ${payAt.toFixed(2)} s</span> &nbsp; Sent. Waiting for confirmation…`);
+  card("pay", false); card("proc", true);
+  gsap.fromTo("#spin", { rotation: 0 }, { rotation: 360 * Math.round(proc / 0.7), duration: proc, ease: "none" });
+  procTl = gsap.timeline().call(() => finish({ t: payAt, pick: pickAt }), null, proc);
+}
+function finish({ t, pick, gone }) {
+  phase = "result"; timerOn = false; card("pay", false); card("proc", false);
+  if (takeTl) takeTl.progress(1);       // whatever was still free goes now
+  const rs = $("rstamp");
+  if (gone) {
+    rs.className = "rstamp gone"; rs.textContent = "REGRET"; $("rline").textContent = "All berths gone in 2.4 s 😭";
+    $("rtime").textContent = "—"; $("rsplit").textContent = "Tap a green berth faster next time"; last = null;
+  } else {
+    const v = verdict(t); last = { t, v };
+    rs.className = "rstamp " + v.cls; rs.textContent = v.big; $("rline").textContent = v.line;
+    $("rtime").textContent = `${t.toFixed(1)} s`; $("rsplit").textContent = `Picked a berth at ${pick.toFixed(1)} s · booked at ${t.toFixed(1)} s`;
+    if (mine && v.cls !== "cnf") { mine.state = "taken"; mine.el.className = "berth gone"; counter.v = 0; showAvail(); }
+    if (v.cls === "cnf") sfx.win(); else sfx.stamp();
+  }
+  note(gone ? "Too slow this time" : `Your time <b>${t.toFixed(1)} s</b>`);
+  card("result", true);
+  gsap.fromTo("#rstamp", { scale: 2.2, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: "power3.in", delay: 0.15, onComplete: () => shake("#result", 8) });
+}
+$("go").addEventListener("click", startRound);
+$("again").addEventListener("click", startRound);
+$("payBtn").addEventListener("click", () => pay());
+
+// ---------- challenge a friend ----------
+// The link carries the time, so the friend sees what to beat. On the live site it is always the clean thenispace.com/tatkal.
+const GAME = /(^|\.)thenispace\.com$/.test(location.hostname) ? "https://thenispace.com/tatkal" : location.origin + location.pathname;
+$("share").addEventListener("click", async () => {
+  const url = GAME + (last ? `?t=${last.t.toFixed(1)}` : "");
+  const text = !last ? "Can you beat Tatkal? 🚆 Berths open at 10:00:00 and vanish in seconds."
+    : last.v.cls === "cnf" ? `I beat Tatkal in ${last.t.toFixed(1)} s 🎉 CNF! Can you? 🚆`
+    : `I booked Tatkal in ${last.t.toFixed(1)} s and still got ${last.v.big} 😭 Can you beat me? 🚆`;
+  if (navigator.share) {                                   // phones: the share sheet (WhatsApp, Instagram, ...)
+    try { await navigator.share({ title: "Tatkal Rush", text, url }); return; } catch (e) { if (e.name === "AbortError") return; }
+  }
+  // No share sheet (a laptop, or Instagram's in-app browser on Android): open WhatsApp with the message and the
+  // link on its own line, and put the bare link on the clipboard too.
+  try { await navigator.clipboard.writeText(url); } catch (e) {}
+  const btn = $("share"), label = btn.textContent;
+  btn.textContent = "Opening WhatsApp…"; setTimeout(() => (btn.textContent = label), 4000);
+  const wa = "https://wa.me/?text=" + encodeURIComponent(text + "\n" + url);
+  if (!window.open(wa, "_blank")) location.href = wa;
+});
+
+// ---------- a played round for the screen recording: a finger picks a berth and pays at set times ----------
+const finger = $("finger"), ripple = $("ripple");
+function centre(el) { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
+function tapFx(tl, el, at, action) {
+  tl.call(() => { const c = centre(el); gsap.to(finger, { x: c.x, y: c.y, opacity: 1, duration: 0.4, ease: "power2.inOut" }); }, null, at - 0.42)
+    .call(() => {
+      const c = centre(el); gsap.set(ripple, { x: c.x, y: c.y });
+      gsap.fromTo(ripple, { opacity: 0.9, scale: 0.4 }, { opacity: 0, scale: 2.2, duration: 0.45, ease: "power2.out" });
+      gsap.fromTo(finger, { scale: 0.82 }, { scale: 1, duration: 0.2 }); action();
+    }, null, at);
+}
+// start: the finger first taps Start on the start card (call title() before); proc: the confirmation wait;
+// shareAt: seconds after 10:00:00 when the finger taps Challenge a friend (a press only, nothing is shared)
+window.demo = ({ pick = 1.3, pay: payT = 4.2, pre = 2.0, proc = 1.4, bay = 4, start = false, shareAt = null } = {}) => {
+  if (!start) reset();
+  for (const tl of [takeTl, flowTl, procTl]) if (tl) tl.kill();
+  round = 7;
+  gsap.set(finger, { x: innerWidth * 0.62, y: innerHeight + 60, opacity: 0 });   // the finger comes in from below
+  const order = shuffled(berths, 100 + round);
+  // the berth the finger picks: the last one to go in the middle bays, so it is still green when tapped
+  const target = order.filter((s) => Math.abs(s.bay - bay) <= 1).pop();
+  const t0 = start ? 0.5 : 0, go = t0 + pre;
+  const begin = () => { clearBoard(); phase = "countdown"; setClock(pre >= 1 ? "095958" : "095959", false); note("Get ready… opens at <b>10:00:00</b>"); };
+  flowTl = gsap.timeline();
+  if (start) tapFx(flowTl, $("go"), t0, begin); else begin();
+  if (pre >= 1) flowTl.call(() => setClock("095959"), null, go - 1);
+  flowTl.call(() => { phase = "open"; openAt = now(); timerOn = true; setClock("100000"); flash(); banner("TATKAL OPEN!", 0.45); }, null, go);
+  order.forEach((s, i) => { if (s !== target) flowTl.call(() => take(s), null, go + ALL_GONE * Math.pow((i + 1) / N, 0.75)); });
+  tapFx(flowTl, target.el, go + pick, () => tapBerth(target, pick));
+  tapFx(flowTl, $("payBtn"), go + payT, () => pay(payT, proc));
+  flowTl.to(finger, { opacity: 0, duration: 0.3 }, go + payT + 0.5);
+  if (shareAt != null) {
+    tapFx(flowTl, $("share"), go + shareAt, () => gsap.fromTo("#share", { scale: 0.92 }, { scale: 1, duration: 0.25, ease: "back.out(3)" }));
+    flowTl.to(finger, { opacity: 0, duration: 0.3 }, go + shareAt + 0.6);
+  }
+};
+// the reel's beats, one call each: tick the clock, open at 10:00:00, the wave of red, the stamp, a shake
+window.clockTo = (text, flip = true) => { setClock(text, flip); };
+window.openNow = () => { phase = "intro"; setClock("100000"); flash(); banner("TATKAL OPEN!", 0.5); note("<b>10:00:00</b> · Tatkal is open"); };
+window.wave = (dur = 0.95) => {
+  const order = shuffled(berths, 11), tl = gsap.timeline();
+  order.forEach((s, i) => tl.call(() => take(s, true), null, dur * Math.pow((i + 1) / N, 0.8)));
+  tl.to(counter, { v: 0, duration: dur, ease: "power1.in", onUpdate: showAvail }, 0)
+    .call(() => note(`All 72 berths gone in <b>${dur.toFixed(1)} s</b>`), null, dur);
+};
+window.stampNow = (text = "WL 147") => { stamp(text); };
+window.shakeNow = () => { shake("#stage", 12); };
+
+// ---------- start ----------
+reset();
+if (!STILL) intro();
+})();
+</script>
+</body>
+</html>
