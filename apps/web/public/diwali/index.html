@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>26 lakh diyas · Happy Diwali</title>
+<meta name="description" content="Last Diwali, Ayodhya lit 26,17,215 diyas. Every flame on this page is code. Add your name and send it to your family." />
+<link rel="canonical" href="https://thenispace.com/diwali" />
+<meta name="theme-color" content="#03040a" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="NIS · The Nest of Innovative Space" />
+<meta property="og:url" content="https://thenispace.com/diwali" />
+<meta property="og:title" content="Happy Diwali 🪔 26 lakh diyas" />
+<meta property="og:description" content="26,17,215 diyas light up one by one, then fireworks. Every flame is code. Add your name and send it to your family." />
+<meta property="og:image" content="https://thenispace.com/diwali/og.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;600;800&family=Great+Vibes&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet" />
+<style>
+  /* DIYA: a river ghat seen from a boat. 26,17,215 diyas (Ayodhya Deepotsav record, 2025) light up in a wave
+     that spreads out from one spot. Near diyas are one GPU point each, far ones smaller than a pixel are merged
+     (same light, far fewer points); the counter counts exactly the lit ones. */
+  :root { --gold: #ffd28a; --ink: #fff6e6; --muted: rgba(255, 236, 205, 0.62); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: #03040a; overflow: hidden; }
+  body { font-family: "Inter Tight", system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  canvas#gl { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  .counter { position: fixed; left: clamp(20px, 4vw, 56px); top: clamp(20px, 4vh, 52px); pointer-events: none; }
+  .counter .label { font-size: clamp(11px, 1.1vw, 15px); letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .counter .num { font-weight: 800; font-size: clamp(44px, 7.2vw, 118px); line-height: 0.95; letter-spacing: -0.02em; color: var(--gold);
+    font-variant-numeric: tabular-nums; text-shadow: 0 0 28px rgba(255, 170, 60, 0.35); margin-top: 6px; }
+  .counter .note { margin-top: 10px; font-size: clamp(12px, 1.1vw, 15px); color: var(--muted); }
+  .greet { position: fixed; left: 0; right: 0; top: 30%; transform: translateY(-50%); text-align: center; pointer-events: none; opacity: 0; will-change: transform, opacity; }
+  .greet .shubh { font-family: "Tiro Devanagari Hindi", serif; font-size: clamp(22px, 2.6vw, 44px); letter-spacing: 0.04em; color: #ffd98f;
+    text-shadow: 0 0 18px rgba(255, 170, 60, 0.55), 0 2px 12px rgba(0, 0, 0, 0.9); }
+  .greet .hdw { position: relative; }
+  .greet h1, .greet .hdglow { font-family: "Great Vibes", cursive; font-weight: 400; font-size: clamp(76px, 12vw, 210px); line-height: 1.02; padding: 0 0.12em; will-change: transform; }
+  .greet h1 { position: relative;
+    background: linear-gradient(100deg, #b8741f 0%, #f6c56a 28%, #fff3c4 var(--shine, 45%), #f6c56a calc(var(--shine, 45%) + 14%), #c9852b 92%);
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  /* the glow sits on its own still copy of the words, so the moving shine never re-runs the blur */
+  .greet .hdglow { position: absolute; inset: 0; color: #f6c56a;
+    filter: drop-shadow(0 0 22px rgba(255, 166, 60, 0.45)) drop-shadow(0 3px 10px rgba(0, 0, 0, 0.85)); }
+  .greet .from { margin-top: 4px; font-family: "Instrument Serif", serif; font-style: italic; font-size: clamp(24px, 3vw, 50px); color: var(--ink);
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.9), 0 2px 14px rgba(0, 0, 0, 0.8); }
+  .brand { position: fixed; right: clamp(16px, 3vw, 40px); bottom: clamp(14px, 3vh, 32px); font-size: 12px; letter-spacing: 0.12em; color: rgba(255, 236, 205, 0.45); pointer-events: none; }
+  .share { position: fixed; left: 50%; bottom: clamp(20px, 6vh, 60px); transform: translate(-50%, 20px); display: flex; gap: 8px; opacity: 0; pointer-events: none;
+    background: rgba(12, 10, 24, 0.86); border: 1px solid rgba(255, 210, 140, 0.25);   /* no backdrop blur: it re-blurs the moving scene every frame */
+    padding: 8px; border-radius: 999px; transition: opacity 0.6s ease, transform 0.6s ease; }
+  .share.on { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  .share input { width: min(52vw, 220px); background: transparent; border: 0; outline: 0; color: var(--ink); font: 500 16px "Inter Tight", sans-serif; padding: 10px 14px; }
+  .share input::placeholder { color: rgba(255, 236, 205, 0.45); }
+  .share button { border: 0; border-radius: 999px; padding: 10px 18px; font: 700 15px "Inter Tight", sans-serif; color: #2a1600;
+    background: linear-gradient(180deg, #ffd99a, #ffb347); cursor: pointer; white-space: nowrap; }
+  body.still .share, body.still .brand { display: none; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="counter"><div class="label">Diyas lit</div><div class="num" id="num">0</div><div class="note">Ayodhya's record, Diwali 2025: 26,17,215</div></div>
+<div class="greet" id="greet"><div class="shubh">शुभ दीपावली</div><div class="hdw"><div class="hdglow" aria-hidden="true">Happy Diwali</div><h1 id="hd">Happy Diwali</h1></div><div class="from" id="from"></div></div>
+<div class="share" id="share"><input id="name" maxlength="28" placeholder="Your name" autocomplete="given-name" /><button id="send">Send to family</button></div>
+<div class="brand">Every flame is code · thenispace.com</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script type="importmap">{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
+<script type="module">
+import * as THREE from "three";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+
+const params = new URLSearchParams(location.search);
+const STILL = params.has("still");
+const TOTAL = 2617215;                       // Ayodhya Deepotsav 2025, Guinness record
+if (STILL) document.body.classList.add("still");
+const fmt = new Intl.NumberFormat("en-IN");
+const $ = (id) => document.getElementById(id);
+
+// ---------- renderer, camera, post ----------
+const canvas = $("gl");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: "high-performance" });
+renderer.setPixelRatio(Math.min(devicePixelRatio, matchMedia("(pointer: coarse)").matches ? 1.5 : 2));   // phones: a soft glow needs no 3x pixels
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x03040a);
+const camera = new THREE.PerspectiveCamera(40, 1, 0.05, 4000);
+const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType }));
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.45, 0.55, 0.85);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+// ---------- the ghat, seen from a boat at its near end ----------
+// Steps rise out of the river to the right and the bank runs away from the camera. Diyas are stored in
+// lighting order (nearest first) and each point keeps its diya number, so "light the first N" is exactly
+// aId < N: the counter is honest.
+const POINTS = TOTAL - 1;                    // diya #1 is the big clay one floating by the boat
+const STEPS = 40, ROWS = 3, RISE = 0.15, RUN = 0.32, SPACING = 0.12, X0 = -1.6;  // per step: 65,430 diyas over ~2.6 km
+// Lighting order: the bottom step first (racing away along the bank), then the next step up, and so on,
+// so 1,000 is a line along the water, 1 lakh is the first step to the horizon and 26 lakh fills the ghat.
+const perStep = Math.ceil(POINTS / STEPS);
+let seed = 7;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const hash01 = (n) => { n = Math.imul(n ^ (n >>> 16), 0x7feb352d); n = Math.imul(n ^ (n >>> 15), 0x846ca68b); return ((n ^ (n >>> 16)) >>> 0) / 4294967296; };
+const camBase = new THREE.Vector3(0.15, 0.62, 0), look = new THREE.Vector3(-2.2, 1.55, 26);
+const isTall = () => innerHeight > innerWidth * 1.05;
+const viewScale = () => innerHeight * renderer.getPixelRatio() * (isTall() ? 0.75 : 1.0);
+// Far away most diyas are smaller than a pixel. Those are merged: each one is kept with a chance equal to
+// KEEP x its brightness and drawn brighter by the same factor, so the screen gets the same light from ~15x
+// fewer points. Near diyas are all drawn. This is what keeps the page smooth on a phone.
+const KEEP = 3;
+function buildGhat(scale) {
+  seed = 7;                                  // the stars, fireworks and lanterns carry on from where this leaves it
+  const fwd = new THREE.Vector3().subVectors(look, camBase).normalize();
+  let cap = 1 << 18, n = 0, pos = new Float32Array(cap * 3), ids = new Float32Array(cap), wts = new Float32Array(cap);
+  const grow = () => {
+    cap *= 2;
+    const p = new Float32Array(cap * 3), i = new Float32Array(cap), w = new Float32Array(cap);
+    p.set(pos); i.set(ids); w.set(wts); pos = p; ids = i; wts = w;
+  };
+  let k = 0;
+  for (let s = 0; s < STEPS && k < POINTS; s++) {
+    for (let j = 0; j < perStep && k < POINTS; j++, k++) {
+      const sl = Math.floor(j / ROWS), r = j % ROWS;
+      const z = 2.4 + sl * SPACING;
+      const bend = 0.00004 * z * z;                // the bank curves gently to the left far away
+      const x = X0 - s * RUN - r * (RUN / ROWS) + bend + (rnd() - 0.5) * 0.025;
+      const y = 0.05 + s * RISE + (rnd() - 0.5) * 0.008;
+      const zz = z + (rnd() - 0.5) * SPACING * 0.6;
+      const d = Math.max(0.05, (x - camBase.x) * fwd.x + (y - camBase.y) * fwd.y + (zz - camBase.z) * fwd.z);
+      const size = scale * 0.045 / d;
+      const keep = Math.min(1, KEEP * 0.6 * size * size);
+      if (keep < 1 && hash01(k) >= keep) continue;
+      if (n === cap) grow();
+      pos[n * 3] = x; pos[n * 3 + 1] = y; pos[n * 3 + 2] = zz; ids[n] = k; wts[n] = 1 / keep; n++;
+    }
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(pos.slice(0, n * 3), 3));
+  geometry.setAttribute("aId", new THREE.BufferAttribute(ids.slice(0, n), 1));
+  geometry.setAttribute("aW", new THREE.BufferAttribute(wts.slice(0, n), 1));
+  geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), 1e5);
+  return { geometry, ids: geometry.attributes.aId.array, scale };
+}
+let ghat = buildGhat(viewScale());
+function fitDrawRange() {                    // draw only the lit diyas: the first kept point whose number is >= uLit
+  const ids = ghat.ids, lit = shared.uLit.value;
+  let lo = 0, hi = ids.length;
+  while (lo < hi) { const mid = (lo + hi) >> 1; if (ids[mid] < lit) lo = mid + 1; else hi = mid; }
+  ghat.geometry.setDrawRange(0, lo);
+}
+
+const shared = { uLit: { value: 0 }, uTime: { value: 0 }, uScale: { value: 1 }, uGlow: { value: 0 } };
+const vert = /* glsl */ `
+  uniform float uLit, uTime, uScale, uReflect;
+  in float aId; in float aW;
+  out float vFlick; out float vAlpha;
+  float hash(float n) { return fract(sin(n * 12.9898) * 43758.5453); }
+  void main() {
+    float id = aId;
+    vec3 p = position;
+    float h = hash(id);
+    if (uReflect > 0.5) { p.y = -p.y; p.x += sin(uTime * 1.3 + p.z * 0.6 + h * 6.0) * 0.03; }
+    vec4 mv = modelViewMatrix * vec4(p, 1.0);
+    float d = -mv.z;
+    float size = uScale * 0.045 / d;
+    vAlpha = min(1.0, size * size * 0.6 * aW);            // sub-pixel diyas give only their share of light (aW: plus the merged ones')
+    float front = clamp((uLit - id) / max(1.0, min(uLit * 0.02, 4000.0)), 0.0, 1.0);   // soft wave front
+    vAlpha *= front;
+    vFlick = 0.78 + 0.22 * sin(uTime * (5.0 + h * 5.0) + h * 6.2831);
+    gl_PointSize = clamp(size, 1.0, 46.0) * (uReflect > 0.5 ? 1.5 : 1.0);
+    gl_Position = projectionMatrix * mv;
+    if (id >= uLit) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+  }`;
+const frag = /* glsl */ `
+  uniform float uReflect, uGlow;
+  in float vFlick; in float vAlpha;
+  out vec4 outColor;
+  void main() {
+    vec2 c = gl_PointCoord - 0.5;
+    float r2 = uReflect > 0.5 ? (c.x * c.x * 10.0 + c.y * c.y * 1.3) : (c.x * c.x * 4.0 + (c.y + 0.06) * (c.y + 0.06) * 3.0);
+    float core = exp(-r2 * 10.0);
+    float halo = exp(-r2 * 2.6) * 0.38;
+    vec3 col = vec3(1.0, 0.84, 0.5) * core * 1.7 + vec3(1.0, 0.45, 0.1) * halo;
+    float a = vAlpha * vFlick * (uReflect > 0.5 ? 0.26 : 0.85) * (1.0 + uGlow * 0.25);
+    outColor = vec4(col * a, 1.0);
+  }`;
+function lampMaterial(reflect) {
+  return new THREE.ShaderMaterial({
+    glslVersion: THREE.GLSL3, vertexShader: vert, fragmentShader: frag,
+    uniforms: { ...shared, uReflect: { value: reflect ? 1 : 0 } },
+    blending: THREE.AdditiveBlending, depthWrite: false, depthTest: false, transparent: true,
+  });
+}
+const lamps = new THREE.Points(ghat.geometry, lampMaterial(false));
+const reflections = new THREE.Points(ghat.geometry, lampMaterial(true));
+lamps.frustumCulled = reflections.frustumCulled = false;
+scene.add(reflections, lamps);
+
+// ---------- stars ----------
+{
+  const n = 700, sp = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) { sp[i * 3] = (rnd() - 0.5) * 1600; sp[i * 3 + 1] = 40 + rnd() * 700; sp[i * 3 + 2] = 300 + rnd() * 900; }
+  const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(sp, 3));
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0x9aa4d8, size: 1.3, sizeAttenuation: false, transparent: true, opacity: 0.5, depthWrite: false })));
+}
+
+// ---------- celebration: fireworks over the ghat (with reflections) and sky lanterns ----------
+// Everything is a function of time since finale(): seeded, so a capture renders the same frames every run.
+const BURSTS = [  // [start (s after finale), x, y, z, hue]  hue: 0 gold, 1 saffron, 2 rose, 3 white
+  [0.15, -18, 12, 38, 0], [0.5, 6, 14, 46, 1], [0.9, -8, 16, 52, 3], [1.3, -26, 10, 40, 2],
+  [1.75, 10, 11, 42, 0], [2.2, -14, 15, 50, 1], [2.65, -2, 9, 36, 0], [3.1, 14, 15, 48, 2],
+  [3.55, -22, 14, 46, 3], [4.0, 2, 12, 40, 0], [4.45, -10, 10, 38, 1], [4.9, 8, 16, 54, 0]];
+const PER = 520, TRAIL = 4, ROCKET = 10, LOOP = 6.0;
+const fwN = BURSTS.length * (PER * TRAIL + ROCKET);
+const fwStart = new Float32Array(fwN), fwOrigin = new Float32Array(fwN * 3), fwDir = new Float32Array(fwN * 3), fwHue = new Float32Array(fwN), fwLag = new Float32Array(fwN), fwKind = new Float32Array(fwN);
+for (let b = 0, i = 0; b < BURSTS.length; b++) {
+  const [t0, x, y, z, hue] = BURSTS[b];
+  for (let j = 0; j < PER; j++) {
+    const u = rnd() * 2 - 1, th = rnd() * Math.PI * 2, rr = Math.sqrt(1 - u * u);
+    const sp = 0.7 + rnd() * 0.3, hu = hue + rnd() * 0.3;
+    for (let q = 0; q < TRAIL; q++, i++) {              // each spark drags a short fading tail
+      fwStart[i] = t0; fwHue[i] = hu; fwLag[i] = q * 0.045; fwKind[i] = 0;
+      fwOrigin.set([x, y, z], i * 3);
+      fwDir.set([rr * Math.cos(th) * sp, u * sp, rr * Math.sin(th) * sp], i * 3);
+    }
+  }
+  for (let q = 0; q < ROCKET; q++, i++) {               // the rocket that climbs from the ghat before the burst
+    fwStart[i] = t0; fwHue[i] = 3; fwLag[i] = q * 0.03; fwKind[i] = 1;
+    fwOrigin.set([x, y, z], i * 3); fwDir.set([0, 0, 0], i * 3);
+  }
+}
+const fwGeo = new THREE.BufferGeometry();
+fwGeo.setAttribute("position", new THREE.BufferAttribute(fwOrigin, 3));
+fwGeo.setAttribute("dir", new THREE.BufferAttribute(fwDir, 3));
+fwGeo.setAttribute("start", new THREE.BufferAttribute(fwStart, 1));
+fwGeo.setAttribute("hue", new THREE.BufferAttribute(fwHue, 1));
+fwGeo.setAttribute("lag", new THREE.BufferAttribute(fwLag, 1));
+fwGeo.setAttribute("kind", new THREE.BufferAttribute(fwKind, 1));
+const fwUniforms = { uT: { value: -1 }, uScale: shared.uScale, uLoop: { value: 0 } };
+function fireworkMaterial(reflect) {
+  return new THREE.ShaderMaterial({
+    glslVersion: THREE.GLSL3, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: false, transparent: true,
+    uniforms: { ...fwUniforms, uReflect: { value: reflect ? 1 : 0 } },
+    vertexShader: /* glsl */ `
+      uniform float uT, uScale, uReflect, uLoop;
+      in vec3 dir; in float start; in float hue; in float lag; in float kind;
+      out float vA; out vec3 vCol;
+      void main() {
+        float T = uT;
+        if (uLoop > 0.5 && uT > ${LOOP.toFixed(1)}) T = mod(uT, ${LOOP.toFixed(1)});
+        float t = T - start - lag;
+        vec3 p; vec3 white = vec3(1.0, 0.95, 0.85);
+        if (kind > 0.5) {                                   // rocket: 0.7 s climb, ends where the burst begins
+          float k = clamp((t + 0.7) / 0.7, 0.0, 1.0);
+          p = mix(position * vec3(1.0, 0.0, 1.0) + vec3(0.0, 2.0, 0.0), position, 1.0 - (1.0 - k) * (1.0 - k));
+          vA = (t > -0.7 && t < 0.0) ? (1.0 - lag * 25.0) * 0.9 : 0.0;
+          vCol = vec3(1.0, 0.8, 0.5);
+        } else {
+          float life = 2.2;
+          vA = (t > 0.0 && t < life) ? pow(1.0 - t / life, 1.5) * (1.0 - lag * 5.0) : 0.0;
+          float spread = 7.5 * (1.0 - exp(-t * 2.4));         // fast burst, then drag
+          p = position + dir * spread + vec3(0.0, -0.8 * t * t, 0.0);
+          vec3 gold = vec3(1.0, 0.76, 0.3), saffron = vec3(1.0, 0.48, 0.1), rose = vec3(1.0, 0.38, 0.55);
+          vCol = hue < 1.0 ? gold : hue < 2.0 ? saffron : hue < 3.0 ? rose : white;
+          vCol = mix(vCol, white, smoothstep(0.3, 0.0, t));   // white-hot at the moment of the burst
+          vA *= 0.75 + 0.25 * sin(t * 40.0 + dir.x * 50.0);   // crackle
+        }
+        if (uReflect > 0.5) { p.y = -p.y; vA *= 0.2; }
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        gl_PointSize = clamp(uScale * 0.2 / -mv.z, 1.5, 14.0);
+        gl_Position = projectionMatrix * mv;
+        if (vA <= 0.0) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+      }`,
+    fragmentShader: /* glsl */ `
+      in float vA; in vec3 vCol; out vec4 o;
+      void main() { vec2 c = gl_PointCoord - 0.5; float g = exp(-dot(c, c) * 16.0); o = vec4(vCol * g * vA * 2.4, 1.0); }`,
+  });
+}
+const fireworks = new THREE.Points(fwGeo, fireworkMaterial(false));
+const fireworksRef = new THREE.Points(fwGeo, fireworkMaterial(true));
+fireworks.frustumCulled = fireworksRef.frustumCulled = false;
+scene.add(fireworksRef, fireworks);
+
+// sky lanterns rising off the ghat
+const LAN = 46;
+const lanPos = new Float32Array(LAN * 3), lanSeed = new Float32Array(LAN);
+for (let i = 0; i < LAN; i++) { lanPos.set([-3 - rnd() * 40, 2 + rnd() * 4, 14 + rnd() * 90], i * 3); lanSeed[i] = rnd(); }
+const lanGeo = new THREE.BufferGeometry();
+lanGeo.setAttribute("position", new THREE.BufferAttribute(lanPos, 3));
+lanGeo.setAttribute("seed", new THREE.BufferAttribute(lanSeed, 1));
+const lanterns = new THREE.Points(lanGeo, new THREE.ShaderMaterial({
+  glslVersion: THREE.GLSL3, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: false, transparent: true,
+  uniforms: { uT: fwUniforms.uT, uScale: shared.uScale },
+  vertexShader: /* glsl */ `
+    uniform float uT, uScale; in float seed; out float vA;
+    void main() {
+      float t = max(0.0, uT - seed * 1.5);
+      vec3 p = position + vec3(sin(t * 0.6 + seed * 6.0) * 0.6, t * (0.9 + seed * 0.6), 0.0);
+      vA = smoothstep(0.0, 1.0, t) * (0.75 + 0.25 * sin(uT * 4.0 + seed * 9.0));
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      gl_PointSize = clamp(uScale * 0.16 / -mv.z, 2.0, 24.0);
+      gl_Position = projectionMatrix * mv;
+      if (uT <= 0.0) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+    }`,
+  fragmentShader: /* glsl */ `
+    in float vA; out vec4 o;
+    void main() { vec2 c = gl_PointCoord - 0.5; float body = exp(-(c.x * c.x * 14.0 + c.y * c.y * 9.0)); float glow = exp(-dot(c, c) * 5.0) * 0.35;
+      o = vec4((vec3(1.0, 0.62, 0.22) * body * 1.5 + vec3(1.0, 0.4, 0.1) * glow) * vA, 1.0); }`,
+}));
+lanterns.frustumCulled = false;
+scene.add(lanterns);
+
+// ---------- the one big clay diya floating near the boat (diya #1) ----------
+const hero = new THREE.Group();
+{
+  const prof = [[0, 0], [0.11, 0.004], [0.2, 0.03], [0.255, 0.075], [0.27, 0.105], [0.255, 0.11], [0.22, 0.085], [0.12, 0.06], [0, 0.055]]
+    .map(([x, y]) => new THREE.Vector2(x, y));
+  const clay = new THREE.MeshStandardMaterial({ color: 0x8c3a1c, roughness: 0.82, metalness: 0.0, emissive: 0x2a0800, emissiveIntensity: 0.15 });
+  const bowl = new THREE.Mesh(new THREE.LatheGeometry(prof, 72), clay);
+  const oil = new THREE.Mesh(new THREE.CircleGeometry(0.205, 48), new THREE.MeshStandardMaterial({ color: 0x3a1a05, roughness: 0.25, metalness: 0.2 }));
+  oil.rotation.x = -Math.PI / 2; oil.position.y = 0.072;
+  const wick = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.012, 0.07, 10), new THREE.MeshStandardMaterial({ color: 0x1a1008, roughness: 1 }));
+  wick.position.set(0.13, 0.1, 0); wick.rotation.z = -0.5;
+  hero.add(bowl, oil, wick);
+}
+const flameMat = new THREE.ShaderMaterial({
+  uniforms: { uTime: shared.uTime, uOn: { value: 0 } },
+  vertexShader: `out vec2 vUv; void main(){ vUv = uv; vec4 mv = modelViewMatrix * vec4(0.0,0.0,0.0,1.0); mv.xy += position.xy; gl_Position = projectionMatrix * mv; }`,
+  fragmentShader: `uniform float uTime, uOn; in vec2 vUv; out vec4 o;
+    void main(){ vec2 p = vUv - vec2(0.5, 0.18); float sway = sin(uTime*7.0)*0.035 + sin(uTime*13.0)*0.015; p.x -= sway * vUv.y;
+      float w = mix(0.32, 0.02, smoothstep(0.0, 0.82, vUv.y)); float d = abs(p.x) / max(w, 1e-3) + max(0.0, -p.y) * 6.0;
+      float body = smoothstep(1.0, 0.0, d); float core = smoothstep(0.55, 0.0, d) * smoothstep(0.62, 0.05, vUv.y);
+      vec3 col = vec3(1.0, 0.45, 0.08) * body * 1.6 + vec3(1.0, 0.93, 0.7) * core * 3.0;
+      o = vec4(col * uOn, 1.0); }`,
+  glslVersion: THREE.GLSL3, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true,
+});
+const flame = new THREE.Mesh(new THREE.PlaneGeometry(0.11, 0.24), flameMat);
+flame.position.set(0.15, 0.235, 0); hero.add(flame);
+const heroLight = new THREE.PointLight(0xff9a3c, 0, 2.5, 1.6); heroLight.position.set(0.15, 0.25, 0.05); hero.add(heroLight);
+scene.add(new THREE.HemisphereLight(0x22264a, 0x0a0503, 0.35));
+// its reflection on the water: a soft vertical streak under the flame
+const streak = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 0.7), new THREE.ShaderMaterial({
+  uniforms: { uTime: shared.uTime, uOn: flameMat.uniforms.uOn },
+  vertexShader: `out vec2 vUv; void main(){ vUv = uv; vec4 mv = modelViewMatrix * vec4(0.0,0.0,0.0,1.0); mv.xy += position.xy; gl_Position = projectionMatrix * mv; }`,
+  fragmentShader: `uniform float uTime, uOn; in vec2 vUv; out vec4 o; void main(){ float x = (vUv.x - 0.5) * 2.0; float wob = sin(vUv.y * 40.0 - uTime * 3.0) * 0.18;
+    float a = exp(-(x + wob) * (x + wob) * 6.0) * smoothstep(0.0, 0.9, vUv.y) * 0.35; o = vec4(vec3(1.0, 0.55, 0.15) * a * uOn, 1.0); }`,
+  glslVersion: THREE.GLSL3, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true,
+}));
+streak.position.set(0.15, -0.33, 0); hero.add(streak);
+hero.position.set(0.55, 0.0, 2.6); hero.rotation.y = 0.6;
+scene.add(hero);
+
+// ---------- framing ----------
+function frame() {
+  const w = innerWidth, h = innerHeight, tall = isTall();
+  renderer.setSize(w, h, false); composer.setSize(w, h); bloom.setSize(w, h);
+  camera.aspect = w / h;
+  camera.fov = Number(params.get("fov")) || (tall ? 64 : 42);
+  camera.updateProjectionMatrix();
+  shared.uScale.value = viewScale();
+  hero.position.x = tall ? 0.25 : 0.55;
+  if (shared.uScale.value > ghat.scale * 1.3) {           // a much bigger screen: far diyas grew, merge fewer
+    const old = ghat.geometry;
+    ghat = buildGhat(shared.uScale.value);
+    lamps.geometry = reflections.geometry = ghat.geometry;
+    old.dispose(); fitDrawRange();
+  }
+}
+addEventListener("resize", frame); frame();
+
+// ---------- state + API (capture jobs call these at exact times) ----------
+const state = { lit: 0, glow: 0, greet: 0 };
+let tween = null;
+function show() {
+  const lit = Math.min(TOTAL, Math.round(state.lit));
+  const heroOn = Math.min(1, state.lit);
+  shared.uLit.value = Math.max(0, lit - 1);               // diya #1 is the clay one
+  fitDrawRange();
+  shared.uGlow.value = state.glow;
+  $("num").textContent = fmt.format(lit);
+  flameMat.uniforms.uOn.value = heroOn;
+  heroLight.intensity = heroOn * 2.4;
+  $("greet").style.opacity = state.greet;
+  document.querySelector(".counter").style.opacity = 1 - state.greet;   // the greeting takes over
+}
+window.lightTo = (n, dur = 1.6, ease = "power2.inOut") => {
+  if (tween) tween.kill();
+  tween = gsap.to(state, { lit: Math.min(TOTAL, n), duration: dur, ease, onUpdate: show, onComplete: show });
+};
+let finaleAt = -1;                                       // performance.now() seconds when the celebration began
+window.finale = (dur = 1.4) => {
+  finaleAt = performance.now() / 1000;
+  gsap.to(state, { glow: 1, duration: dur, ease: "power2.out", onUpdate: show });
+  gsap.to(state, { greet: 1, duration: 1.0, delay: 0.3, ease: "power2.out", onUpdate: show });
+};
+window.reset = () => { if (tween) tween.kill(); gsap.killTweensOf(state); Object.assign(state, { lit: 0, glow: 0, greet: 0 }); finaleAt = -1; show(); };
+window.teaser = (dur = 2.2) => { window.reset(); state.lit = 1; window.lightTo(TOTAL, dur, "power1.in"); };
+
+const name = (params.get("name") || "").trim().slice(0, 28);
+if (name) $("from").textContent = "from " + name;
+if (params.has("lit")) state.lit = Math.min(TOTAL, Number(params.get("lit")) || 0);
+if (params.has("end")) { Object.assign(state, { lit: TOTAL, glow: 1, greet: 1 }); finaleAt = 0; }
+show();
+
+// Visitors get the same story the reel tells, then the share bar.
+if (!STILL && !params.has("lit") && !params.has("end")) {
+  const tl = gsap.timeline({ delay: 0.8 });
+  tl.call(() => lightTo(1, 0.9, "power2.out"))
+    .call(() => lightTo(1000, 1.2), null, 1.6)
+    .call(() => lightTo(100000, 1.6), null, 3.2)
+    .call(() => lightTo(TOTAL, 2.6, "power2.in"), null, 5.2)
+    .call(() => finale(), null, 8.2)
+    .call(() => $("share").classList.add("on"), null, 9.8);
+}
+$("name").value = name;
+// The card's own link. On the live site it is always the clean thenispace.com/diwali, wherever it was opened from.
+const CARD = /(^|\.)thenispace\.com$/.test(location.hostname) ? "https://thenispace.com/diwali" : location.origin + location.pathname;
+$("send").addEventListener("click", async () => {
+  const n = $("name").value.trim().slice(0, 28);
+  const url = CARD + (n ? "?name=" + encodeURIComponent(n) : "");
+  const text = (n ? `Happy Diwali from ${n} 🪔` : "Happy Diwali 🪔") + " 26 lakh diyas, every flame made of code.";
+  $("from").textContent = n ? "from " + n : "";            // they see their card at once, the way family will
+  try { history.replaceState(null, "", n ? "?name=" + encodeURIComponent(n) : location.pathname); } catch (e) {}
+  if (navigator.share) {                                   // phones: the share sheet (WhatsApp, Instagram, ...)
+    try { await navigator.share({ title: "Happy Diwali", text, url }); return; } catch (e) { if (e.name === "AbortError") return; }
+  }
+  // No share sheet (a laptop, or Instagram's in-app browser on Android): open WhatsApp with the message and
+  // the link on its own line, and put the bare link on the clipboard too.
+  try { await navigator.clipboard.writeText(url); } catch (e) {}
+  const btn = $("send"), label = btn.textContent;
+  btn.textContent = "Opening WhatsApp…"; setTimeout(() => (btn.textContent = label), 4000);
+  const wa = "https://wa.me/?text=" + encodeURIComponent(text + "\n" + url);
+  if (!window.open(wa, "_blank")) location.href = wa;
+});
+
+// ---------- render loop (performance.now, so capture can drive a virtual clock) ----------
+function tick() {
+  const t = performance.now() / 1000;
+  shared.uTime.value = t;
+  const drift = Math.min(t, 80) * 0.02;
+  camera.position.set(camBase.x + Math.sin(t * 0.17) * 0.05, camBase.y + Math.sin(t * 0.29) * 0.02, camBase.z + drift);
+  camera.lookAt(look.x, look.y, look.z);
+  hero.position.y = Math.sin(t * 1.1) * 0.012;               // bobbing on the water
+  bloom.strength = 0.38 + state.glow * 0.18;
+  const ft = finaleAt < 0 ? -1 : t - finaleAt;
+  fwUniforms.uT.value = ft;
+  fwUniforms.uLoop.value = STILL ? 0 : 1;                // visitors get fireworks forever, the reel gets one show
+  const hd = $("hd");
+  hd.style.setProperty("--shine", (ft < 0 ? -20 : (-20 + ((ft * 38) % 160))).toFixed(1) + "%");
+  $("greet").style.transform = `translateY(-50%) scale(${0.94 + 0.06 * state.greet})`;
+  composer.render();
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
