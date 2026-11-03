@@ -19,7 +19,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter+Tight:wght@500;600;700;800&family=JetBrains+Mono:wght@700;800&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet" />
 <style>
-  /* TATKAL RUSH: the 10 AM Tatkal booking race as a game. A sleeper coach of 72 berths opens at 10:00:00 sharp
+  /* TATKAL RUSH: the 10 AM Tatkal booking race as a game. An AC 3-tier coach of 72 berths opens at 10:00:00 sharp (AC Tatkal
+     opens at 10, Sleeper at 11)
      and empties in a couple of seconds. Grab a green berth, book it, and see your time and status (CNF / RAC / WL). */
   :root {
     --bg: #060914; --panel: #0f1631; --steel: #1a2550; --line: rgba(160, 180, 255, 0.14);
@@ -169,12 +170,12 @@
 <div id="bg"></div>
 <div class="app">
   <header class="top">
-    <div class="brand"><div class="logo">🚆</div><div><div class="name">TATKAL <i>RUSH</i></div><div class="sub">Tomorrow · Sleeper · Tatkal quota</div></div></div>
+    <div class="brand"><div class="logo">🚆</div><div><div class="name">TATKAL <i>RUSH</i></div><div class="sub">Tomorrow · AC 3-tier · Tatkal quota</div></div></div>
     <div class="clockwrap"><div class="clock" id="clock"></div><div class="note" id="note">Tatkal opens at <b>10:00:00</b></div></div>
-    <div class="avail"><div class="lab">Berths left</div><div class="num" id="avail">72</div><div class="cls">Coach S4</div></div>
+    <div class="avail"><div class="lab">Berths left</div><div class="num" id="avail">72</div><div class="cls">Coach B4</div></div>
   </header>
   <main class="stage" id="stage">
-    <div class="plane" id="plane"><div class="rails"></div><div class="coach" id="coach"><div class="plate"><b>S4</b> · SLEEPER</div><div class="grid" id="grid"></div></div></div>
+    <div class="plane" id="plane"><div class="rails"></div><div class="coach" id="coach"><div class="plate"><b>B4</b> · AC 3-TIER</div><div class="grid" id="grid"></div></div></div>
     <div class="stamp" id="stamp"><b id="stampTxt">WL 147</b><small>WAITING LIST</small></div>
   </main>
 </div>
@@ -188,7 +189,7 @@
   <div class="friend" id="friend"></div>
   <button class="btn" id="go">Start ▸</button>
 </div>
-<div class="card pay" id="pay"><div class="who"><b id="payWho">Berth 27 · UB</b><span>Coach S4 · Tatkal ₹845</span></div><button class="btn" id="payBtn">BOOK NOW</button></div>
+<div class="card pay" id="pay"><div class="who"><b id="payWho">Berth 27 · UB</b><span>Coach B4 · Tatkal quota</span></div><button class="btn" id="payBtn">BOOK NOW</button></div>
 <div class="card proc" id="proc"><div class="spin" id="spin"></div><b>Booking…</b><span>Please don't press back 🙏</span></div>
 <div class="card result" id="result">
   <div class="rstamp wl" id="rstamp">WL 32</div>
