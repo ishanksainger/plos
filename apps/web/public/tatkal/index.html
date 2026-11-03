@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Tatkal Rush · Can you beat Tatkal?</title>
-<meta name="description" content="Tatkal opens at 10:00:00 and every berth is gone in seconds. Grab one and pay before it vanishes. Then challenge a friend." />
+<meta name="description" content="Tatkal opens at 10:00:00 and every berth is gone in seconds. Grab one and book it before it vanishes. Then challenge a friend." />
 <link rel="canonical" href="https://thenispace.com/tatkal" />
 <meta name="theme-color" content="#060914" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="NIS · The Nest of Innovative Space" />
 <meta property="og:url" content="https://thenispace.com/tatkal" />
 <meta property="og:title" content="Tatkal Rush 🚆 Can you beat Tatkal?" />
-<meta property="og:description" content="Berths open at 10:00:00 and vanish in seconds. Grab one, pay, and see if you get CNF, RAC or WL. Then challenge a friend." />
+<meta property="og:description" content="Berths open at 10:00:00 and vanish in seconds. Grab one, book it, and see if you get CNF, RAC or WL. Then challenge a friend." />
 <meta property="og:image" content="https://thenispace.com/tatkal/og.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
@@ -20,7 +20,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter+Tight:wght@500;600;700;800&family=JetBrains+Mono:wght@700;800&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet" />
 <style>
   /* TATKAL RUSH: the 10 AM Tatkal booking race as a game. A sleeper coach of 72 berths opens at 10:00:00 sharp
-     and empties in a couple of seconds. Grab a green berth, pay, and see your time and status (CNF / RAC / WL). */
+     and empties in a couple of seconds. Grab a green berth, book it, and see your time and status (CNF / RAC / WL). */
   :root {
     --bg: #060914; --panel: #0f1631; --steel: #1a2550; --line: rgba(160, 180, 255, 0.14);
     --ink: #f3f6ff; --muted: rgba(205, 215, 245, 0.62);
@@ -184,17 +184,17 @@
 <div class="card start" id="start">
   <div class="deva">तत्काल</div>
   <h1>Can you beat <em>Tatkal</em>?</h1>
-  <p>Berths open at <b>10:00:00</b> and vanish in seconds. Grab a green one and pay before it's gone.</p>
+  <p>Berths open at <b>10:00:00</b> and vanish in seconds. Grab a green one and book it before it's gone.</p>
   <div class="friend" id="friend"></div>
   <button class="btn" id="go">Start ▸</button>
 </div>
-<div class="card pay" id="pay"><div class="who"><b id="payWho">Berth 27 · UB</b><span>Coach S4 · Tatkal ₹845</span></div><button class="btn" id="payBtn">PAY NOW</button></div>
-<div class="card proc" id="proc"><div class="spin" id="spin"></div><b>Processing payment…</b><span>Please don't press back 🙏</span></div>
+<div class="card pay" id="pay"><div class="who"><b id="payWho">Berth 27 · UB</b><span>Coach S4 · Tatkal ₹845</span></div><button class="btn" id="payBtn">BOOK NOW</button></div>
+<div class="card proc" id="proc"><div class="spin" id="spin"></div><b>Booking…</b><span>Please don't press back 🙏</span></div>
 <div class="card result" id="result">
   <div class="rstamp wl" id="rstamp">WL 32</div>
   <div class="rline" id="rline">Phir bhi waiting! 😭</div>
   <div class="rtime"><span>Your time</span><b id="rtime">4.2 s</b></div>
-  <div class="rsplit" id="rsplit">Picked a berth at 1.3 s · paid at 4.2 s</div>
+  <div class="rsplit" id="rsplit">Picked a berth at 1.3 s · booked at 4.2 s</div>
   <div class="rbtns"><button class="btn ghost" id="again">Try again</button><button class="btn" id="share">Challenge a friend</button></div>
 </div>
 <div class="finger" id="finger"></div>
@@ -306,7 +306,7 @@ function stamp(text, show = true) {
   if (!show) { gsap.set("#stamp", { opacity: 0 }); return; }
   gsap.fromTo("#stamp", { opacity: 0, scale: 2.6 }, { opacity: 1, scale: 1, duration: 0.22, ease: "power3.in", onComplete: () => { shake("#stage", 12); sfx.stamp(); } });
 }
-function verdict(t) {             // the faster you pay after 10:00:00, the better your status
+function verdict(t) {             // the faster you book after 10:00:00, the better your status
   if (t <= 1.2) return { cls: "cnf", big: "CNF", line: "Bach gaye! Confirmed 🎉" };
   if (t <= 2.0) return { cls: "rac", big: `RAC ${Math.round((t - 1.2) * 15) + 3}`, line: "So close! RAC 😬" };
   return { cls: "wl", big: `WL ${Math.round(8 + (t - 2) * 11)}`, line: "Phir bhi waiting! 😭" };
@@ -327,7 +327,7 @@ function clearBoard() {
 }
 gsap.ticker.add(() => {            // the race timer under the clock
   if (!timerOn) return;
-  note(`<span class="timer">⏱ ${(now() - openAt).toFixed(2)} s</span> &nbsp; ${phase === "open" ? "Grab a green berth!" : `Berth ${mine.no} is yours. <b>Pay now!</b>`}`);
+  note(`<span class="timer">⏱ ${(now() - openAt).toFixed(2)} s</span> &nbsp; ${phase === "open" ? "Grab a green berth!" : `Berth ${mine.no} is yours. <b>Book now!</b>`}`);
 });
 
 // ---------- the opening: 10:00:00 and every berth is gone ----------
@@ -376,7 +376,7 @@ function tapBerth(s, at) {       // at: the recording's exact time, instead of t
 function pay(at, proc = 1.4) {
   if (phase !== "picked") return;
   payAt = at ?? now() - openAt; phase = "processing"; timerOn = false; sfx.pick();
-  note(`<span class="timer">⏱ ${payAt.toFixed(2)} s</span> &nbsp; Paid. Waiting for confirmation…`);
+  note(`<span class="timer">⏱ ${payAt.toFixed(2)} s</span> &nbsp; Sent. Waiting for confirmation…`);
   card("pay", false); card("proc", true);
   gsap.fromTo("#spin", { rotation: 0 }, { rotation: 360 * Math.round(proc / 0.7), duration: proc, ease: "none" });
   procTl = gsap.timeline().call(() => finish({ t: payAt, pick: pickAt }), null, proc);
@@ -391,7 +391,7 @@ function finish({ t, pick, gone }) {
   } else {
     const v = verdict(t); last = { t, v };
     rs.className = "rstamp " + v.cls; rs.textContent = v.big; $("rline").textContent = v.line;
-    $("rtime").textContent = `${t.toFixed(1)} s`; $("rsplit").textContent = `Picked a berth at ${pick.toFixed(1)} s · paid at ${t.toFixed(1)} s`;
+    $("rtime").textContent = `${t.toFixed(1)} s`; $("rsplit").textContent = `Picked a berth at ${pick.toFixed(1)} s · booked at ${t.toFixed(1)} s`;
     if (mine && v.cls !== "cnf") { mine.state = "taken"; mine.el.className = "berth gone"; counter.v = 0; showAvail(); }
     if (v.cls === "cnf") sfx.win(); else sfx.stamp();
   }
