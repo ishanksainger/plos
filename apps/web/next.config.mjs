@@ -7,7 +7,10 @@ const nextConfig = {
   },
   // Static pages in public/ that live at a clean URL (public/diwali/index.html -> /diwali).
   async rewrites() {
-    return [{ source: '/diwali', destination: '/diwali/index.html' }];
+    return [
+      { source: '/diwali', destination: '/diwali/index.html' },
+      { source: '/tatkal', destination: '/tatkal/index.html' },
+    ];
   },
 };
 
