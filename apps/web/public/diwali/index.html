@@ -420,7 +420,7 @@ if (!STILL && !params.has("lit") && !params.has("end")) {
     .call(() => finale(), null, 8.2)
     .call(() => $("share").classList.add("on"), null, 9.8);
 }
-$("name").value = name;
+// The name in the link is the sender's, so the box stays empty for whoever opened it, ready for their own.
 // The card's own link. On the live site it is always the clean thenispace.com/diwali, wherever it was opened from.
 const CARD = /(^|\.)thenispace\.com$/.test(location.hostname) ? "https://thenispace.com/diwali" : location.origin + location.pathname;
 $("send").addEventListener("click", async () => {
