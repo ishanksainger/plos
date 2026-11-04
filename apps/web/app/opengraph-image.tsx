@@ -13,10 +13,11 @@ export default function OgImage() {
           width: '100%',
           height: '100%',
           background: '#0a0a0a',
+          // satori rejects two px radii, so glow sizes are % of the 1200x630 card
           backgroundImage:
-            'radial-gradient(900px 600px at 12% 30%, rgba(124,58,237,0.32), transparent 60%), ' +
-            'radial-gradient(800px 500px at 88% 10%, rgba(236,72,153,0.18), transparent 60%), ' +
-            'radial-gradient(700px 500px at 60% 100%, rgba(59,130,246,0.22), transparent 60%)',
+            'radial-gradient(75% 95% at 12% 30%, rgba(124,58,237,0.32), transparent 60%), ' +
+            'radial-gradient(67% 79% at 88% 10%, rgba(236,72,153,0.18), transparent 60%), ' +
+            'radial-gradient(58% 79% at 60% 100%, rgba(59,130,246,0.22), transparent 60%)',
           padding: '72px 88px',
           color: '#fafafa',
           display: 'flex',
@@ -31,8 +32,8 @@ export default function OgImage() {
               width: 56,
               height: 56,
               borderRadius: 16,
-              background:
-                'conic-gradient(from 220deg, #7c3aed, #ec4899, #3b82f6, #7c3aed)',
+              // next/og (satori) has no conic-gradient: it fails the whole image
+              backgroundImage: 'linear-gradient(135deg, #7c3aed, #ec4899 55%, #3b82f6)',
               boxShadow: '0 0 0 1px rgba(255,255,255,0.18) inset',
             }}
           />
@@ -49,9 +50,12 @@ export default function OgImage() {
               letterSpacing: '-0.04em',
               lineHeight: 0.96,
               maxWidth: 980,
+              display: 'flex',
+              flexWrap: 'wrap',
+              columnGap: 24,
             }}
           >
-            A creative nest.{' '}
+            <span>A creative nest.</span>
             <span style={{ color: '#a78bfa', fontStyle: 'italic' }}>Built for India.</span>
           </div>
           <div style={{ fontSize: 26, color: '#a3a3a3', maxWidth: 880, lineHeight: 1.35 }}>
