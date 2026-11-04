@@ -393,7 +393,8 @@ function finish({ t, pick, gone }) {
     const v = verdict(t); last = { t, v };
     rs.className = "rstamp " + v.cls; rs.textContent = v.big; $("rline").textContent = v.line;
     $("rtime").textContent = `${t.toFixed(1)} s`; $("rsplit").textContent = `Picked a berth at ${pick.toFixed(1)} s · booked at ${t.toFixed(1)} s`;
-    if (mine && v.cls !== "cnf") { mine.state = "taken"; mine.el.className = "berth gone"; counter.v = 0; showAvail(); }
+    if (mine && v.cls !== "cnf") { mine.state = "taken"; mine.el.className = "berth gone"; }
+    counter.v = 0; showAvail();          // booked or lost, no berth is left either way
     if (v.cls === "cnf") sfx.win(); else sfx.stamp();
   }
   note(gone ? "Too slow this time" : `Your time <b>${t.toFixed(1)} s</b>`);
