@@ -1,0 +1,202 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>One rickshaw, 10 styles — NIS</title>
+<meta name="description" content="One 3D auto-rickshaw built in code, in 10 looks: wireframe, neon, cartoon, clay, pixel art, ASCII, blueprint, voxel, paper cut, glitch. Spin it, tap a style, take the recipes.">
+<meta property="og:title" content="One rickshaw, 10 styles"><meta property="og:description" content="Spin the rickshaw, tap a style. Built in code by NIS."><meta property="og:image" content="https://thenispace.com/styles/og.jpg"><meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#06080b;color:#fff;font-family:"JetBrains Mono",monospace;overflow:hidden;-webkit-tap-highlight-color:transparent}
+#stage{position:fixed;inset:0;touch-action:none;cursor:grab}
+.hdr{position:fixed;left:16px;top:max(14px,env(safe-area-inset-top));font-size:13px;letter-spacing:.06em;color:#19e6ff;padding:8px 12px;background:rgba(6,8,11,.78);pointer-events:none}
+.hdr b{color:#fff}
+.hint{position:fixed;left:16px;top:calc(max(14px,env(safe-area-inset-top)) + 44px);font-size:11px;letter-spacing:.12em;color:rgba(232,246,255,.75);padding:8px 12px;background:rgba(6,8,11,.78);pointer-events:none}
+.name{position:fixed;left:16px;bottom:calc(126px + env(safe-area-inset-bottom));padding:12px 16px 14px;background:rgba(6,8,11,.8);font-family:"Archivo Black",sans-serif;font-size:44px;line-height:.95;letter-spacing:-.02em;pointer-events:none;max-width:calc(100% - 32px)}
+.name small{display:block;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.3em;color:#ffb020;margin-bottom:6px}
+.chips{position:fixed;left:0;right:0;bottom:calc(58px + env(safe-area-inset-bottom));display:flex;gap:8px;padding:0 16px;overflow-x:auto;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:2px solid rgba(25,230,255,.45);background:rgba(6,8,11,.82);color:#19e6ff;font:inherit;font-size:12px;letter-spacing:.14em;padding:9px 12px;cursor:pointer;white-space:nowrap}
+.chip span{opacity:.7;margin-right:6px}
+.chip.on{border-color:#ffb020;color:#fff;background:rgba(255,176,32,.14)}
+.links{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:space-between;gap:12px;padding:14px 16px calc(14px + env(safe-area-inset-bottom));font-size:11px;letter-spacing:.12em;background:linear-gradient(transparent,rgba(6,8,11,.92))}
+.links a{color:#e8f6ff;text-decoration:none;border-bottom:1px solid rgba(232,246,255,.4);padding-bottom:1px;white-space:nowrap}
+.links a.cta{color:#ffb020;border-color:#ffb020}</style></head><body>
+<canvas id="stage"></canvas>
+<div class="hdr">NIS://<b>10-STYLES</b></div>
+<div class="hint">DRAG TO SPIN · TAP A STYLE</div>
+<div class="name"><small id="sub">STYLE 01 / 10</small><span id="txt">WIREFRAME</span></div>
+<div class="chips" id="chips"></div>
+<div class="links"><a class="cta" href="/styles/recipes.pdf">10 RECIPES (PDF) →</a><a href="https://instagram.com/thenispace">@THENISPACE</a></div>
+<script src="/styles/three.min.js"></script>
+<script>
+const STYLES = [
+  { id: "wire",  name: "WIREFRAME" }, { id: "neon",  name: "NEON" },   { id: "toon",   name: "CARTOON" }, { id: "clay",  name: "CLAY" },
+  { id: "pixel", name: "PIXEL ART" }, { id: "ascii", name: "ASCII" },  { id: "blue",   name: "BLUEPRINT" }, { id: "voxel", name: "VOXEL" },
+  { id: "paper", name: "PAPER CUT" }, { id: "glitch", name: "GLITCH" },
+];
+// ---------- three.js: one rickshaw, many looks ----------
+let W = 1080, H = 1920, S = 1;
+const gl = document.createElement("canvas");
+const renderer = new THREE.WebGLRenderer({ canvas: gl, antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(30, W / H, 0.1, 100);
+const hemi = new THREE.HemisphereLight(0xffffff, 0x334455, 0.9); scene.add(hemi);
+const key = new THREE.DirectionalLight(0xffffff, 1.3); key.position.set(4, 7, 5); scene.add(key);
+const fill = new THREE.DirectionalLight(0x99ccff, 0.5); fill.position.set(-5, 3, -3); scene.add(fill);
+
+// primitive list: kind, center, size/radius, colour role  (Bajaj-RE style auto: round nose over ONE front wheel, open sides, yellow canopy, green body)
+const P = [];
+const add = (kind, c, s, role, rot) => P.push({ kind, c, s, role, rot: rot || [0, 0, 0] });
+add("box", [0, 0.72, -0.2], [1.3, 0.56, 2.3], "body");                 // lower shell
+add("cyl", [0, 0.72, 0.9], [0.64, 0.56], "body");                      // round nose (vertical cylinder)
+add("box", [0, 1.12, -1.25], [1.3, 0.26, 0.2], "body");                // rear panel
+add("box", [0, 1.5, -1.32], [1.36, 0.52, 0.06], "roof");               // soft-top back (yellow)
+add("box", [0, 1.78, -0.15], [1.44, 0.08, 2.5], "roof");               // yellow canopy
+add("box", [0, 1.4, 0.98], [1.26, 0.72, 0.04], "glass", [-0.3, 0, 0]); // slanted windshield
+add("box", [-0.66, 1.4, 0.98], [0.06, 0.78, 0.06], "frame", [-0.3, 0, 0]); add("box", [0.66, 1.4, 0.98], [0.06, 0.78, 0.06], "frame", [-0.3, 0, 0]);
+add("box", [-0.66, 1.38, -0.05], [0.05, 0.76, 0.05], "frame"); add("box", [0.66, 1.38, -0.05], [0.05, 0.76, 0.05], "frame");
+add("box", [-0.66, 1.38, -1.3], [0.05, 0.76, 0.05], "frame"); add("box", [0.66, 1.38, -1.3], [0.05, 0.76, 0.05], "frame");
+add("box", [0, 1.04, -0.78], [1.1, 0.14, 0.55], "seat");               // passenger bench
+add("box", [0, 1.22, -1.1], [1.1, 0.42, 0.1], "seat");                 // seat back
+add("box", [0, 1.02, 0.3], [0.5, 0.1, 0.42], "seat");                  // driver seat
+add("cyl", [0, 1.18, 0.78], [0.025, 0.76], "metal", [0, 0, Math.PI / 2]); // handlebar
+add("cyl", [0, 1.02, 0.8], [0.03, 0.36], "metal");                     // steering column
+add("sphere", [0, 0.98, 1.5], [0.13], "lamp");                         // single headlight
+add("box", [0, 0.58, 1.54], [0.3, 0.1, 0.02], "plate");                // number plate
+add("cyl", [0, 0.31, 1.12], [0.31, 0.16], "tyre", [0, 0, Math.PI / 2]);
+add("cyl", [-0.62, 0.31, -0.8], [0.31, 0.16], "tyre", [0, 0, Math.PI / 2]);
+add("cyl", [0.62, 0.31, -0.8], [0.31, 0.16], "tyre", [0, 0, Math.PI / 2]);
+add("cyl", [0, 0.31, 1.12], [0.16, 0.18], "hub", [0, 0, Math.PI / 2]);
+add("cyl", [-0.62, 0.31, -0.8], [0.16, 0.18], "hub", [0, 0, Math.PI / 2]);
+add("cyl", [0.62, 0.31, -0.8], [0.16, 0.18], "hub", [0, 0, Math.PI / 2]);
+const COL = { body: 0x157a3a, roof: 0xf2b21b, glass: 0x9fd8ff, frame: 0x14161a, seat: 0x3b2a26, lamp: 0xfff2b0, metal: 0xb8c0c8, tyre: 0x1b1d21, hub: 0x8f9499, plate: 0xf4f4f0 };
+const geo = (p) => p.kind === "box" ? new THREE.BoxGeometry(...p.s) : p.kind === "sphere" ? new THREE.SphereGeometry(p.s[0], 24, 16) : new THREE.CylinderGeometry(p.s[0], p.s[0], p.s[1], 28);
+const group = new THREE.Group(); scene.add(group);
+const meshes = P.map((p) => { const m = new THREE.Mesh(geo(p)); m.position.set(...p.c); m.rotation.set(...p.rot); m.userData.role = p.role; group.add(m); return m; });
+// outlines (toon / paper): back-face shells
+const shells = meshes.map((m) => { const s = new THREE.Mesh(m.geometry, new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide })); s.position.copy(m.position); s.rotation.copy(m.rotation); s.scale.setScalar(1.045); s.visible = false; group.add(s); return s; });
+// edge lines (wire / neon / blueprint)
+const edges = meshes.map((m) => { const e = new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry, 18), new THREE.LineBasicMaterial({ color: 0x19e6ff })); e.position.copy(m.position); e.rotation.copy(m.rotation); e.visible = false; group.add(e); return e; });
+// voxels: sample the primitives on a 0.12 grid
+const V = 0.12, voxPos = [];
+const hitPrim = (p, x, y, z) => {
+  if (p.role === "glass") return false;
+  const dx = x - p.c[0], dy = y - p.c[1], dz = z - p.c[2];
+  if (p.kind === "box") return Math.abs(dx) <= p.s[0] / 2 && Math.abs(dy) <= p.s[1] / 2 && Math.abs(dz) <= p.s[2] / 2;
+  if (p.kind === "sphere") return dx * dx + dy * dy + dz * dz <= p.s[0] * p.s[0];
+  if (Math.abs(p.rot[2]) > 1) return Math.abs(dx) <= p.s[1] / 2 && dy * dy + dz * dz <= p.s[0] * p.s[0];   // along x
+  return Math.abs(dy) <= p.s[1] / 2 && dx * dx + dz * dz <= p.s[0] * p.s[0];                                // along y
+};
+const inside = (x, y, z) => P.some((p) => hitPrim(p, x, y, z));
+const voxColor = [];
+for (let x = -0.9; x <= 0.9; x += V) for (let y = 0; y <= 2.1; y += V) for (let z = -1.4; z <= 2.1; z += V) {
+  if (!inside(x, y, z)) continue;
+  voxPos.push([x, y, z]);
+  const hit = P.find((p) => hitPrim(p, x, y, z));
+  voxColor.push(COL[hit ? hit.role : "body"]);
+}
+const vox = new THREE.InstancedMesh(new THREE.BoxGeometry(V * 0.92, V * 0.92, V * 0.92), new THREE.MeshStandardMaterial({ roughness: .8 }), voxPos.length);
+{ const m = new THREE.Matrix4(), c = new THREE.Color(); voxPos.forEach((p, i) => { m.setPosition(p[0], p[1], p[2]); vox.setMatrixAt(i, m); c.setHex(voxColor[i]); vox.setColorAt(i, c); }); vox.instanceMatrix.needsUpdate = true; vox.visible = false; group.add(vox); }
+// ground disc for clay/paper
+const ground = new THREE.Mesh(new THREE.CircleGeometry(3.2, 64), new THREE.MeshStandardMaterial({ color: 0xe9e4da, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.position.y = 0.001; ground.visible = false; scene.add(ground);
+
+// toon gradient
+const gradData = new Uint8Array([40, 120, 220, 255]); const grad = new THREE.DataTexture(gradData, 4, 1, THREE.RedFormat); grad.minFilter = grad.magFilter = THREE.NearestFilter; grad.needsUpdate = true;
+const MAT = {
+  base:  (r) => new THREE.MeshStandardMaterial({ color: 0x9aa0a6, roughness: .85 }),
+  wire:  (r) => new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 }),
+  neon:  (r) => new THREE.MeshBasicMaterial({ color: 0x05060a }),
+  toon:  (r) => new THREE.MeshToonMaterial({ color: COL[r], gradientMap: grad }),
+  clay:  (r) => new THREE.MeshStandardMaterial({ color: new THREE.Color(COL[r]).lerp(new THREE.Color(0xffffff), .35), roughness: .95 }),
+  pixel: (r) => new THREE.MeshLambertMaterial({ color: COL[r] }),
+  ascii: (r) => new THREE.MeshBasicMaterial({ color: ({ body: 0x8fe39a, roof: 0xffffff, glass: 0x5fb3ff, frame: 0x3a3a3a, seat: 0x6a4a44, lamp: 0xffffff, metal: 0xcccccc, tyre: 0x606060, hub: 0xbbbbbb, plate: 0xffffff })[r] || 0xffffff }),
+  blue:  (r) => new THREE.MeshBasicMaterial({ color: 0x0b3d91, transparent: true, opacity: .55 }),
+  voxel: (r) => null,
+  paper: (r) => new THREE.MeshBasicMaterial({ color: new THREE.Color(COL[r]).lerp(new THREE.Color(0xffffff), .2) }),
+  glitch:(r) => new THREE.MeshToonMaterial({ color: COL[r], gradientMap: grad }),
+};
+const cache = {};
+function applyStyle(id) {
+  const mats = cache[id] || (cache[id] = {});
+  meshes.forEach((m) => { const r = m.userData.role; const f = MAT[id]; const mat = f && f(r); m.visible = !!mat; if (mat) { mats[r] = mats[r] || mat; m.material = mats[r]; } });
+  shells.forEach((s) => (s.visible = id === "toon" || id === "paper" || id === "glitch"));
+  edges.forEach((e) => { e.visible = id === "wire" || id === "neon" || id === "blue"; e.material.color.setHex(id === "blue" ? 0xffffff : id === "neon" ? 0xff2fd6 : 0x19e6ff); });
+  vox.visible = id === "voxel";
+  ground.visible = id === "clay" || id === "paper";
+  ground.material.color.setHex(id === "paper" ? 0xf3eee4 : 0xe9e4da);
+  const bg = { base: 0x1a1d22, wire: null, neon: null, toon: 0xffd166, clay: 0xf4efe8, pixel: 0x2b2d42, ascii: null, blue: null, voxel: 0x101a2e, paper: 0xf3eee4, glitch: 0x111318 }[id];
+  scene.background = bg == null ? null : new THREE.Color(bg);
+  hemi.intensity = id === "clay" ? 1.2 : 0.9;
+}
+
+// ---------- 2D compose per style ----------
+const stage = document.getElementById("stage"), ctx = stage.getContext("2d");
+const tiny = document.createElement("canvas"), tctx = tiny.getContext("2d", { willReadFrequently: true });
+const CHARS = " .:-=+*#%@"; let SMALL = [1080, 1920];
+function hash(n) { let x = Math.imul(n ^ 0x9e3779b9, 0x85ebca6b); x ^= x >>> 13; x = Math.imul(x, 0xc2b2ae35); return ((x ^ (x >>> 16)) >>> 0) / 4294967296; }
+function renderStyle(id, t, w, h, ang) {
+  const rows = h >= 400 ? 107 : 26, cols = Math.round(rows * w / (0.75 * h));
+  const prow = h >= 400 ? 192 : 48;
+  const small = id === "pixel" ? [Math.round(prow * w / h), prow] : id === "ascii" ? [cols, rows] : [w * S, h * S];
+  SMALL = small; renderer.setSize(small[0], small[1], false);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+  applyStyle(id);
+  const a = ang, R = w > h ? 9.6 : 13.0, bob = Math.sin(t * 1.3) * 0.08;
+  camera.position.set(Math.sin(a) * R, 2.6 + bob, Math.cos(a) * R); camera.lookAt(0, 0.6, 0);
+  renderer.setClearColor(0x000000, scene.background ? 1 : 0);
+  renderer.render(scene, camera);
+}
+function compose(id, t, x, y, w, h) {
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+  if (id === "wire") { ctx.fillStyle = "#06080b"; ctx.fillRect(x, y, w, h); grid(x, y, w, h, "rgba(25,230,255,.10)", 60); ctx.drawImage(gl, x, y, w, h); }
+  else if (id === "neon") { ctx.fillStyle = "#05060a"; ctx.fillRect(x, y, w, h); ctx.filter = "blur(16px)"; ctx.globalAlpha = .95; ctx.drawImage(gl, x, y, w, h); ctx.filter = "blur(5px)"; ctx.drawImage(gl, x, y, w, h); ctx.filter = "none"; ctx.globalAlpha = 1; for (const [ox, oy] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) ctx.drawImage(gl, x + ox, y + oy, w, h); }
+  else if (id === "pixel") { ctx.imageSmoothingEnabled = false; ctx.drawImage(gl, 0, 0, SMALL[0], SMALL[1], x, y, w, h); ctx.imageSmoothingEnabled = true; }
+  else if (id === "ascii") {
+    const rows = h >= 400 ? 107 : 26, cols = Math.round(rows * w / (0.75 * h));
+    tiny.width = cols; tiny.height = rows; tctx.drawImage(gl, 0, 0); const d = tctx.getImageData(0, 0, cols, rows).data;
+    ctx.fillStyle = "#020b06"; ctx.fillRect(x, y, w, h); const cw = w / cols, ch = h / rows; ctx.font = `bold ${Math.floor(ch * 1.3)}px Menlo, monospace`; ctx.textBaseline = "top";
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) { const k = (j * cols + i) * 4; const l = (0.3 * d[k] + 0.59 * d[k + 1] + 0.11 * d[k + 2]) / 255; if (l < .06) continue; const lg = Math.pow(l, 0.6); const c = CHARS[Math.min(9, Math.floor(lg * 9.99))]; ctx.fillStyle = lg > .72 ? "#eafff0" : lg > .4 ? "#6cf79c" : "#3dbf6c"; ctx.fillText(c, x + i * cw, y + j * ch); }
+  }
+  else if (id === "blue") { ctx.fillStyle = "#0b3d91"; ctx.fillRect(x, y, w, h); grid(x, y, w, h, "rgba(255,255,255,.14)", 48); grid(x, y, w, h, "rgba(255,255,255,.28)", 240); ctx.drawImage(gl, x, y, w, h); }
+  else if (id === "paper") { ctx.fillStyle = "#f3eee4"; ctx.fillRect(x, y, w, h); ctx.filter = "brightness(0.15) blur(6px)"; ctx.globalAlpha = .28; ctx.drawImage(gl, x + 22, y + 30, w, h); ctx.filter = "none"; ctx.globalAlpha = 1; ctx.drawImage(gl, x, y, w, h); }
+  else if (id === "glitch") {
+    ctx.drawImage(gl, x, y, w, h); const f = Math.floor(t * 14);
+    for (let i = 0; i < 6; i++) { const sy = Math.floor(hash(f * 7 + i) * h), sh = 12 + Math.floor(hash(f * 11 + i) * 60), dx = Math.floor((hash(f * 13 + i) - .5) * 90); ctx.drawImage(stage, x * S, (y + sy) * S, w * S, sh * S, x + dx, y + sy, w, sh); }
+    ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = .32; ctx.filter = "hue-rotate(300deg) saturate(3)"; ctx.drawImage(gl, x - 7, y, w, h); ctx.filter = "hue-rotate(180deg) saturate(3)"; ctx.drawImage(gl, x + 7, y, w, h); ctx.filter = "none"; ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = "rgba(0,0,0,.25)"; for (let yy = y; yy < y + h; yy += 5) ctx.fillRect(x, yy, w, 2);
+  }
+  else { ctx.drawImage(gl, x, y, w, h); }
+  ctx.restore();
+}
+function grid(x, y, w, h, color, step) { ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.beginPath(); for (let gx = x; gx <= x + w; gx += step) { ctx.moveTo(gx, y); ctx.lineTo(gx, y + h); } for (let gy = y; gy <= y + h; gy += step) { ctx.moveTo(x, gy); ctx.lineTo(x + w, gy); } ctx.stroke(); }
+
+
+
+// ---------- the page: spin, tap, auto-cycle ----------
+const N = STYLES.length, sub = document.getElementById("sub"), txt = document.getElementById("txt"), chips = document.getElementById("chips");
+let cur = 0, ang = 0.72, vel = 0, dragging = false, lastX = 0, auto = true, lastSwitch = 0, t0 = performance.now();
+function fit() { W = innerWidth; H = innerHeight; S = Math.min(1.5, devicePixelRatio || 1); stage.width = Math.round(W * S); stage.height = Math.round(H * S); stage.style.width = W + "px"; stage.style.height = H + "px"; }
+addEventListener("resize", fit); fit();
+function setStyle(k, user) {
+  cur = (k + N) % N; [...chips.children].forEach((c, i) => c.classList.toggle("on", i === cur));
+  sub.textContent = `STYLE ${String(cur + 1).padStart(2, "0")} / 10`; txt.textContent = STYLES[cur].name;
+  if (user) auto = false; lastSwitch = performance.now();
+  chips.children[cur].scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+}
+STYLES.forEach((s, k) => { const b = document.createElement("button"); b.className = "chip"; b.innerHTML = `<span>${String(k + 1).padStart(2, "0")}</span>${s.name}`; b.onclick = () => setStyle(k, true); chips.appendChild(b); });
+stage.addEventListener("pointerdown", (e) => { dragging = true; lastX = e.clientX; auto = false; stage.setPointerCapture(e.pointerId); });
+stage.addEventListener("pointermove", (e) => { if (!dragging) return; const dx = e.clientX - lastX; lastX = e.clientX; ang += dx * 0.01; vel = dx * 0.01; });
+stage.addEventListener("pointerup", () => (dragging = false)); stage.addEventListener("pointercancel", () => (dragging = false));
+addEventListener("keydown", (e) => { if (e.key === "ArrowRight") setStyle(cur + 1, true); if (e.key === "ArrowLeft") setStyle(cur - 1, true); });
+function frame(now) {
+  const t = (now - t0) / 1000;
+  if (!dragging) { ang += vel; vel *= 0.92; ang += 0.0045; }
+  if (auto && now - lastSwitch > 3200) setStyle(cur + 1, false);
+  ctx.setTransform(S, 0, 0, S, 0, 0); ctx.fillStyle = "#06080b"; ctx.fillRect(0, 0, W, H);
+  const id = STYLES[cur].id; renderStyle(id, t, W, H, ang); compose(id, t, 0, 0, W, H);
+  requestAnimationFrame(frame);
+}
+setStyle(0, false); requestAnimationFrame(frame);
+
+</script>
+</body></html>

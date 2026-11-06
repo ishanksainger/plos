@@ -11,6 +11,7 @@ const nextConfig = {
       { source: '/diwali', destination: '/diwali/index.html' },
       { source: '/tatkal', destination: '/tatkal/index.html' },
       { source: '/prompts', destination: '/prompts/index.html' },
+      { source: '/styles', destination: '/styles/index.html' },
     ];
   },
 };
