@@ -1,0 +1,248 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>One rickshaw, 10 styles — NIS</title>
+<meta name="description" content="One 3D auto-rickshaw built in code, in 10 looks: wireframe, neon, cartoon, clay, pixel art, ASCII, blueprint, voxel, paper cut, glitch. Spin it, tap a style, take the recipes.">
+<meta property="og:title" content="One rickshaw, 10 styles"><meta property="og:description" content="Spin the rickshaw, tap a style. Built in code by NIS."><meta property="og:image" content="https://thenispace.com/styles/og.jpg"><meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#06080b;color:#fff;font-family:"JetBrains Mono",monospace;overflow:hidden;-webkit-tap-highlight-color:transparent}
+#stage{position:fixed;inset:0;touch-action:none;cursor:grab}
+.hdr{position:fixed;left:16px;top:max(14px,env(safe-area-inset-top));font-size:13px;letter-spacing:.06em;color:#19e6ff;padding:8px 12px;background:rgba(6,8,11,.78);pointer-events:none}
+.hdr b{color:#fff}
+.hint{position:fixed;left:16px;top:calc(max(14px,env(safe-area-inset-top)) + 44px);font-size:11px;letter-spacing:.12em;color:rgba(232,246,255,.75);padding:8px 12px;background:rgba(6,8,11,.78);pointer-events:none}
+.name{position:fixed;left:16px;bottom:calc(126px + env(safe-area-inset-bottom));padding:12px 16px 14px;background:rgba(6,8,11,.8);font-family:"Archivo Black",sans-serif;font-size:44px;line-height:.95;letter-spacing:-.02em;pointer-events:none;max-width:calc(100% - 32px)}
+.name small{display:block;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.3em;color:#ffb020;margin-bottom:6px}
+.chips{position:fixed;left:0;right:0;bottom:calc(58px + env(safe-area-inset-bottom));display:flex;gap:8px;padding:0 16px;overflow-x:auto;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:2px solid rgba(25,230,255,.45);background:rgba(6,8,11,.82);color:#19e6ff;font:inherit;font-size:12px;letter-spacing:.14em;padding:9px 12px;cursor:pointer;white-space:nowrap}
+.chip span{opacity:.7;margin-right:6px}
+.chip.on{border-color:#ffb020;color:#fff;background:rgba(255,176,32,.14)}
+.links{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:space-between;gap:12px;padding:14px 16px calc(14px + env(safe-area-inset-bottom));font-size:11px;letter-spacing:.12em;background:linear-gradient(transparent,rgba(6,8,11,.92))}
+.links a{color:#e8f6ff;text-decoration:none;border-bottom:1px solid rgba(232,246,255,.4);padding-bottom:1px;white-space:nowrap}
+.links a.cta{color:#ffb020;border-color:#ffb020}</style></head><body>
+<canvas id="stage"></canvas>
+<div class="hdr">NIS://<b>10-STYLES</b></div>
+<div class="hint">DRAG TO SPIN · TAP A STYLE</div>
+<div class="name"><small id="sub">STYLE 01 / 10</small><span id="txt">WIREFRAME</span></div>
+<div class="chips" id="chips"></div>
+<div class="links"><a class="cta" href="/styles/recipes.pdf">10 RECIPES (PDF) →</a><a href="https://instagram.com/thenispace">@THENISPACE</a></div>
+<script src="/styles/three.min.js"></script>
+<script>
+const STYLES = [
+  { id: "wire",  name: "WIREFRAME", accent: "#19e6ff" }, { id: "neon",  name: "NEON",      accent: "#ff2fd6" }, { id: "toon",   name: "CARTOON",   accent: "#ffb020" },
+  { id: "clay",  name: "CLAY",      accent: "#c9a978" }, { id: "pixel", name: "PIXEL ART", accent: "#8be9fd" }, { id: "ascii",  name: "ASCII",     accent: "#5df08f" },
+  { id: "blue",  name: "BLUEPRINT", accent: "#dbe8ff" }, { id: "voxel", name: "VOXEL",     accent: "#f2b21b" }, { id: "paper",  name: "PAPER CUT", accent: "#e59a4b" },
+  { id: "glitch", name: "GLITCH",   accent: "#ff2fd6" },
+];
+// ---------- three.js: one rickshaw, many looks ----------
+let W = 1080, H = 1920, S = 1;
+const gl = document.createElement("canvas");
+const renderer = new THREE.WebGLRenderer({ canvas: gl, antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.outputColorSpace = THREE.SRGBColorSpace;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(30, W / H, 0.1, 100);
+const hemi = new THREE.HemisphereLight(0xffffff, 0x55606c, 0.75); scene.add(hemi);
+const key = new THREE.DirectionalLight(0xffffff, 1.7); key.position.set(4.5, 7, 4); key.castShadow = true; key.shadow.mapSize.set(2048, 2048);
+Object.assign(key.shadow.camera, { left: -3.5, right: 3.5, top: 3.5, bottom: -3.5, near: 1, far: 30 }); key.shadow.bias = -0.0006; key.shadow.radius = 5; scene.add(key);
+const fill = new THREE.DirectionalLight(0xbcd4ff, 0.55); fill.position.set(-5, 3, -2); scene.add(fill);
+const rim = new THREE.DirectionalLight(0xffffff, 0.6); rim.position.set(-2, 4, -6); scene.add(rim);
+
+const COL = { body: 0x1b7f3b, canopy: 0xf5b82e, glass: 0xbfe3ff, frame: 0x15171b, seat: 0x5a2a2a, chrome: 0xd9dde2, tyre: 0x202327, hub: 0xaab0b6, plate: 0xf4f4f0, lamp: 0xfff1c0, dark: 0x2a2d33 };
+
+// geometry helpers
+function rrect(w, h, r) { const s = new THREE.Shape(), x = -w / 2, y = -h / 2; s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r); s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h); s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r); s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y); return s; }
+function rbox(w, h, d, r = 0.03) { r = Math.min(r, w / 2 - 0.001, h / 2 - 0.001, d / 2 - 0.001); const g = new THREE.ExtrudeGeometry(rrect(w - 2 * r, h - 2 * r, Math.max(0.002, r)), { depth: d - 2 * r, bevelEnabled: true, bevelSize: r, bevelThickness: r, bevelSegments: 3, curveSegments: 5 }); g.center(); return g; }
+function shellShape() { const s = new THREE.Shape(); s.moveTo(-0.65, -1.25); s.lineTo(-0.65, 0.25); s.bezierCurveTo(-0.65, 0.8, -0.46, 1.02, -0.22, 1.13); s.quadraticCurveTo(0, 1.23, 0.22, 1.13); s.bezierCurveTo(0.46, 1.02, 0.65, 0.8, 0.65, 0.25); s.lineTo(0.65, -1.25); s.closePath(); return s; }
+function plateTexture(text) { const c = document.createElement("canvas"); c.width = 256; c.height = 96; const x = c.getContext("2d"); x.fillStyle = "#f4f4f0"; x.fillRect(0, 0, 256, 96); x.fillStyle = "#111"; x.font = "bold 54px Menlo, monospace"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(text, 128, 50); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; }
+
+// the rickshaw: a list of parts {geo, role, pos, rot, novox?, open?}
+const PARTS = [];
+const part = (geo, role, pos, rot, extra) => PARTS.push(Object.assign({ geo, role, pos, rot: rot || [0, 0, 0] }, extra || {}));
+part(new THREE.ExtrudeGeometry(shellShape(), { depth: 0.5, bevelEnabled: true, bevelSize: 0.03, bevelThickness: 0.03, bevelSegments: 2, curveSegments: 12 }), "body", [0, 0.95, 0], [Math.PI / 2, 0, 0]);   // lower shell, round tapered nose
+part(new THREE.CylinderGeometry(0.37, 0.37, 0.24, 28, 1, true, 0, Math.PI), "body", [0, 0.34, 1.0], [0, 0, Math.PI / 2], { novox: true });   // front mudguard
+part(rbox(1.3, 0.3, 0.2, 0.03), "body", [0, 1.1, -1.2]);                                   // rear panel
+part(rbox(1.38, 0.5, 0.06, 0.025), "canopy", [0, 1.52, -1.3]);                             // rear soft-top
+part(rbox(1.44, 0.07, 2.45, 0.03), "canopy", [0, 1.79, -0.1]);                             // canopy
+{ const f = rrect(1.26, 0.72, 0.06); const hole = rrect(1.14, 0.6, 0.04); f.holes.push(hole);
+  part(new THREE.ExtrudeGeometry(f, { depth: 0.04, bevelEnabled: false }), "frame", [0, 1.4, 0.98], [-0.28, 0, 0], { novox: true });   // windshield frame
+  part(rbox(1.14, 0.6, 0.02, 0.008), "glass", [0, 1.4, 0.98], [-0.28, 0, 0], { novox: true }); }
+for (const x of [-0.66, 0.66]) { part(new THREE.CylinderGeometry(0.028, 0.028, 0.78, 12), "frame", [x, 1.4, 0.985], [-0.28, 0, 0]); part(new THREE.CylinderGeometry(0.026, 0.026, 0.76, 12), "frame", [x, 1.38, -0.05]); part(new THREE.CylinderGeometry(0.026, 0.026, 0.76, 12), "frame", [x, 1.38, -1.3]); }
+for (const x of [-0.675, 0.675]) part(new THREE.CylinderGeometry(0.02, 0.02, 0.9, 10), "chrome", [x, 1.12, -0.45], [Math.PI / 2, 0, 0]);   // grab bars
+part(rbox(1.1, 0.16, 0.52, 0.05), "seat", [0, 1.03, -0.72]); part(rbox(1.1, 0.46, 0.12, 0.05), "seat", [0, 1.26, -1.06], [-0.12, 0, 0]); part(rbox(0.5, 0.12, 0.42, 0.04), "seat", [0, 1.02, 0.28]);
+part(new THREE.CylinderGeometry(0.025, 0.025, 0.72, 12), "chrome", [0, 1.18, 0.78], [0, 0, Math.PI / 2]);   // handlebar
+for (const x of [-0.33, 0.33]) part(new THREE.CylinderGeometry(0.036, 0.036, 0.14, 12), "frame", [x, 1.18, 0.78], [0, 0, Math.PI / 2]);
+part(new THREE.CylinderGeometry(0.03, 0.03, 0.32, 12), "dark", [0, 1.02, 0.82], [-0.3, 0, 0]);               // steering column
+part(new THREE.TorusGeometry(0.13, 0.025, 10, 28), "chrome", [0, 0.98, 1.2]); part(new THREE.SphereGeometry(0.115, 24, 16), "lamp", [0, 0.98, 1.19]);   // headlight
+for (const x of [-0.8, 0.8]) { part(rbox(0.12, 0.16, 0.03, 0.02), "dark", [x, 1.52, 0.92]); part(new THREE.CylinderGeometry(0.012, 0.012, 0.16, 8), "chrome", [x * 0.92, 1.52, 0.93], [0, 0, Math.PI / 2], { novox: true }); }   // mirrors
+part(rbox(0.14, 0.1, 0.12, 0.015), "dark", [0.5, 1.12, 0.72]);                                                // meter
+part(rbox(0.3, 0.1, 0.02, 0.01), "plate", [0, 0.6, 1.235]); part(rbox(0.3, 0.1, 0.02, 0.01), "plate", [0, 0.72, -1.3]);
+part(rbox(0.7, 0.06, 0.06, 0.03), "dark", [0, 0.47, 1.22]);                                                    // bumper
+part(new THREE.CylinderGeometry(0.04, 0.04, 0.3, 12), "dark", [-0.45, 0.4, -1.3], [Math.PI / 2, 0, 0]);       // exhaust
+for (const [x, z] of [[0, 1.0], [-0.6, -0.8], [0.6, -0.8]]) { part(new THREE.TorusGeometry(0.235, 0.095, 14, 36), "tyre", [x, 0.33, z], [0, Math.PI / 2, 0]); part(new THREE.CylinderGeometry(0.19, 0.19, 0.14, 24), "hub", [x, 0.33, z], [0, 0, Math.PI / 2]); part(new THREE.CylinderGeometry(0.07, 0.07, 0.16, 16), "dark", [x, 0.33, z], [0, 0, Math.PI / 2]); }
+
+const group = new THREE.Group(); scene.add(group);
+const meshes = PARTS.map((p) => { const m = new THREE.Mesh(p.geo); m.position.set(...p.pos); m.rotation.set(...p.rot); m.userData = { role: p.role, novox: !!p.novox }; m.castShadow = p.role !== "glass"; m.receiveShadow = true; group.add(m); return m; });
+const plateTex = plateTexture("DL 1R 2026");
+// outlines (toon / paper / glitch): back-face shells
+const shells = meshes.map((m) => { const s = new THREE.Mesh(m.geometry, new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide })); s.position.copy(m.position); s.rotation.copy(m.rotation); s.scale.setScalar(1.04); s.visible = false; group.add(s); return s; });
+// edge lines (wire / neon / blueprint)
+const edges = meshes.filter((m) => m.userData.role !== "glass").map((m) => { const e = new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry, 15), new THREE.LineBasicMaterial({ color: 0x19e6ff, transparent: true, opacity: 0.95 })); e.position.copy(m.position); e.rotation.copy(m.rotation); e.visible = false; group.add(e); return e; });
+// ground + grid
+const ground = new THREE.Mesh(new THREE.CircleGeometry(4.5, 64), new THREE.MeshStandardMaterial({ color: 0xe9e4da, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.position.y = 0.0; ground.receiveShadow = true; ground.visible = false; scene.add(ground);
+const shadowOnly = new THREE.Mesh(new THREE.CircleGeometry(4.5, 64), new THREE.ShadowMaterial({ opacity: 0.28 })); shadowOnly.rotation.x = -Math.PI / 2; shadowOnly.position.y = 0.001; shadowOnly.receiveShadow = true; shadowOnly.visible = false; scene.add(shadowOnly);
+const gridH = new THREE.GridHelper(14, 28, 0x19e6ff, 0x19e6ff); gridH.material.transparent = true; gridH.material.opacity = 0.16; gridH.position.y = 0.002; gridH.visible = false; scene.add(gridH);
+
+// voxels: one ray per (y, z) row through the closed parts, inside = between an entry and an exit of the same part
+const V = 0.11, voxPos = [], voxRole = [];
+{ const ray = new THREE.Raycaster(); const solids = meshes.filter((m) => !m.userData.novox && m.userData.role !== "glass");
+  const tmp = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }); solids.forEach((m) => (m.material = tmp)); group.updateMatrixWorld(true);
+  for (let y = 0.06; y <= 1.9; y += V) for (let z = -1.45; z <= 1.3; z += V) {
+    ray.set(new THREE.Vector3(-2, y, z), new THREE.Vector3(1, 0, 0)); const hits = ray.intersectObjects(solids, false);
+    const by = new Map(); hits.forEach((h) => { (by.get(h.object) || by.set(h.object, []).get(h.object)).push(h.point.x); });
+    const spans = []; by.forEach((xs, o) => { xs.sort((a, b) => a - b); for (let i = 0; i + 1 < xs.length; i += 2) spans.push([xs[i], xs[i + 1], o.userData.role]); });
+    if (!spans.length) continue;
+    const used = new Set();
+    for (let x = -0.85; x <= 0.85; x += V) { const s = spans.find((sp) => x >= sp[0] && x <= sp[1]); if (s) { voxPos.push([x, y, z]); voxRole.push(s[2]); used.add(s); } }
+    spans.forEach((sp) => { if (!used.has(sp)) { const cx = (sp[0] + sp[1]) / 2, gx = -0.85 + Math.round((cx + 0.85) / V) * V; voxPos.push([gx, y, z]); voxRole.push(sp[2]); } });
+  }
+}
+const vox = new THREE.InstancedMesh(new THREE.BoxGeometry(V * 0.94, V * 0.94, V * 0.94), new THREE.MeshStandardMaterial({ roughness: .75 }), voxPos.length);
+{ const m = new THREE.Matrix4(), c = new THREE.Color(); voxPos.forEach((p, i) => { m.setPosition(p[0], p[1], p[2]); vox.setMatrixAt(i, m); c.setHex(COL[voxRole[i]]); c.offsetHSL(0, 0, (hash(i) - 0.5) * 0.08); vox.setColorAt(i, c); }); vox.instanceMatrix.needsUpdate = true; vox.castShadow = true; vox.visible = false; group.add(vox); }
+function hash(n) { let x = Math.imul(n ^ 0x9e3779b9, 0x85ebca6b); x ^= x >>> 13; x = Math.imul(x, 0xc2b2ae35); return ((x ^ (x >>> 16)) >>> 0) / 4294967296; }
+
+// materials per style
+const gradData = new Uint8Array([40, 120, 220, 255]); const grad = new THREE.DataTexture(gradData, 4, 1, THREE.RedFormat); grad.minFilter = grad.magFilter = THREE.NearestFilter; grad.needsUpdate = true;
+const lighten = (hex, k) => new THREE.Color(hex).lerp(new THREE.Color(0xffffff), k);
+const std = (r, o) => { const m = new THREE.MeshStandardMaterial(Object.assign({ color: COL[r], roughness: r === "chrome" || r === "hub" ? .25 : r === "glass" ? .1 : .6, metalness: r === "chrome" || r === "hub" ? .9 : 0 }, o || {})); if (r === "glass") Object.assign(m, { transparent: true, opacity: .45 }); if (r === "lamp") { m.emissive = new THREE.Color(0xffe9a0); m.emissiveIntensity = .6; } if (r === "plate") m.map = plateTex; return m; };
+const MAT = {
+  base:  (r) => std(r, { color: r === "glass" ? 0xdfefff : 0x9aa0a6, roughness: .8, metalness: 0 }),
+  wire:  (r) => new THREE.MeshBasicMaterial({ color: 0x19e6ff, transparent: true, opacity: 0.09 }),
+  neon:  (r) => new THREE.MeshBasicMaterial({ color: 0x05060a }),
+  toon:  (r) => { const m = new THREE.MeshToonMaterial({ color: COL[r], gradientMap: grad }); if (r === "glass") Object.assign(m, { transparent: true, opacity: .55 }); if (r === "plate") m.map = plateTex; return m; },
+  clay:  (r) => std(r, { color: lighten(COL[r], .32), roughness: .95, metalness: 0 }),
+  pixel: (r) => { const m = new THREE.MeshLambertMaterial({ color: COL[r] }); if (r === "glass") Object.assign(m, { transparent: true, opacity: .6 }); return m; },
+  ascii: (r) => new THREE.MeshBasicMaterial({ color: ({ body: 0x8fe39a, canopy: 0xffffff, glass: 0x5fb3ff, frame: 0x3a3a3a, seat: 0x6a4a44, lamp: 0xffffff, chrome: 0xdddddd, tyre: 0x606060, hub: 0xbbbbbb, plate: 0xffffff, dark: 0x505050 })[r] || 0xffffff }),
+  blue:  (r) => new THREE.MeshBasicMaterial({ color: 0x2a63c9, transparent: true, opacity: .5 }),
+  voxel: (r) => null,
+  paper: (r) => { const m = new THREE.MeshBasicMaterial({ color: lighten(COL[r], .18) }); if (r === "glass") Object.assign(m, { transparent: true, opacity: .5 }); return m; },
+  glitch:(r) => { const m = new THREE.MeshToonMaterial({ color: COL[r], gradientMap: grad }); if (r === "glass") Object.assign(m, { transparent: true, opacity: .55 }); return m; },
+};
+const BG = { base: 0x1a1d22, wire: null, neon: null, toon: 0xffd166, clay: 0xf4efe8, pixel: 0x2b2d42, ascii: null, blue: null, voxel: 0x101a2e, paper: 0xf3eee4, glitch: 0x111318 };
+const cache = {};
+function applyStyle(id) {
+  const mats = cache[id] || (cache[id] = {});
+  meshes.forEach((m) => { const r = m.userData.role; const f = MAT[id]; const mat = f && f(r); m.visible = !!mat; if (mat) { mats[r] = mats[r] || mat; m.material = mats[r]; } });
+  shells.forEach((s) => (s.visible = id === "toon" || id === "paper" || id === "glitch"));
+  edges.forEach((e) => { e.visible = id === "wire" || id === "neon" || id === "blue"; e.material.color.setHex(id === "blue" ? 0xffffff : id === "neon" ? 0xff2fd6 : 0x19e6ff); });
+  vox.visible = id === "voxel";
+  ground.visible = id === "clay" || id === "paper" || id === "toon" || id === "base";
+  ground.material.color.setHex({ clay: 0xe9e4da, paper: 0xf3eee4, toon: 0xf6c75a, base: 0x1f232a }[id] || 0xe9e4da);
+  ground.material.roughness = 1;
+  shadowOnly.visible = id === "voxel" || id === "pixel" || id === "glitch";
+  gridH.visible = id === "wire" || id === "neon" || id === "blue"; gridH.material.color.setHex(id === "blue" ? 0xffffff : id === "neon" ? 0xff2fd6 : 0x19e6ff); gridH.material.opacity = id === "blue" ? .22 : .16;
+  const bg = BG[id]; scene.background = bg == null ? null : new THREE.Color(bg);
+  renderer.toneMapping = (id === "base" || id === "clay" || id === "toon" || id === "pixel" || id === "voxel" || id === "glitch") ? THREE.ACESFilmicToneMapping : THREE.NoToneMapping;
+  renderer.toneMappingExposure = id === "clay" ? 1.15 : 1.0;
+  hemi.intensity = id === "clay" ? 1.0 : 0.75; key.intensity = id === "clay" ? 1.4 : 1.7;
+}
+
+// ---------- camera per style: angle start, turn, height, radius, look-at height ----------
+const CAM = {
+  base:  { a0: 0.75, da: 0.30, h: 2.4, R: 13.0, look: 0.6 },
+  wire:  { a0: 0.72, da: 0.36, h: 2.6, R: 13.0, look: 0.6 },
+  neon:  { a0: 0.40, da: 0.40, h: 1.5, R: 12.2, look: 0.7 },
+  toon:  { a0: 0.95, da: 0.30, h: 2.6, R: 12.6, look: 0.6 },
+  clay:  { a0: 0.60, da: 0.30, h: 3.4, R: 12.0, look: 0.55 },
+  pixel: { a0: 0.82, da: 0.32, h: 2.4, R: 12.6, look: 0.6 },
+  ascii: { a0: 1.0, da: 0.3, h: 2.2, R: 13.2, look: 0.65 },
+  blue:  { a0: 1.5708, da: 0.0, h: 1.3, R: 14.2, look: 0.85 },
+  voxel: { a0: 0.8, da: 0.42, h: 2.9, R: 12.6, look: 0.6 },
+  paper: { a0: 0.42, da: 0.30, h: 1.9, R: 12.6, look: 0.65 },
+  glitch:{ a0: 0.90, da: 0.46, h: 2.1, R: 11.2, look: 0.75 },
+};
+let SMALL = [W, H];
+function renderStyle(id, t, w, h, ang, cam) {
+  const c = cam || CAM[id] || CAM.base, loc = ang == null ? 0 : 0;
+  const rows = h >= 400 ? 107 : 26, cols = Math.round(rows * w / (0.75 * h)), prow = h >= 400 ? 228 : 56;
+  const lineStyle = id === "wire" || id === "neon" || id === "blue";
+  const small = id === "pixel" ? [Math.round(prow * w / h), prow] : id === "ascii" ? [cols, rows] : lineStyle ? [w, h] : [w * S, h * S];
+  SMALL = small; renderer.setSize(small[0], small[1], false);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+  applyStyle(id);
+  const a = ang, R = (w > h ? c.R * 0.62 : c.R), bob = Math.sin(t * 1.3) * 0.05;
+  camera.position.set(Math.sin(a) * R, c.h + bob, Math.cos(a) * R); camera.lookAt(0, c.look, 0);
+  renderer.setClearColor(0x000000, scene.background ? 1 : 0);
+  renderer.render(scene, camera);
+}
+// angle + dolly for a style at local time `loc` (seconds into its shot)
+function shot(id, loc) { const c = CAM[id] || CAM.base; const k = Math.max(0, Math.min(1.4, loc / SEG)); return { ang: c.a0 + c.da * k, cam: Object.assign({}, c, { R: c.R * (1 - 0.035 * k) }) }; }
+
+// ---------- 2D compose per style ----------
+const stage = document.getElementById("stage"), ctx = stage.getContext("2d");
+const tiny = document.createElement("canvas"), tctx = tiny.getContext("2d", { willReadFrequently: true });
+const CHARS = " .:-=+*#%@";
+const paperNoise = (() => { const c = document.createElement("canvas"); c.width = 256; c.height = 256; const x = c.getContext("2d"); const img = x.createImageData(256, 256); for (let i = 0; i < 256 * 256; i++) { const v = 200 + Math.floor(hash(i) * 55); img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = v; img.data[i * 4 + 3] = 255; } x.putImageData(img, 0, 0); return x.createPattern(c, "repeat"); })();
+function compose(id, t, x, y, w, h) {
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+  if (id === "wire") { ctx.fillStyle = "#06080b"; ctx.fillRect(x, y, w, h); for (const [ox, oy] of [[0, 0], [1, 0], [0, 1]]) ctx.drawImage(gl, x + ox, y + oy, w, h); }
+  else if (id === "neon") { ctx.fillStyle = "#05060a"; ctx.fillRect(x, y, w, h); ctx.filter = "blur(22px)"; ctx.globalAlpha = 1; ctx.drawImage(gl, x, y, w, h); ctx.drawImage(gl, x, y, w, h); ctx.filter = "blur(7px)"; ctx.drawImage(gl, x, y, w, h); ctx.filter = "none"; for (const [ox, oy] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1], [1, 1]]) ctx.drawImage(gl, x + ox, y + oy, w, h); }
+  else if (id === "pixel") { ctx.imageSmoothingEnabled = false; ctx.drawImage(gl, 0, 0, SMALL[0], SMALL[1], x, y, w, h); ctx.imageSmoothingEnabled = true; ctx.fillStyle = "rgba(0,0,0,.18)"; const step = h / SMALL[1]; for (let yy = y; yy < y + h; yy += step) ctx.fillRect(x, yy, w, Math.max(1, step * .22)); }
+  else if (id === "ascii") {
+    const rows = h >= 400 ? 107 : 26, cols = Math.round(rows * w / (0.75 * h));
+    tiny.width = cols; tiny.height = rows; tctx.drawImage(gl, 0, 0); const d = tctx.getImageData(0, 0, cols, rows).data;
+    ctx.fillStyle = "#020b06"; ctx.fillRect(x, y, w, h); const cw = w / cols, ch = h / rows; ctx.font = `bold ${Math.floor(ch * 1.3)}px Menlo, monospace`; ctx.textBaseline = "top";
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) { const k = (j * cols + i) * 4; const l = (0.3 * d[k] + 0.59 * d[k + 1] + 0.11 * d[k + 2]) / 255; if (l < .06) continue; const lg = Math.pow(l, 0.6); const c = CHARS[Math.min(9, Math.floor(lg * 9.99))]; ctx.fillStyle = lg > .72 ? "#eafff0" : lg > .4 ? "#6cf79c" : "#3dbf6c"; ctx.fillText(c, x + i * cw, y + j * ch); }
+  }
+  else if (id === "blue") {
+    ctx.fillStyle = "#0b3d91"; ctx.fillRect(x, y, w, h); grid(x, y, w, h, "rgba(255,255,255,.10)", 48); grid(x, y, w, h, "rgba(255,255,255,.22)", 240); for (const [ox, oy] of [[0, 0], [1, 0], [0, 1]]) ctx.drawImage(gl, x + ox, y + oy, w, h);
+    if (w > 600) { // dimension lines (side elevation)
+      ctx.strokeStyle = "rgba(255,255,255,.85)"; ctx.fillStyle = "rgba(255,255,255,.9)"; ctx.lineWidth = 2; ctx.font = "26px 'JetBrains Mono', Menlo, monospace"; ctx.textAlign = "center";
+      const x0 = x + w * 0.16, x1 = x + w * 0.84, yy = y + h * 0.69; ctx.beginPath(); ctx.moveTo(x0, yy); ctx.lineTo(x1, yy); ctx.moveTo(x0, yy - 14); ctx.lineTo(x0, yy + 14); ctx.moveTo(x1, yy - 14); ctx.lineTo(x1, yy + 14); ctx.stroke(); ctx.fillText("2 625 mm", (x0 + x1) / 2, yy + 36);
+      const xx = x + w * 0.9, y0 = y + h * 0.36, y1 = y + h * 0.64; ctx.beginPath(); ctx.moveTo(xx, y0); ctx.lineTo(xx, y1); ctx.moveTo(xx - 14, y0); ctx.lineTo(xx + 14, y0); ctx.moveTo(xx - 14, y1); ctx.lineTo(xx + 14, y1); ctx.stroke(); ctx.save(); ctx.translate(xx + 34, (y0 + y1) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText("1 785 mm", 0, 0); ctx.restore();
+      ctx.textAlign = "left"; ctx.fillText("AUTO-RICKSHAW · 3-WHEELER · SCALE 1:20", x + 70, y + h * 0.3); ctx.fillText("SHEET 07 / 10 · REV A", x + 70, y + h * 0.3 + 34);
+    }
+  }
+  else if (id === "paper") { ctx.fillStyle = "#f3eee4"; ctx.fillRect(x, y, w, h); ctx.globalAlpha = .12; ctx.fillStyle = paperNoise; ctx.fillRect(x, y, w, h); ctx.globalAlpha = 1; ctx.filter = "brightness(0.15) blur(7px)"; ctx.globalAlpha = .26; ctx.drawImage(gl, x + 24, y + 32, w, h); ctx.filter = "none"; ctx.globalAlpha = 1; ctx.drawImage(gl, x, y, w, h); }
+  else if (id === "glitch") {
+    ctx.drawImage(gl, x, y, w, h); const f = Math.floor(t * 14), burst = hash(f * 3 + 1) < 0.22;
+    const n = burst ? 10 : 5; for (let i = 0; i < n; i++) { const sy = Math.floor(hash(f * 7 + i) * h), sh = 10 + Math.floor(hash(f * 11 + i) * 70), dx = Math.floor((hash(f * 13 + i) - .5) * (burst ? 160 : 70)); ctx.drawImage(stage, x * S, (y + sy) * S, w * S, sh * S, x + dx, y + sy, w, sh); }
+    ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = burst ? .38 : .2; const o = burst ? 12 : 5; ctx.filter = "hue-rotate(300deg) saturate(3)"; ctx.drawImage(gl, x - o, y, w, h); ctx.filter = "hue-rotate(180deg) saturate(3)"; ctx.drawImage(gl, x + o, y, w, h); ctx.filter = "none"; ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = "rgba(0,0,0,.25)"; for (let yy = y; yy < y + h; yy += 5) ctx.fillRect(x, yy, w, 2);
+  }
+  else { ctx.drawImage(gl, x, y, w, h); if (id === "clay" || id === "base") { const g = ctx.createRadialGradient(x + w / 2, y + h / 2, w * 0.35, x + w / 2, y + h / 2, w * 0.95); g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, id === "clay" ? "rgba(60,40,20,.22)" : "rgba(0,0,0,.45)"); ctx.fillStyle = g; ctx.fillRect(x, y, w, h); } }
+  ctx.restore();
+}
+function grid(x, y, w, h, color, step) { ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.beginPath(); for (let gx = x; gx <= x + w; gx += step) { ctx.moveTo(gx, y); ctx.lineTo(gx, y + h); } for (let gy = y; gy <= y + h; gy += step) { ctx.moveTo(x, gy); ctx.lineTo(x + w, gy); } ctx.stroke(); }
+function draw(id, loc, t, x, y, w, h) { const s = shot(id, loc); renderStyle(id, t, w, h, s.ang, s.cam); compose(id, t, x, y, w, h); }
+const easeIO = (p) => p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+
+
+
+// ---------- the page: spin, tap, auto-cycle ----------
+const N = STYLES.length, SEG_PAGE = 2.14, sub = document.getElementById("sub"), txt = document.getElementById("txt"), chips = document.getElementById("chips");
+let cur = 0, ang = 0.72, vel = 0, dragging = false, lastX = 0, auto = true, lastSwitch = 0, t0 = performance.now();
+function fit() { W = innerWidth; H = innerHeight; S = Math.min(1.5, devicePixelRatio || 1); stage.width = Math.round(W * S); stage.height = Math.round(H * S); stage.style.width = W + "px"; stage.style.height = H + "px"; }
+addEventListener("resize", fit); fit();
+function setStyle(k, user) {
+  cur = (k + N) % N; [...chips.children].forEach((c, i) => c.classList.toggle("on", i === cur));
+  sub.textContent = `STYLE ${String(cur + 1).padStart(2, "0")} / 10`; txt.textContent = STYLES[cur].name;
+  if (user) auto = false; lastSwitch = performance.now();
+  chips.children[cur].scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+}
+STYLES.forEach((s, k) => { const b = document.createElement("button"); b.className = "chip"; b.innerHTML = `<span>${String(k + 1).padStart(2, "0")}</span>${s.name}`; b.onclick = () => setStyle(k, true); chips.appendChild(b); });
+stage.addEventListener("pointerdown", (e) => { dragging = true; lastX = e.clientX; auto = false; stage.setPointerCapture(e.pointerId); });
+stage.addEventListener("pointermove", (e) => { if (!dragging) return; const dx = e.clientX - lastX; lastX = e.clientX; ang += dx * 0.01; vel = dx * 0.01; });
+stage.addEventListener("pointerup", () => (dragging = false)); stage.addEventListener("pointercancel", () => (dragging = false));
+addEventListener("keydown", (e) => { if (e.key === "ArrowRight") setStyle(cur + 1, true); if (e.key === "ArrowLeft") setStyle(cur - 1, true); });
+function frame(now) {
+  const t = (now - t0) / 1000;
+  if (!dragging) { ang += vel; vel *= 0.92; ang += 0.0045; }
+  if (auto && now - lastSwitch > 3200) setStyle(cur + 1, false);
+  ctx.setTransform(S, 0, 0, S, 0, 0); ctx.fillStyle = "#06080b"; ctx.fillRect(0, 0, W, H);
+  const id = STYLES[cur].id; renderStyle(id, t, W, H, ang); compose(id, t, 0, 0, W, H);
+  requestAnimationFrame(frame);
+}
+setStyle(0, false); requestAnimationFrame(frame);
+
+</script>
+</body></html>
