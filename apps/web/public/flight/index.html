@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flight Hologram · NIS</title>
+<meta name="description" content="Your phone hides your altitude and location inside every flight video. See it as a hologram. Nothing is uploaded.">
+<meta property="og:title" content="What did your phone save on your flight?">
+<meta property="og:description" content="My iPhone had no signal at 38,282 ft and still saved where I was. See yours. Nothing leaves your phone.">
+<meta property="og:image" content="https://thenispace.com/flight/og.jpg">
+<meta property="og:url" content="https://thenispace.com/flight">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#060b16">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@500;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060b16;--ink:#eaf6ff;--dim:#9fb6cc;--cyan:#5fe1ff;--amber:#ffb347;--yellow:#ffd60a;--card:rgba(10,24,48,.62);--line:rgba(150,230,255,.28)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{min-height:100vh;color:var(--ink);font-family:Inter,system-ui,sans-serif;background:radial-gradient(120% 60% at 50% 0%,#14305a 0%,#0a1630 45%,var(--bg) 100%);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;background-image:radial-gradient(rgba(95,225,255,.9) 1.2px,transparent 1.5px);background-size:34px 34px}
+main{position:relative;max-width:520px;margin:0 auto;padding:22px 16px 40px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.tag{display:inline-block;border:1.5px solid rgba(95,225,255,.6);border-radius:999px;padding:7px 14px;font:800 13px Inter;letter-spacing:.08em;color:#bfefff;background:rgba(255,255,255,.06)}
+.brand{font:700 13px "JetBrains Mono",monospace;color:var(--dim);text-decoration:none}
+h1{font:400 clamp(34px,9vw,46px)/1.02 "Archivo Black",sans-serif;letter-spacing:-.02em;text-transform:uppercase}
+h1 span{color:var(--yellow);text-shadow:0 0 30px rgba(255,214,10,.45)}
+.lead{margin-top:12px;font:600 17px/1.45 Inter;color:#cfe3f2}
+.lead b{color:#fff}
+.holo{position:relative;margin-top:20px;border-radius:24px;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line),0 20px 60px rgba(0,0,0,.45);overflow:hidden}
+.hint{position:absolute;left:16px;top:14px;z-index:3;font:700 12px "JetBrains Mono",monospace;letter-spacing:.06em;color:#bfefff;background:rgba(6,12,26,.6);border-radius:8px;padding:5px 9px}
+.stage{position:relative;height:400px;perspective:900px;touch-action:none;cursor:grab}
+.map3d{position:absolute;left:50%;top:58%;width:270px;height:307px;transform-style:preserve-3d;transform:translate(-50%,-50%) rotateX(var(--rx,52deg)) rotateZ(var(--rz,-14deg))}
+.map3d svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.glowmap{filter:drop-shadow(0 0 6px rgba(95,225,255,.75)) drop-shadow(0 0 18px rgba(40,160,255,.35))}
+.pin{position:absolute;width:0;height:0;transform-style:preserve-3d}
+.pin .dot{position:absolute;left:-6px;top:-6px;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 0 12px 4px var(--amber)}
+.pin .ring{position:absolute;left:-22px;top:-22px;width:44px;height:44px;border-radius:50%;border:2px solid var(--amber);opacity:0;animation:ring 2.4s ease-out infinite}
+.pin .ring.r2{animation-delay:1.2s}
+@keyframes ring{0%{transform:scale(.2);opacity:.95}100%{transform:scale(1.6);opacity:0}}
+.beam{position:absolute;left:-2px;bottom:0;width:4px;height:var(--h,180px);transform-origin:50% 100%;transform:rotateX(-90deg);background:linear-gradient(to top,rgba(255,200,110,1),rgba(255,179,71,.0));box-shadow:0 0 16px rgba(255,170,60,.9);border-radius:3px}
+.beam:after{content:"";position:absolute;left:-7px;top:-7px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 0 20px 8px rgba(255,179,71,.85)}
+.read{padding:16px 18px 18px;border-top:1px solid var(--line)}
+.lab{font:700 12px "JetBrains Mono",monospace;letter-spacing:.14em;color:#ffcf8a}
+.big{font:400 clamp(44px,13vw,64px)/1.02 "Archivo Black",sans-serif;letter-spacing:-.01em}
+.sub{font:600 14px Inter;color:var(--dim);margin-top:2px}
+.row{display:flex;gap:18px;margin-top:14px;flex-wrap:wrap}
+.row>div{flex:1 1 140px}
+.v{font:800 18px Inter;margin-top:3px}
+.raw{margin-top:14px;font:500 12.5px "JetBrains Mono",monospace;color:#9fe9ff;word-break:break-all;background:rgba(0,0,0,.25);border-radius:10px;padding:9px 11px}
+.btns{display:grid;gap:10px;margin-top:16px}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:58px;border-radius:16px;border:0;font:900 17px Inter;cursor:pointer;text-decoration:none}
+.btn.main{background:var(--yellow);color:#171003;box-shadow:0 12px 30px rgba(255,214,10,.25)}
+.btn.ghost{background:rgba(255,255,255,.08);color:#fff;box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn input{display:none}
+.note{margin-top:12px;font:600 14px/1.5 Inter;color:#cfe3f2}
+.msg{display:none;margin-top:14px;border-radius:16px;padding:14px 16px;font:600 15px/1.5 Inter}
+.msg.ok{display:block;background:rgba(95,225,255,.1);box-shadow:inset 0 0 0 1.5px rgba(95,225,255,.4)}
+.msg.no{display:block;background:rgba(255,179,71,.1);box-shadow:inset 0 0 0 1.5px rgba(255,179,71,.45)}
+.msg ol{margin:8px 0 0 20px}
+.msg li{margin:4px 0}
+h2{margin-top:30px;font:400 24px/1.1 "Archivo Black",sans-serif;text-transform:uppercase;letter-spacing:-.01em}
+.steps{margin-top:12px;display:grid;gap:10px}
+.step{border-radius:16px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px var(--line);padding:13px 15px;font:600 15px/1.5 Inter;color:#d8e8f4}
+.step b{color:#fff}
+.step .k{display:block;font:700 12px "JetBrains Mono",monospace;letter-spacing:.12em;color:var(--cyan);margin-bottom:4px}
+footer{margin-top:34px;text-align:center;font:600 13px/1.6 Inter;color:var(--dim)}
+footer a{color:#cfefff}
+#card{display:none}
+.modal{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:rgba(2,6,14,.92);padding:20px}
+.modal img{max-width:min(86vw,380px);max-height:72vh;border-radius:16px;box-shadow:0 0 0 1.5px var(--line)}
+.modal p{font:700 15px Inter;color:#fff;text-align:center}
+.modal button{background:rgba(255,255,255,.12);color:#fff;border:0;border-radius:12px;padding:12px 20px;font:800 15px Inter}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><span class="tag">✈️ FLIGHT HOLOGRAM</span><a class="brand" href="https://instagram.com/thenispace">@thenispace</a></div>
+  <h1>What did your phone <span>save?</span></h1>
+  <p class="lead">My iPhone had <b>no signal</b> on my Delhi to Goa flight. It still saved my altitude and location inside the video. Check your own. <b>Nothing leaves your phone.</b></p>
+
+  <section class="holo" aria-label="Hologram">
+    <div class="hint" id="hint">EXAMPLE · MY FLIGHT · 30 SEP</div>
+    <div class="stage" id="stage">
+      <div class="map3d" id="map3d">
+        <svg viewBox="-12 -8 636 712" aria-hidden="true"><g id="grid"></g><g id="states" class="glowmap"></g><g id="route"></g></svg>
+        <div class="pin" id="pin"><div class="ring"></div><div class="ring r2"></div><div class="dot"></div><div class="beam" id="beam"></div></div>
+      </div>
+    </div>
+    <div class="read">
+      <div class="lab">ALTITUDE, FROM GPS</div>
+      <div class="big" id="alt">38,282 FT</div>
+      <div class="sub" id="altm">11,668 m above sea level</div>
+      <div class="row">
+        <div><div class="lab">POSITION</div><div class="v" id="pos">19.81°N 73.52°E</div><div class="sub" id="near">about 34 km from Nashik</div></div>
+        <div><div class="lab">SAVED AT</div><div class="v" id="time">30 Sep 2026, 12:08</div><div class="sub" id="kind">from a video</div></div>
+      </div>
+      <div class="raw" id="raw">IMG_4915.MOV &middot; location tag: +19.8072+073.5207+11668.282/</div>
+    </div>
+  </section>
+
+  <div class="btns">
+    <label class="btn main">📂 Check my own video or photo<input type="file" id="file" accept="video/*,image/*,.mov,.mp4,.heic,.heif,.jpg,.jpeg"></label>
+    <button class="btn ghost" id="save">⬇️ Save as a story image</button>
+  </div>
+  <div class="msg" id="msg"></div>
+  <p class="note">Tip for iPhone: pick the file from <b>Browse</b> or <b>Files</b>, not straight from Photos. Phones remove the location before a website can see it. The steps are below.</p>
+
+  <h2>See yours in 4 steps</h2>
+  <div class="steps">
+    <div class="step"><span class="k">IPHONE</span>Open the flight video in <b>Photos</b>, tap <b>Share</b>, then <b>Options</b> at the top. Turn on <b>All Photos Data</b>, tap Done, then <b>Save to Files</b>. Come back here, tap the yellow button, choose <b>Browse</b> and pick that file.</div>
+    <div class="step"><span class="k">ANDROID</span>Tap the yellow button and pick the video from <b>Files</b> or <b>Browse</b>. If it shows nothing, your camera didn&rsquo;t save the location: Camera, Settings, <b>Location tags</b>.</div>
+    <div class="step"><span class="k">NOTHING FOUND?</span>Videos sent on WhatsApp or downloaded from Instagram lose this data. Use the original from your own phone.</div>
+  </div>
+
+  <h2>Want to turn it off?</h2>
+  <div class="steps">
+    <div class="step"><span class="k">IPHONE, NEW PHOTOS</span>Settings, Privacy &amp; Security, Location Services, <b>Camera</b>, Never.</div>
+    <div class="step"><span class="k">IPHONE, WHEN YOU SHARE</span>In the Share sheet tap <b>Options</b> and turn off <b>Location</b>.</div>
+    <div class="step"><span class="k">ANDROID</span>Open Camera, Settings, and switch off <b>Location tags</b>.</div>
+  </div>
+
+  <footer>Made by <b>NIS</b> · <a href="https://instagram.com/thenispace">@thenispace</a> · AI · Tech · Productivity<br>Your file is read on this device only. Nothing is uploaded or stored.<br><span style="font-size:11px;opacity:.7">India map: @svg-maps/india, CC BY 4.0</span></footer>
+</main>
+
+<div class="modal" id="modal"><img id="shot" alt="Your flight hologram card"><p>Press and hold the image to save it.</p><button id="close">Close</button></div>
+<canvas id="card" width="1080" height="1920"></canvas>
+
+<script src="/flight/india_paths.js"></script>
+<script src="/flight/gps.js"></script>
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const merc=d=>Math.log(Math.tan(Math.PI/4+d*Math.PI/360));
+const gx=lon=>(lon-68.2)*20.96, gy=lat=>210.4+1210*(merc(28.65)-merc(lat));
+const inIndia=(la,lo)=>la>6&&la<37.5&&lo>67.5&&lo<97.8;
+const CITIES=[["Delhi",28.61,77.21],["Mumbai",19.08,72.88],["Bengaluru",12.97,77.59],["Chennai",13.08,80.27],["Kolkata",22.57,88.36],["Hyderabad",17.39,78.49],["Pune",18.52,73.86],["Ahmedabad",23.02,72.57],["Jaipur",26.91,75.79],["Lucknow",26.85,80.95],["Goa",15.49,73.83],["Nashik",20.0,73.79],["Indore",22.72,75.86],["Bhopal",23.26,77.41],["Nagpur",21.15,79.09],["Surat",21.17,72.83],["Udaipur",24.59,73.71],["Jodhpur",26.24,73.02],["Chandigarh",30.73,76.78],["Amritsar",31.63,74.87],["Srinagar",34.08,74.8],["Leh",34.15,77.58],["Dehradun",30.32,78.03],["Varanasi",25.32,82.97],["Patna",25.59,85.14],["Ranchi",23.34,85.31],["Bhubaneswar",20.3,85.82],["Raipur",21.25,81.63],["Guwahati",26.14,91.74],["Visakhapatnam",17.69,83.22],["Vijayawada",16.51,80.65],["Mangaluru",12.91,74.86],["Kochi",9.93,76.27],["Thiruvananthapuram",8.52,76.94],["Coimbatore",11.02,76.96],["Madurai",9.93,78.12],["Mysuru",12.3,76.64],["Hubballi",15.36,75.12],["Aurangabad",19.88,75.34],["Kolhapur",16.7,74.24],["Gwalior",26.22,78.18],["Agra",27.18,78.01],["Kanpur",26.45,80.33],["Prayagraj",25.44,81.85],["Jammu",32.73,74.86],["Shimla",31.1,77.17],["Port Blair",11.62,92.73]];
+function hav(a,b,c,d){const R=6371,r=Math.PI/180,x=Math.sin((c-a)*r/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin((d-b)*r/2)**2;return 2*R*Math.asin(Math.sqrt(x));}
+function nearest(la,lo){let best=null;for(const [n,a,b] of CITIES){const d=hav(la,lo,a,b);if(!best||d<best[1])best=[n,d];}return best;}
+/* map */
+const NS='http://www.w3.org/2000/svg';
+const sg=$('#states');
+for(const [k,d] of Object.entries(INDIA)){const p=document.createElementNS(NS,'path');p.setAttribute('d',d);p.setAttribute('fill',k==='ga'?'rgba(255,179,71,.9)':'rgba(95,200,255,.16)');p.setAttribute('stroke','rgba(200,245,255,.85)');p.setAttribute('stroke-width',k==='an'||k==='ld'?'.5':'.9');sg.appendChild(p);}
+const gr=$('#grid');
+for(let la=10;la<=35;la+=5){const l=document.createElementNS(NS,'line');l.setAttribute('x1',0);l.setAttribute('x2',612);l.setAttribute('y1',gy(la));l.setAttribute('y2',gy(la));l.setAttribute('stroke','rgba(120,210,255,.18)');l.setAttribute('stroke-width','.8');gr.appendChild(l);}
+for(let lo=70;lo<=95;lo+=5){const l=document.createElementNS(NS,'line');l.setAttribute('y1',0);l.setAttribute('y2',696);l.setAttribute('x1',gx(lo));l.setAttribute('x2',gx(lo));l.setAttribute('stroke','rgba(120,210,255,.18)');l.setAttribute('stroke-width','.8');gr.appendChild(l);}
+function drawRoute(on){
+  const g=$('#route');g.innerHTML='';if(!on)return;
+  const D=[gx(77.1082),gy(28.538)],N=[gx(73.5207),gy(19.8072)],G=[gx(73.8358),gy(15.3847)];
+  const p=document.createElementNS(NS,'path');p.setAttribute('d',`M${D[0]} ${D[1]} Q ${(D[0]+N[0])/2-12} ${(D[1]+N[1])/2} ${N[0]} ${N[1]}`);p.setAttribute('stroke','#ffb347');p.setAttribute('stroke-width','4');p.setAttribute('fill','none');p.setAttribute('stroke-linecap','round');g.appendChild(p);
+  const q=document.createElementNS(NS,'path');q.setAttribute('d',`M${N[0]} ${N[1]} Q ${N[0]-4} ${(N[1]+G[1])/2} ${G[0]} ${G[1]}`);q.setAttribute('stroke','#dff7ff');q.setAttribute('stroke-width','2.5');q.setAttribute('stroke-dasharray','6 7');q.setAttribute('fill','none');g.appendChild(q);
+  [[D,'#bff4ff'],[G,'#ffb347']].forEach(([c,col])=>{const e=document.createElementNS(NS,'circle');e.setAttribute('cx',c[0]);e.setAttribute('cy',c[1]);e.setAttribute('r',6);e.setAttribute('fill',col);g.appendChild(e);});
+}
+/* show a reading */
+let current=null;
+function fmtTime(s){if(!s)return'not saved';const m=s.match(/(\d{4})[-:](\d{2})[-:](\d{2})[T ](\d{2}):(\d{2})/);if(!m)return s;const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m[2]-1];return `${+m[3]} ${mon} ${m[1]}, ${m[4]}:${m[5]}`;}
+function show(r,example){
+  current=r;
+  const ft=r.alt!==null?Math.round(r.alt*3.28084):null;
+  $('#alt').textContent=ft!==null?ft.toLocaleString('en-IN').replace(/,(?=\d{3}$)/,',')+' FT':'NO ALTITUDE';
+  $('#alt').textContent=ft!==null?ft.toLocaleString('en-US')+' FT':'NO ALTITUDE';
+  $('#altm').textContent=ft!==null?`${Math.round(r.alt).toLocaleString('en-US')} m ${r.alt>=0?'above':'below'} sea level`:'This file saved the place but not the height';
+  $('#pos').textContent=`${Math.abs(r.lat).toFixed(2)}°${r.lat>=0?'N':'S'} ${Math.abs(r.lon).toFixed(2)}°${r.lon>=0?'E':'W'}`;
+  const nb=nearest(r.lat,r.lon);
+  $('#near').textContent=!inIndia(r.lat,r.lon)?'outside India':(nb[1]<12?`in ${nb[0]}`:`about ${Math.round(nb[1])} km from ${nb[0]}`);
+  $('#time').textContent=fmtTime(r.time);
+  $('#kind').textContent=r.kind==='video'?'from a video':'from a photo';
+  $('#raw').textContent=`${r.file||'your file'} · location tag: ${r.raw}`;
+  $('#hint').textContent=example?'EXAMPLE · MY FLIGHT · 30 SEP':'YOUR FILE · READ ON THIS PHONE';
+  drawRoute(!!example);
+  const pin=$('#pin');
+  if(inIndia(r.lat,r.lon)){pin.style.display='block';pin.style.left=((gx(r.lon)+12)/636*100)+'%';pin.style.top=((gy(r.lat)+8)/712*100)+'%';}
+  else pin.style.display='none';
+  const h=r.alt===null?20:Math.max(14,Math.min(150,20+130*Math.max(0,r.alt)/12000));
+  $('#beam').style.setProperty('--h',h+'px');
+}
+show({lat:19.8072,lon:73.5207,alt:11668.282,time:'2026-09-30T12:08:23+0530',raw:'+19.8072+073.5207+11668.282/',kind:'video',file:'IMG_4915.MOV'},true);
+/* tilt: auto sway plus drag */
+let rz=-14,rx=52,drag=null,t0=performance.now();
+const m3=$('#map3d');
+function frame(t){if(!drag){rz=-14+Math.sin((t-t0)/2600)*10;}m3.style.setProperty('--rz',rz+'deg');m3.style.setProperty('--rx',rx+'deg');requestAnimationFrame(frame);}
+requestAnimationFrame(frame);
+const st=$('#stage');
+st.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,rz,rx};st.setPointerCapture(e.pointerId);});
+st.addEventListener('pointermove',e=>{if(!drag)return;rz=drag.rz+(e.clientX-drag.x)*.35;rx=Math.max(20,Math.min(70,drag.rx-(e.clientY-drag.y)*.25));});
+st.addEventListener('pointerup',()=>{drag=null;t0=performance.now()-Math.asin(Math.max(-1,Math.min(1,(rz+14)/10)))*2600;});
+/* read a file */
+$('#file').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  const msg=$('#msg');msg.className='msg ok';msg.textContent='Reading your file on this phone…';
+  try{
+    const r=await GPS.read(f);
+    if(r){show(r,false);msg.className='msg ok';msg.innerHTML=`Found it. Your phone saved <b>${r.alt!==null?Math.round(r.alt*3.28084).toLocaleString('en-US')+' ft':'your location'}</b> inside <b>${f.name||'this file'}</b>. Nothing was uploaded.`;window.scrollTo({top:$('.holo').offsetTop-12,behavior:'smooth'});}
+    else{msg.className='msg no';msg.innerHTML=`No location inside this file. That usually means the phone removed it before the website saw it.<ol><li>iPhone: Photos, Share, <b>Options</b>, turn on <b>All Photos Data</b>, Save to Files.</li><li>Come back, tap the yellow button, choose <b>Browse</b>, pick the saved file.</li></ol>`;}
+  }catch(err){msg.className='msg no';msg.textContent='Could not read this file. Try the original video from your camera.';}
+  e.target.value='';
+});
+/* story image */
+$('#save').addEventListener('click',async()=>{
+  const r=current;if(!r)return;
+  try{await Promise.all(['400 80px "Archivo Black"','800 40px Inter','700 30px "JetBrains Mono"'].map(f=>document.fonts.load(f)));}catch(e){}
+  const c=$('#card'),x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,1920);g.addColorStop(0,'#14305a');g.addColorStop(.5,'#0a1630');g.addColorStop(1,'#050913');x.fillStyle=g;x.fillRect(0,0,1080,1920);
+  x.fillStyle='rgba(95,225,255,.12)';for(let i=0;i<1080;i+=40)for(let j=0;j<1920;j+=40){x.beginPath();x.arc(i,j,1.6,0,7);x.fill();}
+  x.fillStyle='#bfefff';x.font='700 30px "JetBrains Mono"';x.fillText('NO SIGNAL. STILL SAVED.',80,190);
+  x.fillStyle='#fff';x.font='400 92px "Archivo Black"';x.fillText('MY PHONE',80,300);x.fillStyle='#ffd60a';x.shadowColor='rgba(255,214,10,.5)';x.shadowBlur=30;x.fillText('SAVED THIS',80,400);x.shadowBlur=0;
+  /* map */
+  x.save();x.translate(150,470);x.scale(1.27,1.27);
+  for(const [k,d] of Object.entries(INDIA)){const p=new Path2D(d);x.fillStyle=k==='ga'?'rgba(255,179,71,.9)':'rgba(95,200,255,.16)';x.fill(p);x.strokeStyle='rgba(200,245,255,.85)';x.lineWidth=1;x.shadowColor='rgba(95,225,255,.9)';x.shadowBlur=10;x.stroke(p);x.shadowBlur=0;}
+  if(inIndia(r.lat,r.lon)){const px=gx(r.lon),py=gy(r.lat);x.shadowColor='#ffb347';x.shadowBlur=30;x.fillStyle='#fff';x.beginPath();x.arc(px,py,9,0,7);x.fill();x.strokeStyle='#ffb347';x.lineWidth=3;x.beginPath();x.arc(px,py,22,0,7);x.stroke();x.shadowBlur=0;}
+  x.restore();
+  const ft=r.alt!==null?Math.round(r.alt*3.28084).toLocaleString('en-US')+' FT':'LOCATION';
+  x.fillStyle='#ffcf8a';x.font='700 30px "JetBrains Mono"';x.fillText('ALTITUDE, FROM GPS',80,1460);
+  x.fillStyle='#fff';x.font='400 132px "Archivo Black"';x.fillText(ft,74,1600);
+  x.fillStyle='#d9f6ff';x.font='800 40px Inter';x.fillText(`${$('#pos').textContent} · ${$('#near').textContent}`,80,1670);
+  x.fillStyle='#9fb6cc';x.font='700 34px Inter';x.fillText($('#time').textContent,80,1726);
+  x.fillStyle='#ffd60a';x.font='800 36px Inter';x.fillText('See yours: thenispace.com/flight',80,1840);
+  const url=c.toDataURL('image/png');
+  const blob=await (await fetch(url)).blob();
+  const file=new File([blob],'my-flight-hologram.png',{type:'image/png'});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'My flight hologram'});return;}catch(e){}}
+  $('#shot').src=url;$('#modal').style.display='flex';
+});
+$('#close').addEventListener('click',()=>{$('#modal').style.display='none';});
+})();
+</script>
+</body>
+</html>
