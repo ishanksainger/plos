@@ -13,6 +13,7 @@ const nextConfig = {
       { source: '/prompts', destination: '/prompts/index.html' },
       { source: '/styles', destination: '/styles/index.html' },
       { source: '/flight', destination: '/flight/index.html' },
+      { source: '/tapri', destination: '/tapri/index.html' },
     ];
   },
 };
