@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cutting Chai Pro · Raju Tapri</title>
+<meta name="description" content="A ₹10 chai stall, launched like a flagship. Raju Tapri is made up. The website is real. A concept by NIS.">
+<meta property="og:title" content="Cutting Chai Pro. Forged in mitti.">
+<meta property="og:description" content="A ₹10 chai stall, launched like a flagship. A concept by NIS.">
+<meta name="theme-color" content="#000000">
+<meta property="og:image" content="https://thenispace.com/tapri/og.jpg">
+<meta property="og:url" content="https://thenispace.com/tapri">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Direction: a ₹10 cup launched like a flagship product. Black stage, huge tight type, warm mitti gradient, one photo per idea.
+     Motion: GSAP + ScrollTrigger, Lenis as the only smooth-scroll engine. No Three.js: photos carry this page.
+     Images: original, generated with Higgsfield Soul 2 (see reels/v15). Map of jokes is ours. No third-party logos or product names. -->
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#f5f5f7;--mute:#a1a1a6;--amber:#f5a14a;--blue:#2b6fe0;--link:#4a9cff;--mitti:linear-gradient(180deg,#fff 18%,#f3dfc6 52%,#b98a5c 96%)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:#000;-webkit-text-size-adjust:100%}
+html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!important}
+body{background:#000;color:var(--ink);font-family:"Inter Tight",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--link);outline-offset:3px;border-radius:6px}
+img{display:block;max-width:100%}
+.m{background:var(--mitti);-webkit-background-clip:text;background-clip:text;color:transparent}
+.wd{display:inline-block;padding-bottom:.14em;margin-bottom:-.14em}
+.btn{display:inline-block;background:var(--blue);color:#fff;border-radius:999px;padding:12px 26px;transition:background .2s}
+.btn:hover{background:#3b7ff0}.btn:active{background:#2259b8}
+.lnk{color:var(--link)}.lnk:hover{text-decoration:underline}
+nav{position:fixed;top:0;left:0;right:0;height:52px;display:flex;align-items:center;justify-content:center;gap:clamp(14px,3vw,44px);font-size:15px;font-weight:500;color:rgba(245,245,247,.8);background:rgba(20,20,22,.72);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);z-index:20}
+nav b{font-weight:700;color:#fff;letter-spacing:-.01em}
+nav a:hover{color:#fff}
+nav .o{color:#fff;background:var(--blue);border-radius:999px;padding:5px 14px;font-weight:600;font-size:14px}
+.stage{position:relative;height:100vh;height:100svh;min-height:620px;overflow:hidden;background:#000}
+h2{font-weight:600;letter-spacing:-.035em;line-height:1.02}
+
+/* hero */
+#hero{text-align:center}
+.hero-txt{position:relative;z-index:3;padding-top:clamp(84px,11.2vh,112px)}
+.new{font-size:clamp(17px,1.4vw,22px);font-weight:600;color:var(--amber)}
+h1{font-size:clamp(58px,9.6vw,156px);line-height:1.02;font-weight:600;letter-spacing:-.035em;margin-top:6px}
+.sub{font-size:clamp(26px,3.4vw,56px);font-weight:500;letter-spacing:-.02em;color:#d9c2a6;margin-top:-2px}
+.price{font-size:clamp(18px,1.5vw,24px);font-weight:500;color:var(--mute);margin-top:14px}
+.cta{display:flex;gap:26px;justify-content:center;align-items:center;margin-top:18px;font-size:clamp(17px,1.4vw,22px);font-weight:500}
+.cup-wrap{position:absolute;left:0;right:0;margin:auto;bottom:-6vh;width:min(980px,68vw);z-index:2}
+.cup{width:100%;-webkit-mask-image:radial-gradient(46% 62% at 50% 58%,#000 70%,transparent 100%);mask-image:radial-gradient(46% 62% at 50% 58%,#000 70%,transparent 100%)}
+.steam{position:absolute;left:34%;width:32%;bottom:44%;mix-blend-mode:screen;opacity:.35;pointer-events:none;-webkit-mask-image:radial-gradient(50% 50% at 50% 55%,#000 35%,transparent 100%);mask-image:radial-gradient(50% 50% at 50% 55%,#000 35%,transparent 100%)}
+.spec{position:absolute;left:0;right:0;bottom:30px;z-index:4;display:flex;justify-content:space-between;padding:0 6vw;font-size:clamp(14px,1.25vw,20px);font-weight:500;color:var(--mute)}
+.spec b{display:block;font-size:clamp(20px,1.9vw,30px);font-weight:600;color:var(--ink);letter-spacing:-.02em}
+.spec div:last-child{text-align:right}
+
+/* forged in mitti */
+.clay{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#forged .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.35) 55%,rgba(0,0,0,.1) 100%)}
+.forged-copy{position:absolute;left:7vw;right:7vw;top:50%;transform:translateY(-50%)}
+#forged h2{font-size:clamp(60px,12vw,200px)}
+#forged .line{font-size:clamp(22px,2.6vw,42px);font-weight:500;letter-spacing:-.02em;color:#f3dfc6;margin-top:10px}
+#forged .line:first-of-type{margin-top:26px}
+
+/* a1 adrak */
+#chip .grid{position:absolute;inset:0;display:grid;grid-template-columns:1.1fr 1fr;align-items:center;padding:60px 7vw 0;gap:2vw}
+.tile{width:clamp(130px,14vw,230px);aspect-ratio:1;border-radius:clamp(22px,2.2vw,36px);background:linear-gradient(145deg,#2a2018,#0c0a08);box-shadow:inset 0 0 0 1.5px rgba(243,223,198,.35),0 30px 80px rgba(245,161,74,.2);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.tile b{font-size:clamp(52px,6vw,100px);font-weight:700;letter-spacing:-.04em;line-height:1}
+.tile small{font-size:clamp(12px,1.1vw,18px);font-weight:600;letter-spacing:.32em;color:#d9c2a6;margin-top:6px;padding-left:.32em}
+#chip h2{font-size:clamp(46px,6.6vw,112px);margin-top:26px}
+.stats{display:flex;gap:clamp(20px,3.4vw,60px);margin-top:30px}
+.stat b{display:block;font-size:clamp(30px,3.2vw,54px);font-weight:600;letter-spacing:-.03em;color:var(--amber)}
+.stat span{font-size:clamp(14px,1.2vw,20px);color:var(--mute);font-weight:500}
+.ginger{width:100%;max-height:82vh;object-fit:contain}
+
+/* finishes */
+#finish .grid{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:60px 7vw 0;gap:2vw}
+#finish h2{font-size:clamp(50px,7.6vw,128px)}
+#finish .zero{font-size:clamp(26px,3.4vw,56px);font-weight:500;letter-spacing:-.02em;color:#d9c2a6}
+.names{margin-top:clamp(20px,3.4vh,40px)}
+.fin-name{padding:9px 0;opacity:.3}
+.fin-name b{font-size:clamp(24px,2.6vw,42px);font-weight:600;letter-spacing:-.02em}
+.fin-name span{display:block;font-size:clamp(14px,1.2vw,20px);color:var(--mute);font-weight:500}
+.fins{position:relative;aspect-ratio:1;max-height:84vh;margin:auto;width:100%}
+.fin-img{width:100%;height:100%;object-fit:contain}
+.js .fin-img{position:absolute;inset:0;opacity:0}
+.js .fin-img:first-child{opacity:1}
+html:not(.js) .fins{display:grid;grid-template-columns:1fr 1fr;aspect-ratio:auto;max-height:none}
+
+/* garam all day */
+#garam{text-align:center}
+#garam .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:40px}
+#garam h2{font-size:clamp(40px,5.4vw,92px)}
+.big{font-size:clamp(170px,30vw,500px);font-weight:600;letter-spacing:-.05em;line-height:.95;font-variant-numeric:tabular-nums}
+.unit{font-size:clamp(24px,3vw,50px);font-weight:500;letter-spacing:-.02em;color:#d9c2a6;margin-top:-1vw}
+.bar{width:min(620px,70vw);height:12px;border-radius:99px;background:rgba(243,223,198,.14);margin:28px auto 0;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#b98a5c,#f5a14a);border-radius:99px;transform-origin:left center}
+.fine{font-size:clamp(14px,1.2vw,20px);color:var(--mute);margin-top:18px;font-weight:500}
+
+/* compare */
+#compare{padding:clamp(90px,14vh,150px) 7vw}
+#compare h2{font-size:clamp(42px,6vw,100px);text-align:center}
+.cols{display:grid;grid-template-columns:1.1fr 1fr 1fr;max-width:1180px;margin:clamp(36px,6vh,70px) auto 0}
+.cell{padding:clamp(14px,2.2vh,24px) 8px;border-top:1px solid rgba(245,245,247,.16);font-size:clamp(17px,1.7vw,28px);font-weight:500}
+.cell.h{border-top:0;font-size:clamp(20px,2.3vw,38px);font-weight:600;letter-spacing:-.02em}
+.cell.h small{display:block;font-size:clamp(16px,1.5vw,24px);color:var(--amber);font-weight:500;margin-top:2px}
+.cell.k{color:var(--mute)}
+
+/* store */
+.stall{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#store .shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.82) 0%,rgba(0,0,0,.2) 55%,rgba(0,0,0,.25) 100%)}
+.store-copy{position:absolute;left:7vw;right:7vw;bottom:9vh}
+#store h2{font-size:clamp(46px,7.4vw,124px)}
+#store p{font-size:clamp(20px,2.3vw,38px);font-weight:500;letter-spacing:-.02em;color:#f3dfc6;margin-top:10px}
+
+/* order */
+#order{text-align:center;padding:clamp(110px,20vh,220px) 6vw clamp(70px,12vh,130px)}
+#order h2{font-size:clamp(44px,7.6vw,128px)}
+#order .fol{margin-top:34px;font-size:clamp(17px,1.5vw,24px);font-weight:500}
+#order .by{margin-top:18px;color:var(--mute);font-size:clamp(15px,1.25vw,20px);font-weight:500}
+footer{border-top:1px solid rgba(245,245,247,.12);padding:22px 6vw 30px;text-align:center;color:var(--mute);font-size:14px;line-height:1.6}
+footer a{color:#d2d2d7}
+
+#go{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:#000;color:rgba(245,245,247,.55);font-size:18px;font-weight:500}
+html.film #go{display:flex}
+html.film,html.film *{cursor:none!important}
+html.film nav a{pointer-events:none}
+
+@media (max-width:760px){
+  #chip .grid,#finish .grid{grid-template-columns:1fr;align-content:center;padding-top:66px;gap:6px}
+  .ginger{max-height:30vh}.fins{width:min(38vh,86vw);height:min(38vh,86vw);max-height:none}
+  .stats{gap:18px}
+  nav span.hide{display:none}
+  .cup-wrap{width:118vw;margin-left:-9vw;right:auto;bottom:0}
+  .spec{bottom:14px}
+  .cols{grid-template-columns:1fr 1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important}}
+</style>
+</head>
+<body>
+<nav aria-label="Main">
+  <a href="#hero"><b>Raju Tapri</b></a>
+  <a href="#forged">Mitti</a><a href="#chip">Adrak</a><a href="#finish">Finishes</a><span class="hide"><a href="#compare">Compare</a></span><span class="hide"><a href="#store">Visit</a></span>
+  <a class="o" href="#order">Order</a>
+</nav>
+
+<main>
+  <section id="hero" class="stage" aria-label="Cutting Chai Pro">
+    <div class="hero-txt">
+      <p class="new">New</p>
+      <h1 aria-label="Cutting Chai Pro"><span class="wd m" aria-hidden="true">Cutting</span> <span class="wd m" aria-hidden="true">Chai</span> <span class="wd m" aria-hidden="true">Pro</span></h1>
+      <p class="sub">Forged in mitti.</p>
+      <p class="price">From ₹10</p>
+      <div class="cta"><a class="btn" href="#order">Order now</a><a class="lnk" href="#forged">Learn more ›</a></div>
+    </div>
+    <div class="cup-wrap">
+      <img class="steam" src="/tapri/img/steam.jpg" alt="" aria-hidden="true">
+      <img class="cup" src="/tapri/kulhad.jpg" alt="A steaming clay kulhad of chai on black" fetchpriority="high">
+    </div>
+    <div class="spec"><div><b>A1 Adrak</b>Our fastest kick ever</div><div><b>Garam all day</b>Refill anytime, ₹10</div></div>
+  </section>
+
+  <section id="forged" class="stage" aria-label="Forged in mitti">
+    <img class="clay" src="/tapri/img/clay.jpg" alt="Close-up of the rough clay of a kulhad" loading="lazy">
+    <div class="shade"></div>
+    <div class="forged-copy">
+      <h2 aria-label="Forged in mitti."><span class="wd m" aria-hidden="true">Forged</span> <span class="wd m" aria-hidden="true">in</span> <span class="wd m" aria-hidden="true">mitti.</span></h2>
+      <p class="line">Real clay from the real ground.</p>
+      <p class="line">Baked in a real bhatti.</p>
+      <p class="line">Used once. Back to the earth.</p>
+    </div>
+  </section>
+
+  <section id="chip" class="stage" aria-label="A1 Adrak">
+    <div class="grid">
+      <div>
+        <div class="tile"><b class="m">A1</b><small>ADRAK</small></div>
+        <h2 aria-label="Our fastest kick ever."><span class="wd" aria-hidden="true">Our</span> <span class="wd" aria-hidden="true">fastest</span> <span class="wd" aria-hidden="true">kick</span> <span class="wd" aria-hidden="true">ever.</span></h2>
+        <div class="stats">
+          <div class="stat"><b>2×</b><span>the kick of last year’s chai</span></div>
+          <div class="stat"><b>0.3 s</b><span>to first adrak</span></div>
+          <div class="stat"><b>1 sip</b><span>wakes the whole family</span></div>
+        </div>
+      </div>
+      <img class="ginger" src="/tapri/img/ginger.jpg" alt="A root of fresh ginger with one glowing cut slice" loading="lazy">
+    </div>
+  </section>
+
+  <section id="finish" class="stage" aria-label="Four finishes">
+    <div class="grid">
+      <div>
+        <h2>Four finishes.</h2>
+        <p class="zero">Zero EMI.</p>
+        <div class="names">
+          <div class="fin-name" style="opacity:1"><b>Cutting</b><span>Strong. Short. Legendary.</span></div>
+          <div class="fin-name"><b>Masala</b><span>For people who like drama.</span></div>
+          <div class="fin-name"><b>Adrak</b><span>See: A1 Adrak.</span></div>
+          <div class="fin-name"><b>Elaichi</b><span>Smells like your nani’s kitchen.</span></div>
+        </div>
+      </div>
+      <div class="fins">
+        <img class="fin-img" src="/tapri/img/f_cutting.jpg" alt="Cutting chai in a kulhad, from above" loading="lazy">
+        <img class="fin-img" src="/tapri/img/f_masala.jpg" alt="Masala chai with a star anise, from above" loading="lazy">
+        <img class="fin-img" src="/tapri/img/f_adrak.jpg" alt="Adrak chai with ginger shreds, from above" loading="lazy">
+        <img class="fin-img" src="/tapri/img/f_elaichi.jpg" alt="Elaichi chai with cardamom, from above" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <section id="garam" class="stage" aria-label="Garam all day">
+    <div class="in">
+      <h2>Garam all day.</h2>
+      <div class="big m" id="num">47</div>
+      <div class="unit">minutes of garam*</div>
+      <div class="bar"><i></i></div>
+      <p class="fine">*If nobody starts talking about politics.</p>
+    </div>
+  </section>
+
+  <section id="compare" aria-label="Compare">
+    <h2 class="m" style="padding-bottom:.1em">Which one is right for you?</h2>
+    <div class="cols">
+      <div class="cell h"></div><div class="cell h">Cutting Chai<small>₹10</small></div><div class="cell h">Cutting Chai Pro<small>₹10</small></div>
+      <div class="cell k row">Kulhad</div><div class="cell row">Yes</div><div class="cell row">Yes</div>
+      <div class="cell k row">Adrak</div><div class="cell row">Some</div><div class="cell row">Extra</div>
+      <div class="cell k row">Raju bhaiya’s smile</div><div class="cell row">Yes</div><div class="cell row">Bigger</div>
+      <div class="cell k row">Udhaar</div><div class="cell row">No</div><div class="cell row">Also no</div>
+    </div>
+  </section>
+
+  <section id="store" class="stage" aria-label="Visit the flagship store">
+    <img class="stall" src="/tapri/img/stall.jpg" alt="A small chai stall at night with a steaming kettle and stacked kulhads" loading="lazy">
+    <div class="shade"></div>
+    <div class="store-copy">
+      <h2 aria-label="Visit the flagship store."><span class="wd" aria-hidden="true">Visit</span> <span class="wd" aria-hidden="true">the</span> <span class="wd" aria-hidden="true">flagship</span> <span class="wd" aria-hidden="true">store.</span></h2>
+      <p>Gate No. 2. Next to the bus stop. Open till the last bus.</p>
+    </div>
+  </section>
+
+  <section id="order" aria-label="The stall is made up">
+    <h2 class="reveal">This stall is made up.</h2>
+    <h2 class="reveal m" style="padding-bottom:.1em">The website is real.</h2>
+    <p class="fol reveal"><a class="btn" href="https://instagram.com/thenispace" rel="noopener">Follow @thenispace</a></p>
+    <p class="by reveal">Built with Claude Code by NIS. <a href="/tapri/prompt.pdf" style="text-decoration:underline">Get the prompts and skills</a></p>
+  </section>
+</main>
+
+<footer>Raju Tapri, its prices and its jokes are made up for a reel. Photos made with AI.<br><a href="https://thenispace.com">NIS</a> · AI · Tech · Productivity</footer>
+<div id="go">Press Space</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+<script>
+(function(){
+  if(!window.gsap||!window.ScrollTrigger||!window.Lenis)return;           /* the static page still reads fine */
+  const film=new URLSearchParams(location.search).has('film');
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches&&!film){
+    document.documentElement.classList.remove('js');return;               /* final states, no pins, no smooth scroll */
+  }
+  if(film){document.documentElement.classList.add('film');}
+  gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.config({ignoreMobileResize:true});
+  const build=false;
+  const lenis=build?{scrollTo(){},stop(){},start(){}}:new Lenis({duration:1.15,smoothWheel:true});
+  if(!build){lenis.on('scroll',ScrollTrigger.update);gsap.ticker.add(t=>lenis.raf(t*1000));gsap.ticker.lagSmoothing(0);}
+
+  /* hero intro */
+  const intro=gsap.timeline({paused:film||build,defaults:{ease:'power3.out'}});
+  if(!build)intro.from('.new',{y:14,opacity:0,duration:.6},.1)
+       .from('#hero .wd',{yPercent:60,opacity:0,stagger:.11,duration:.95},.2)
+       .from('.sub',{y:22,opacity:0,duration:.75},.72)
+       .from('.price,.cta',{y:16,opacity:0,stagger:.08,duration:.6},.95)
+       .from('.cup-wrap',{y:150,scale:.9,opacity:0,duration:1.5},.45)
+       .from('.spec > div',{opacity:0,duration:.8,stagger:.1},1.35);
+  const steam=build?{play(){},pause(){}}:gsap.fromTo('.steam',{y:30,opacity:.12},{y:-46,opacity:.42,duration:3.2,repeat:-1,yoyo:true,ease:'sine.inOut'});
+
+  /* hero hands over to the clay */
+  gsap.timeline({scrollTrigger:{trigger:'#hero',start:'top top',end:'+=90%',scrub:true,pin:true,anticipatePin:1,onToggle:s=>s.isActive?steam.play():steam.pause()}})
+      .to('.hero-txt',{y:-130,opacity:0,ease:'none',duration:.6},0)
+      .to('.spec',{opacity:0,ease:'none',duration:.3},0)
+      .to('.cup-wrap',{scale:1.75,yPercent:-10,ease:'none',duration:1},0)
+      .to('.cup-wrap',{opacity:0,ease:'none',duration:.25},.75);
+
+  /* forged in mitti */
+  gsap.timeline({scrollTrigger:{trigger:'#forged',start:'top top',end:'+=240%',scrub:true,pin:true,anticipatePin:1}})
+      .fromTo('.clay',{scale:1.5},{scale:1,ease:'none',duration:10},0)
+      .from('#forged .wd',{yPercent:70,opacity:0,stagger:.55,duration:1.4,ease:'power2.out'},.5)
+      .from('#forged .line',{y:36,opacity:0,stagger:1.3,duration:1.3,ease:'power2.out'},3)
+      .to({}, {duration:.01},10);
+
+  /* a1 adrak: the page is already alive while it scrolls in, so there is no black gap */
+  gsap.timeline({scrollTrigger:{trigger:'#chip',start:'top 95%',end:'top top',scrub:true}})
+      .fromTo('.ginger',{scale:.72,rotate:-12,opacity:0},{scale:.95,rotate:0,opacity:1,duration:3,ease:'none'},0)
+      .from('.tile',{scale:.6,opacity:0,duration:1.2,ease:'power2.out'},.2)
+      .from('#chip .wd',{yPercent:70,opacity:0,stagger:.22,duration:.9,ease:'power2.out'},1.1);
+  gsap.timeline({scrollTrigger:{trigger:'#chip',start:'top top',end:'+=90%',scrub:true,pin:true,anticipatePin:1}})
+      .to('.ginger',{scale:1.05,rotate:5,duration:4,ease:'none'},0)
+      .from('.stat',{y:34,opacity:0,stagger:.5,duration:.9,ease:'power2.out'},.2);
+
+  /* four finishes */
+  const imgs=gsap.utils.toArray('.fin-img'),names=gsap.utils.toArray('.fin-name');
+  const fin=gsap.timeline({scrollTrigger:{trigger:'#finish',start:'top top',end:'+=320%',scrub:true,pin:true,anticipatePin:1}});
+  fin.fromTo(imgs[0],{scale:.82,rotate:-30},{scale:1,rotate:0,duration:1.5,ease:'power2.out'},0);
+  imgs.forEach((im,i)=>{
+    if(i===0)return;
+    const at=i*3-.6;
+    fin.to(imgs[i-1],{opacity:0,scale:.9,rotate:28,duration:1,ease:'power1.inOut'},at)
+       .fromTo(im,{opacity:0,scale:1.1,rotate:-28},{opacity:1,scale:1,rotate:0,duration:1,ease:'power1.inOut'},at)
+       .to(names[i-1],{opacity:.3,duration:.5},at+.2)
+       .to(names[i],{opacity:1,duration:.5},at+.2);
+  });
+  fin.to({}, {duration:.6},imgs.length*3-1.1);
+
+  /* garam all day */
+  const num=document.getElementById('num'),g={v:0};num.textContent='0';
+  gsap.timeline({scrollTrigger:{trigger:'#garam',start:'top top',end:'+=130%',scrub:true,pin:true,anticipatePin:1}})
+      .to(g,{v:47,duration:3,ease:'none',onUpdate:()=>{num.textContent=Math.round(g.v);}},0)
+      .fromTo('.bar i',{scaleX:0},{scaleX:1,duration:3,ease:'none'},0)
+      .from('.fine',{opacity:0,duration:.6},3.1)
+      .to({}, {duration:.4},3.7);
+
+  /* compare */
+  gsap.from('.row',{y:26,opacity:0,stagger:.08,ease:'none',scrollTrigger:{trigger:'#compare .cols',start:'top 82%',end:'top 34%',scrub:true}});
+
+  /* flagship store */
+  gsap.timeline({scrollTrigger:{trigger:'#store',start:'top top',end:'+=120%',scrub:true,pin:true,anticipatePin:1}})
+      .fromTo('.stall',{scale:1.3},{scale:1,ease:'none',duration:4},0)
+      .from('#store .wd',{yPercent:70,opacity:0,stagger:.28,duration:.9,ease:'power2.out'},.9)
+      .from('#store p',{y:20,opacity:0,duration:.8},2.4);
+
+  /* last words */
+  gsap.from('#order .reveal',{y:36,opacity:0,stagger:.22,ease:'none',scrollTrigger:{trigger:'#order',start:'top 72%',end:'top 22%',scrub:true}});
+
+  addEventListener('load',()=>ScrollTrigger.refresh());
+  document.fonts&&document.fonts.ready.then(()=>ScrollTrigger.refresh());
+  document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();lenis.scrollTo(t,{duration:1.6});}}));
+
+  /* film mode: ?film. Space plays the intro, then one even scroll to the end (about 40 s). Hands stay out of shot. */
+  if(film){
+    lenis.stop();
+    let started=false;
+    const start=()=>{
+      if(started)return;started=true;
+      document.getElementById('go').style.display='none';
+      intro.play();
+      gsap.delayedCall(3.4,()=>{
+        lenis.start();
+        lenis.scrollTo(document.documentElement.scrollHeight-innerHeight,{duration:37,easing:t=>t,lock:true,force:true});
+      });
+    };
+    addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();start();}});
+    addEventListener('pointerdown',start);
+    window.__filmStart=start;
+  }
+})();
+</script>
+</body>
+</html>
