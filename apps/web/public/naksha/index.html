@@ -95,11 +95,11 @@ For night, send the new photo back with this:
 <p class="fine">In the reel: the 3D house, the edit and this page were made by Claude Fable 5.2 in Claude Code. The real-looking rooms and the views from space are AI images made with Nano Banana Pro on top of that 3D house. The music is AI-made. The plan is a sample 30×40 2BHK drawn for the reel. Prices are rough and change.</p>
 <p class="fine"><b>@thenispace</b> · AI • Tech • Productivity</p>
 
-          <a id="pdf" href="naksha-guide.pdf" download>Download these steps as a PDF</a>
+          <a id="pdf" href="/naksha/naksha-guide.pdf" download>Download these steps as a PDF</a>
         </div>
       </section>
     </main>
-    <script src="three.iife.js"></script>
+    <script src="/naksha/three.iife.js"></script>
     <script>
       (function () {
         "use strict";
@@ -875,7 +875,7 @@ For night, send the new photo back with this:
         function need(key) {
           if (TEXR[key] || asked[key]) return;
           asked[key] = true;
-          loader.load("img/" + key + ".jpg", (t) => {
+          loader.load("/naksha/img/" + key + ".jpg", (t) => {
             t.colorSpace = T.SRGBColorSpace;
             t.minFilter = T.LinearMipmapLinearFilter;
             t.generateMipmaps = true;
