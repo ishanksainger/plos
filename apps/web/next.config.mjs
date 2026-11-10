@@ -14,6 +14,7 @@ const nextConfig = {
       { source: '/styles', destination: '/styles/index.html' },
       { source: '/flight', destination: '/flight/index.html' },
       { source: '/tapri', destination: '/tapri/index.html' },
+      { source: '/naksha', destination: '/naksha/index.html' },
     ];
   },
 };
