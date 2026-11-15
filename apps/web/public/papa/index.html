@@ -1,0 +1,1665 @@
+<!doctype html>
+<html lang="hi-Latn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Papa ka Hisaab · ghar ka bahi-khata</title>
+<meta name="description" content="Ghar ka roz ka hisaab, bahi-khata style. Kharcha likho, mahine ka budget, udhaar, WhatsApp pe bhejo. Papa ne yeh app Claude se banwaya.">
+<meta name="theme-color" content="#8f1d1d">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Nest of Innovative Space">
+<meta property="og:title" content="Papa ka Hisaab">
+<meta property="og:description" content="Ghar ka hisaab, bahi-khata style. Papa ne yeh app Claude se banwaya. Beta ko mat batana.">
+<meta property="og:url" content="https://thenispace.com/papa">
+<meta property="og:image" content="https://thenispace.com/papa/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://thenispace.com/papa">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Mukta:wght@400;500;600;700;800&family=Rozha+One&display=swap">
+<style>
+/* ===== Papa ka Hisaab: a red cloth bahi-khata. Cloth cover, ruled paper with a red margin,
+   blue ballpoint entries, double-underlined totals, a violet rubber stamp, pages that flip over the top binding. ===== */
+:root{
+  --desk:#3b1c18;
+  --cloth:#8d1b22;--cloth-deep:#5c0e14;--cloth-hi:#b8424a;
+  --weave:rgba(40,0,4,.22);--weave-hi:rgba(255,222,200,.07);
+  --gold:#ecc15a;--gold-lo:#a8761f;--on-cloth:#f9e6cc;
+  --paper:#fdfdfb;--paper-2:#f2f2ee;--rule:#efcfcf;--margin:#d8453e;
+  --ink:#1c3ba0;--ink-wet:#3a68ff;--ink-red:#c1262c;--ink-green:#14784a;--stamp:#6b2c9f;
+  --text:#1b1c23;--muted:#585b68;--line:#d4d5dd;
+  --key:#ffffff;--key-edge:#d3d4dc;--key-press:#e7e8ee;
+  --warn:#ad5900;--slip:#fff2b8;--slip-edge:#e3c96f;--tape:rgba(255,255,255,.6);
+  --wa:#177f43;--on-wa:#ffffff;
+  --shadow:rgba(70,18,18,.16);--shadow-strong:rgba(35,6,6,.34);--scrim:rgba(26,8,8,.5);
+  --toast-bg:#1b1c23;--toast-ink:#fdfdfb;--focus:#1c3ba0;--sel:rgba(28,59,160,.18);--wet:rgba(58,104,255,.11);
+  --clear:transparent;
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .075 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  --f-hand:"Kalam","Segoe Print","Bradley Hand",cursive;
+  --f-ui:"Mukta","Noto Sans Devanagari",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-title:"Rozha One","Noto Serif Devanagari",serif;
+  --mcol:42px;
+  --ease-out:cubic-bezier(.23,1,.32,1);--ease-drawer:cubic-bezier(.32,.72,0,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --desk:#0c0a0a;
+    --cloth:#5e1117;--cloth-deep:#3c080c;--cloth-hi:#7c2129;
+    --weave:rgba(0,0,0,.28);--weave-hi:rgba(255,222,200,.05);
+    --gold:#ddb04c;--gold-lo:#8a6219;--on-cloth:#f1d9bb;
+    --paper:#16171c;--paper-2:#1f2027;--rule:#3d2729;--margin:#b5433d;
+    --ink:#a9beff;--ink-wet:#dfe7ff;--ink-red:#ff8f87;--ink-green:#7fd5a3;--stamp:#c9a5f6;
+    --text:#ecebe7;--muted:#a3a6b3;--line:#383944;
+    --key:#24252d;--key-edge:#34353f;--key-press:#2f303a;
+    --warn:#f2a65a;--slip:#3a3420;--slip-edge:#5d5230;--tape:rgba(255,255,255,.12);
+    --wa:#1a8247;--on-wa:#ffffff;
+    --shadow:rgba(0,0,0,.45);--shadow-strong:rgba(0,0,0,.62);--scrim:rgba(0,0,0,.62);
+    --toast-bg:#ecebe7;--toast-ink:#16171c;--focus:#a9beff;--sel:rgba(169,190,255,.26);--wet:rgba(169,190,255,.12);
+    --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --desk:#0c0a0a;
+  --cloth:#5e1117;--cloth-deep:#3c080c;--cloth-hi:#7c2129;
+  --weave:rgba(0,0,0,.28);--weave-hi:rgba(255,222,200,.05);
+  --gold:#ddb04c;--gold-lo:#8a6219;--on-cloth:#f1d9bb;
+  --paper:#16171c;--paper-2:#1f2027;--rule:#3d2729;--margin:#b5433d;
+  --ink:#a9beff;--ink-wet:#dfe7ff;--ink-red:#ff8f87;--ink-green:#7fd5a3;--stamp:#c9a5f6;
+  --text:#ecebe7;--muted:#a3a6b3;--line:#383944;
+  --key:#24252d;--key-edge:#34353f;--key-press:#2f303a;
+  --warn:#f2a65a;--slip:#3a3420;--slip-edge:#5d5230;--tape:rgba(255,255,255,.12);
+  --wa:#1a8247;--on-wa:#ffffff;
+  --shadow:rgba(0,0,0,.45);--shadow-strong:rgba(0,0,0,.62);--scrim:rgba(0,0,0,.62);
+  --toast-bg:#ecebe7;--toast-ink:#16171c;--focus:#a9beff;--sel:rgba(169,190,255,.26);--wet:rgba(169,190,255,.12);
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  color-scheme:dark;
+}
+
+/* ---------- base ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--desk);-webkit-text-size-adjust:100%;text-size-adjust:100%;scrollbar-color:var(--line) var(--paper)}
+body{margin:0;background:var(--desk);color:var(--text);font:400 17px/1.5 var(--f-ui);-webkit-font-smoothing:antialiased;overflow-x:clip}
+::selection{background:var(--sel)}
+button,input,textarea{font:inherit;color:inherit;margin:0}
+button{cursor:pointer;-webkit-tap-highlight-color:var(--clear);touch-action:manipulation}
+button:disabled{cursor:default}
+input,textarea{caret-color:var(--ink)}
+a{color:var(--ink);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:10px}
+[hidden]{display:none!important}
+.vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.sprite{position:absolute;width:0;height:0;overflow:hidden}
+.ic{width:24px;height:24px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.in{padding-left:calc(var(--mcol) + 14px)}
+
+/* the book column */
+.book{position:relative;max-width:560px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--paper);padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
+
+/* ---------- cloth cover ---------- */
+.cover{position:relative;color:var(--on-cloth);background-color:var(--cloth);
+  background-image:repeating-linear-gradient(0deg,var(--weave) 0 1px,var(--clear) 1px 3px),repeating-linear-gradient(90deg,var(--weave-hi) 0 1px,var(--clear) 1px 3px),radial-gradient(130% 120% at 12% -25%,var(--cloth-hi),var(--clear) 62%);
+  padding-top:max(22px,env(safe-area-inset-top,0px))}
+.cover::before{content:"";position:absolute;left:9px;right:9px;top:9px;bottom:0;border:2px dashed var(--gold-lo);border-bottom:0;border-radius:14px 14px 0 0;pointer-events:none}
+.title{margin:0;padding-top:6px;font:400 clamp(38px,11.4vw,56px)/1.18 var(--f-title);color:var(--gold);text-shadow:0 2px 0 var(--cloth-deep);text-wrap:balance}
+.subtitle{margin:0;font:600 16px/1.35 var(--f-ui);letter-spacing:.03em;color:var(--on-cloth)}
+.tabs{display:flex;gap:8px;margin-top:20px}
+.tab{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:52px;padding:10px 20px 6px;border:0;border-radius:14px 14px 0 0;background:var(--cloth-deep);color:var(--gold);font:700 18px/1 var(--f-ui);transition:background-color .2s ease,color .2s ease}
+.tab[aria-selected="true"]{background-color:var(--paper);background-image:var(--grain);color:var(--ink-red)}
+.tab:focus-visible{outline-color:var(--gold);outline-offset:-4px}
+.tab[aria-selected="true"]:focus-visible{outline-color:var(--focus)}
+.badge{min-width:24px;height:24px;padding:0 7px;border-radius:12px;background:var(--gold);color:var(--cloth-deep);font:800 14px/24px var(--f-ui);text-align:center;font-variant-numeric:tabular-nums}
+.tab[aria-selected="true"] .badge{background:var(--ink-red);color:var(--paper)}
+
+/* ---------- ruled paper ---------- */
+.paper{position:relative;background-color:var(--paper);background-image:var(--grain)}
+.paper::before{content:"";position:absolute;top:0;bottom:0;left:calc(max(16px,env(safe-area-inset-left,0px)) + var(--mcol));width:5px;border-left:1.5px solid var(--margin);border-right:1.5px solid var(--margin);opacity:.72;pointer-events:none}
+.hd{margin:0 0 10px;font:800 19px/1.25 var(--f-ui);color:var(--text)}
+.hint{margin:10px 0 0;font:400 16px/1.45 var(--f-ui);color:var(--muted)}
+
+/* sample parchi, taped to the page */
+.slipzone{padding-top:14px}
+.slip{position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin-left:calc(var(--mcol) + 14px);padding:16px 16px 14px;background:var(--slip);border:1px solid var(--slip-edge);border-radius:3px;transform:rotate(-.8deg);box-shadow:0 8px 18px var(--shadow)}
+.slip::before{content:"";position:absolute;top:-10px;left:50%;width:92px;height:22px;margin-left:-46px;background:var(--tape);transform:rotate(2deg);box-shadow:0 1px 2px var(--shadow)}
+.slip p{margin:0;font:400 19px/1.4 var(--f-hand);color:var(--text)}
+.slip b{font-weight:700;color:var(--ink-red)}
+
+/* month head */
+.mnav{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center;gap:8px;padding:16px 0 4px}
+.mbtn{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);display:grid;place-items:center;transition:transform .16s var(--ease-out),opacity .2s ease}
+.mbtn:active{transform:scale(.93)}
+.mbtn:disabled{opacity:.3}
+.mlabel{margin:0;text-align:center;font:700 21px/1.2 var(--f-ui);color:var(--text)}
+.mlabel span{font-weight:500;color:var(--muted)}
+
+/* page summary, written like the top of a ledger page */
+.sum{position:relative;padding-top:10px;padding-bottom:6px}
+.sum-k{margin:0;font:600 16px/1.3 var(--f-ui);color:var(--ink-red)}
+.sum-v{margin:0 0 4px;font:700 clamp(46px,14vw,66px)/1.12 var(--f-hand);color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.dbl{display:inline-block;border-bottom:4px double currentColor;padding-bottom:1px}
+.ln{display:flex;align-items:baseline;gap:8px;min-height:46px;margin:0;padding-top:8px;border-bottom:1px solid var(--rule)}
+.ln .k{font:500 17px/1.3 var(--f-ui);color:var(--muted)}
+.ln .dots{flex:1 1 auto;min-width:14px;border-bottom:2px dotted var(--line);transform:translateY(-5px)}
+.ln .v{font:700 22px/1.2 var(--f-hand);color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
+.mark{position:absolute;right:-2px;top:-6px;display:grid;justify-items:center;padding:6px 10px 3px;border:3px double var(--stamp);border-radius:6px;color:var(--stamp);transform:rotate(-9deg);opacity:.8;filter:url(#ink);pointer-events:none}
+.mark b{font:400 24px/1 var(--f-title)}
+.mark i{font:800 12px/1.4 var(--f-ui);font-style:normal;letter-spacing:.26em;padding-left:.26em}
+
+/* budget: an inked box, shaded with pen strokes up to what is spent */
+.budget{padding-top:16px;padding-bottom:16px;border-bottom:1px solid var(--rule)}
+.b-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.b-k{margin:0;font:600 16px/1.3 var(--f-ui);color:var(--ink-red);min-width:0;flex:1 1 auto;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px;row-gap:2px}
+.b-k .lbl{flex-basis:100%}
+.b-k b{font:700 22px/1.1 var(--f-hand);color:var(--ink)}
+.b-k small{font:600 14px/1 var(--f-ui);color:var(--stamp);letter-spacing:.04em;text-transform:uppercase}
+.btn-mini{flex:0 0 auto;min-height:44px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);font:700 16px/1 var(--f-ui);transition:transform .16s var(--ease-out)}
+.btn-mini:active{transform:scale(.96)}
+.b-bar{--b:var(--ink);position:relative;height:24px;border:1.5px solid var(--b);border-radius:5px;overflow:hidden;background:var(--paper)}
+.b-fill{position:absolute;left:0;top:0;bottom:0;width:100%;border-right:1.5px solid var(--b);background:repeating-linear-gradient(-55deg,var(--b) 0 2px,var(--clear) 2px 6px);transform:translateX(-100%);transition:transform .7s var(--ease-out)}
+.budget.near .b-bar{--b:var(--warn)}
+.budget.over .b-bar{--b:var(--ink-red)}
+.budget.over .b-fill{border-right:0;background:repeating-linear-gradient(-55deg,var(--b) 0 2px,var(--clear) 2px 6px),repeating-linear-gradient(55deg,var(--b) 0 1.5px,var(--clear) 1.5px 7px)}
+.b-text{margin:10px 0 0;font:400 20px/1.4 var(--f-hand);color:var(--ink)}
+.b-text b{font-weight:700}
+.b-warn{margin:2px 0 0;font:700 16px/1.35 var(--f-ui);color:var(--warn)}
+.budget.over .b-warn,.budget.over .b-text{color:var(--ink-red)}
+.b-empty{margin:0 0 12px;font:400 19px/1.4 var(--f-hand);color:var(--muted)}
+
+/* one-tap rate tags */
+.quick{padding-top:18px;padding-bottom:6px}
+.tags{display:flex;flex-wrap:wrap;gap:10px}
+.tag{position:relative;display:inline-flex;align-items:center;gap:7px;min-height:52px;padding:6px 12px 6px 27px;border:1.5px solid var(--ink);border-radius:8px 16px 16px 8px;background:var(--paper);color:var(--ink);font:600 17px/1.1 var(--f-ui);transition:transform .16s var(--ease-out),background-color .2s ease}
+.tag::before{content:"";position:absolute;left:10px;top:50%;width:9px;height:9px;margin-top:-4.5px;border-radius:50%;border:1.5px solid var(--ink)}
+.tag b{font:700 20px/1 var(--f-hand)}
+.tag:active{transform:scale(.95);background:var(--wet)}
+
+/* the register */
+.regzone{padding-top:20px}
+.reg-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.reg-top .hd{margin:0}
+.cols{display:flex;justify-content:space-between;margin-top:8px;padding-bottom:6px;border-bottom:1.5px solid var(--margin);font:700 14px/1 var(--f-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-red)}
+.reg{list-style:none;margin:0;padding:0}
+.day{display:grid;grid-template-columns:var(--mcol) minmax(0,1fr)}
+.d-m{grid-column:1;grid-row:1;padding-top:10px;text-align:center;color:var(--ink-red);font:700 25px/1 var(--f-hand)}
+.d-m small{display:block;margin-top:2px;font:700 12px/1.2 var(--f-ui);letter-spacing:.08em;text-transform:uppercase}
+.d-h{grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:50px;padding-left:14px;border-bottom:1px solid var(--rule)}
+.d-name{font:700 17px/1.2 var(--f-ui);color:var(--text)}
+.d-name span{font-weight:500;color:var(--muted)}
+.d-tot{font:700 21px/1 var(--f-hand);color:var(--ink);border-bottom:3px double currentColor;padding-bottom:2px;font-variant-numeric:tabular-nums}
+.d-rows{grid-column:2;list-style:none;margin:0;padding:0}
+.rbtn{position:relative;width:100%;display:grid;grid-template-columns:28px minmax(0,1fr) auto 16px;align-items:center;gap:10px;min-height:56px;padding:6px 0 6px 14px;border:0;border-bottom:1px solid var(--rule);border-radius:0;background:var(--clear);color:var(--ink);text-align:left;transition:background-color .2s ease}
+.rbtn:active{background:var(--wet)}
+.rbtn .ic{width:26px;height:26px}
+.r-what{min-width:0;font:400 21px/1.2 var(--f-hand);overflow-wrap:anywhere}
+.r-what small{display:block;font:400 16px/1.25 var(--f-hand);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r-amt{font:700 23px/1 var(--f-hand);text-align:right;font-variant-numeric:tabular-nums}
+.r-ed{width:16px;height:16px;color:var(--muted)}
+.sk::after{content:"";position:absolute;left:8px;right:2px;top:50%;height:3px;margin-top:-1.5px;border-radius:2px;background:var(--ink-red);transform:scaleX(0);transform-origin:0 50%;transition:transform .26s var(--ease-out)}
+.struck .sk::after,.struck.sk::after{transform:scaleX(1)}
+.sk.fresh{animation:soak 1.8s var(--ease-out)}
+.rbtn.fresh .r-what,.rbtn.fresh .r-amt,.uline.fresh b{animation:dry 1.8s ease-out}
+@keyframes soak{from{background-color:var(--wet)}to{background-color:var(--clear)}}
+@keyframes dry{from{color:var(--ink-wet)}to{color:var(--ink)}}
+.empty{margin:0;padding:16px 0 4px;font:400 20px/1.45 var(--f-hand);color:var(--muted)}
+
+/* where the money went: share of the month, drawn to scale */
+.where{padding-top:26px}
+.bars{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.bar{display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;column-gap:10px;row-gap:6px}
+.bar .ic{width:24px;height:24px;color:var(--ink)}
+.bar-n{min-width:0;font:600 17px/1.2 var(--f-ui);overflow-wrap:anywhere}
+.bar-v{font:700 21px/1 var(--f-hand);color:var(--ink);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.bar-v small{font:600 16px/1 var(--f-ui);color:var(--muted);margin-left:6px}
+.bar-t{grid-column:2 / 4;height:14px;border-radius:3px;background:linear-gradient(var(--rule),var(--rule)) left center / 100% 2px no-repeat,var(--paper-2)}
+.bar-f{--b:var(--ink);height:100%;min-width:7px;border:1.5px solid var(--b);border-radius:3px;background:repeating-linear-gradient(-55deg,var(--b) 0 1.5px,var(--clear) 1.5px 5px)}
+.bar.top .bar-f{--b:var(--ink-red)}
+.bar.top .bar-v,.bar.top .ic{color:var(--ink-red)}
+
+/* share */
+.share{padding-top:28px;padding-bottom:8px}
+.share-p{margin:-4px 0 14px;color:var(--muted)}
+.share-btns{display:flex;flex-wrap:wrap;gap:10px}
+.btn-wa,.btn-line{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:10px 18px;border-radius:14px;font:700 17px/1 var(--f-ui);text-decoration:none;transition:transform .16s var(--ease-out)}
+.btn-wa{background:var(--wa);color:var(--on-wa)}
+.btn-line{border:1.5px solid var(--ink);background:var(--paper);color:var(--ink)}
+.btn-wa:active,.btn-line:active{transform:scale(.97)}
+.share-ta{display:block;width:100%;min-height:170px;margin-top:12px;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper-2);color:var(--text);font:400 16px/1.45 var(--f-ui);resize:vertical}
+
+/* ---------- udhaar khata ---------- */
+.ud-h{margin:0;min-height:40px;padding-right:110px;font:800 19px/1.3 var(--f-ui);color:var(--text)}
+.ud-tot{display:grid;grid-template-columns:minmax(0,1fr)}
+.ud-t{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--rule)}
+.ud-t .sum-k{grid-column:1;grid-row:1}
+.ud-v{grid-column:2;grid-row:1 / span 2;margin:0;font:700 clamp(34px,10vw,46px)/1.15 var(--f-hand);font-variant-numeric:tabular-nums;white-space:nowrap}
+.lene .ud-v{color:var(--ink-green)}
+.dene .ud-v{color:var(--ink-red)}
+.ud-s{grid-column:1;grid-row:2;margin:2px 0 0;font-size:16px;line-height:1.3;color:var(--muted)}
+.udzone{padding-top:22px}
+.people{list-style:none;margin:0;padding:0;border-top:1.5px solid var(--margin)}
+.person{display:grid;grid-template-columns:var(--mcol) minmax(0,1fr)}
+.p-ini{grid-column:1;padding-top:16px;text-align:center;font:700 26px/1 var(--f-hand);color:var(--ink-red)}
+.pbtn{grid-column:2;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;min-height:68px;padding:8px 0 8px 14px;border:0;border-bottom:1px solid var(--rule);background:var(--clear);color:var(--ink);text-align:left;transition:background-color .2s ease}
+.pbtn:active{background:var(--wet)}
+.p-name{min-width:0;font:700 22px/1.2 var(--f-hand);overflow-wrap:anywhere}
+.p-name small{display:block;font:400 16px/1.35 var(--f-ui);color:var(--muted)}
+.p-amt{text-align:right;font:700 23px/1.05 var(--f-hand);white-space:nowrap;font-variant-numeric:tabular-nums}
+.p-amt small{display:block;font:700 16px/1.3 var(--f-ui)}
+.p-amt.lene{color:var(--ink-green)}
+.p-amt.dene{color:var(--ink-red)}
+.p-amt.zero{color:var(--muted)}
+.p-det{grid-column:2;padding:2px 0 16px 14px;border-bottom:1px solid var(--rule)}
+.uline{position:relative;width:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:baseline;gap:10px;min-height:48px;padding:8px 0;border:0;border-bottom:1px dashed var(--rule);background:var(--clear);color:var(--ink);text-align:left;font:400 19px/1.3 var(--f-hand)}
+.uline .u-d{font:600 16px/1 var(--f-ui);color:var(--muted);white-space:nowrap}
+.uline .u-t{min-width:0;overflow-wrap:anywhere}
+.uline .u-t small{color:var(--muted)}
+.uline b{font-weight:700;white-space:nowrap}
+.uline b.took{color:var(--ink-red)}
+.uline b.gave{color:var(--ink-green)}
+.p-acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.btn-chukta{display:inline-flex;align-items:center;gap:8px;min-height:50px;padding:8px 18px;border-radius:14px;border:2px solid var(--stamp);background:var(--paper);color:var(--stamp);font:800 17px/1 var(--f-ui);transition:transform .16s var(--ease-out)}
+.btn-chukta:active{transform:scale(.96)}
+.settled{margin-top:22px;border-top:1px solid var(--rule)}
+.settled summary{display:flex;align-items:center;gap:10px;min-height:52px;padding-left:calc(var(--mcol) + 14px);font:700 17px/1.2 var(--f-ui);color:var(--muted);cursor:pointer;list-style:none}
+.settled summary::-webkit-details-marker{display:none}
+.settled summary::after{content:"";width:9px;height:9px;margin-left:2px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-3px);transition:transform .2s var(--ease-out)}
+.settled[open] summary::after{transform:rotate(225deg) translateY(-1px)}
+.settled ul{list-style:none;margin:0;padding:0 0 0 calc(var(--mcol) + 14px)}
+.settled li{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;border-bottom:1px solid var(--rule);font:400 20px/1.3 var(--f-hand);color:var(--muted)}
+.settled li span{min-width:0;overflow-wrap:anywhere}
+.chukta-mini{flex:0 0 auto;padding:2px 8px;border:2px solid var(--stamp);border-radius:4px;color:var(--stamp);font:400 16px/1.2 var(--f-title);transform:rotate(-6deg);opacity:.85;filter:url(#ink)}
+
+/* ---------- footer ---------- */
+.foot{padding-top:30px;padding-bottom:20px}
+.foot p{margin:0 0 6px;font:400 19px/1.45 var(--f-hand);color:var(--muted)}
+.foot .f1{color:var(--ink);font-weight:700}
+.foot a{display:inline-flex;align-items:center;min-height:44px;font:700 17px/1.4 var(--f-ui);color:var(--ink)}
+.foot .warnline{color:var(--ink-red);font:600 16px/1.4 var(--f-ui)}
+.wink{display:inline-block;margin-top:10px!important;color:var(--ink-red)!important;transform:rotate(-2deg)}
+
+/* ---------- the red button in the thumb zone ---------- */
+.dock{position:fixed;left:50%;bottom:0;z-index:20;width:min(100%,560px);transform:translateX(-50%);padding-top:18px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,var(--clear),var(--paper) 34%)}
+.cta{position:relative;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;min-height:60px;padding:12px 18px;border:0;border-radius:16px;color:var(--gold);background-color:var(--cloth);
+  background-image:repeating-linear-gradient(0deg,var(--weave) 0 1px,var(--clear) 1px 3px),repeating-linear-gradient(90deg,var(--weave-hi) 0 1px,var(--clear) 1px 3px);
+  font:800 19px/1 var(--f-ui);box-shadow:0 10px 22px var(--shadow);transition:transform .16s var(--ease-out),opacity .2s ease}
+.cta::after{content:"";position:absolute;inset:5px;border:1.5px dashed var(--gold-lo);border-radius:12px;pointer-events:none}
+.cta:active{transform:scale(.97)}
+.cta:disabled{opacity:.6}
+
+/* ---------- entry sheet ---------- */
+.sheet{position:fixed;inset:0;z-index:50}
+.scrim{position:absolute;inset:0;background:var(--scrim);opacity:0;transition:opacity .2s ease}
+.sheet.open .scrim{opacity:1;transition-duration:.34s}
+.card{position:absolute;left:0;right:0;bottom:0;width:100%;max-width:560px;max-height:calc(100% - max(10px,env(safe-area-inset-top,0px)));margin:0 auto;overflow-y:auto;overscroll-behavior:contain;
+  padding:4px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));background-color:var(--paper);background-image:var(--grain);border-radius:22px 22px 0 0;box-shadow:0 -14px 40px var(--shadow-strong);
+  transform:translateY(105%);transition:transform .22s var(--ease-out)}
+.sheet.open .card{transform:none;transition:transform .44s var(--ease-drawer)}
+.card:focus{outline:none}
+.card > .stamp-fly{position:absolute}
+.grab{width:44px;height:5px;margin:6px auto 4px;border-radius:3px;background:var(--line)}
+.s-head{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px}
+.s-head h2{margin:0;font:800 21px/1.2 var(--f-ui);min-width:0}
+.x{flex:0 0 auto;width:48px;height:48px;border-radius:50%;border:0;background:var(--paper-2);color:var(--text);display:grid;place-items:center}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:2px 0 calc(18px + env(safe-area-inset-bottom,0px))}
+.tile{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;align-content:center;gap:3px;min-height:92px;padding:10px 6px;border:1.5px solid var(--key-edge);border-radius:16px;background:var(--key);color:var(--text);text-align:center;transition:transform .14s var(--ease-out),border-color .2s ease}
+.tile .ic{width:30px;height:30px;color:var(--ink)}
+.tile b{font:700 16px/1.15 var(--f-ui)}
+.tile small{font:400 16px/1.15 var(--f-hand);color:var(--muted)}
+.tile:active{transform:scale(.95)}
+.tile[aria-pressed="true"]{border-color:var(--ink);background:var(--wet)}
+.seg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.seg button{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;justify-items:start;min-height:66px;padding:10px 14px;border-radius:14px;border:1.5px solid var(--key-edge);background:var(--key);color:var(--text);text-align:left}
+.seg button b{font:800 18px/1.15 var(--f-ui)}
+.seg button small{font:500 16px/1.2 var(--f-ui);color:var(--muted)}
+.seg button[aria-checked="true"][data-dir="gave"]{border-color:var(--ink-green);background:var(--paper);box-shadow:inset 0 0 0 1.5px var(--ink-green)}
+.seg button[aria-checked="true"][data-dir="gave"] b{color:var(--ink-green)}
+.seg button[aria-checked="true"][data-dir="took"]{border-color:var(--ink-red);background:var(--paper);box-shadow:inset 0 0 0 1.5px var(--ink-red)}
+.seg button[aria-checked="true"][data-dir="took"] b{color:var(--ink-red)}
+.flabel{display:block;margin:16px 0 6px;font:700 16px/1.2 var(--f-ui)}
+.field{width:100%;min-height:54px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);font:400 21px/1.2 var(--f-hand)}
+.field::placeholder,.note::placeholder{color:var(--muted);font:400 16px/1.2 var(--f-ui)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chips button{min-height:46px;padding:6px 14px;border-radius:23px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);font:700 19px/1 var(--f-hand)}
+.who-go{margin:16px 0 calc(18px + env(safe-area-inset-bottom,0px))}
+.pick{display:inline-flex;flex:0 1 auto;min-width:0;align-items:center;gap:8px;max-width:100%;min-height:48px;padding:6px 14px 6px 10px;border-radius:24px;border:1.5px solid var(--line);background:var(--paper);color:var(--text);font:700 17px/1.1 var(--f-ui);text-align:left}
+.pick .ic{width:24px;height:24px;color:var(--ink)}
+.pick-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick-c{flex:0 0 auto;font:600 16px/1 var(--f-ui);color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.amt{display:flex;align-items:baseline;gap:4px;min-height:74px;margin:8px 0 8px;padding:0 2px 4px;border-bottom:2px solid var(--rule);color:var(--ink);font:700 clamp(44px,13vw,58px)/1.15 var(--f-hand);font-variant-numeric:tabular-nums}
+.amt-r{font-size:.66em}
+.amt-tx{min-width:0;white-space:nowrap}
+.amt.empty .amt-tx{color:var(--line)}
+.caret{width:3px;height:.85em;align-self:center;border-radius:2px;background:var(--ink);animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.amt.nudge{animation:nudge .34s var(--ease-out)}
+@keyframes nudge{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+.sugg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.sugg button{min-height:44px;padding:6px 14px;border-radius:22px;border:1.5px dashed var(--ink);background:var(--paper);color:var(--ink);font:700 19px/1 var(--f-hand)}
+.keys{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.key{display:grid;place-items:center;min-height:54px;border-radius:14px;border:1px solid var(--key-edge);background:var(--key);color:var(--text);font:600 27px/1 var(--f-ui);font-variant-numeric:tabular-nums;box-shadow:0 1px 0 var(--key-edge);transition:transform .1s var(--ease-out),background-color .1s ease;user-select:none;-webkit-user-select:none}
+.key:active{transform:scale(.95);background:var(--key-press)}
+.key .ic{width:30px;height:30px}
+.meta{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin-top:12px}
+.when{display:flex;align-items:center;gap:8px;min-width:0}
+.when-b{flex:0 0 auto;min-height:46px;padding:6px 16px;border-radius:23px;border:1.5px solid var(--line);background:var(--paper);color:var(--text);font:700 16px/1 var(--f-ui)}
+.when-b[aria-pressed="true"]{border-color:var(--ink);background:var(--wet);color:var(--ink)}
+.date-in{flex:1 1 auto;min-width:0;min-height:46px;padding:6px 12px;border-radius:23px;border:1.5px solid var(--line);background:var(--paper);color:var(--text);font:600 16px/1.2 var(--f-ui)}
+.note{width:100%;min-height:52px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);font:400 20px/1.2 var(--f-hand)}
+.smsg{margin:6px 0 0;min-height:22px;font:700 16px/1.3 var(--f-ui);color:var(--ink-red)}
+.acts{position:sticky;bottom:0;z-index:2;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin:0 calc(-1 * max(16px,env(safe-area-inset-right,0px))) 0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:8px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background-color:var(--paper)}
+.acts.two{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}
+.btn-del{min-height:60px;padding:8px 12px;border-radius:16px;border:1.5px solid var(--ink-red);background:var(--paper);color:var(--ink-red);font:800 17px/1.1 var(--f-ui);transition:transform .16s var(--ease-out)}
+.btn-del:active{transform:scale(.97)}
+
+/* ---------- toast ---------- */
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;align-items:center;gap:12px;width:max-content;max-width:min(528px,calc(100% - 32px));padding:10px 10px 10px 16px;border-radius:14px;background:var(--toast-bg);color:var(--toast-ink);font:600 16px/1.35 var(--f-ui);box-shadow:0 14px 30px var(--shadow-strong);transform:translate(-50%,0);transition:transform .32s var(--ease-out),opacity .32s ease}
+.toast.out{transform:translate(-50%,18px);opacity:0;transition-duration:.18s}
+.toast span{min-width:0}
+.undo{flex:0 0 auto;min-height:44px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--toast-ink);background:var(--clear);color:var(--toast-ink);font:800 16px/1 var(--f-ui)}
+.undo:focus-visible{outline-color:var(--toast-ink)}
+
+/* ---------- rubber stamp ---------- */
+.stamp-fly{position:fixed;left:0;top:0;z-index:60;pointer-events:none;color:var(--stamp);opacity:0}
+.stamp-fly svg{display:block;width:100%;height:100%;overflow:visible}
+.st-ring{font:700 15px/1 var(--f-ui);letter-spacing:1px}
+.st-main{font:400 40px/1 var(--f-title)}
+.st-sub{font:800 13px/1 var(--f-ui);letter-spacing:3px}
+.st-date{font:700 12px/1 var(--f-ui);letter-spacing:1.5px}
+
+/* ---------- page turn over the top binding ---------- */
+.flip-stage{position:fixed;inset:0;z-index:15;pointer-events:none;perspective:1700px}
+.flip-box{position:absolute;overflow:hidden;background-color:var(--paper)}
+.flip-box.over{transform-origin:50% 0;backface-visibility:hidden;box-shadow:0 18px 36px var(--shadow)}
+.flip-shade{position:absolute;inset:0;opacity:0;pointer-events:none;background:linear-gradient(180deg,var(--shadow-strong),var(--clear) 80%)}
+.flip-box.over .flip-shade{background:var(--shadow-strong)}
+.leaf-snap{position:absolute!important;left:0;top:0}
+
+/* rupees everywhere else line up too (after the font shorthands above, which reset it) */
+.b-k b,.b-text,.tag b,.tile small,.sugg button,.d-m,.uline .u-d,.uline b,.p-name small,.bar-v small,.toast,.share-ta{font-variant-numeric:tabular-nums}
+
+/* ---------- hover only where there is a mouse ---------- */
+@media (hover:hover) and (pointer:fine){
+  .rbtn:hover,.pbtn:hover{background:var(--wet)}
+  .tile:hover,.key:hover{border-color:var(--ink)}
+  .tag:hover,.btn-line:hover,.btn-mini:hover,.mbtn:not(:disabled):hover{background:var(--wet)}
+  .btn-wa:hover{filter:brightness(1.08)}
+}
+
+/* ---------- small and short screens ---------- */
+@media (max-width:370px){
+  :root{--mcol:36px}
+  .tag{padding-right:12px}
+}
+@media (max-height:740px){
+  .key{min-height:50px}
+  .amt{min-height:64px;font-size:46px}
+  .tile{min-height:82px}
+}
+@media (max-height:640px){
+  .key{min-height:46px}
+  .tile{min-height:74px}
+  .grab{display:none}
+}
+
+/* ---------- desk around the book on wide screens ---------- */
+@media (min-width:600px){
+  body{padding:28px 0 0}
+  .book{min-height:calc(100vh - 28px);border-radius:18px 18px 0 0;overflow:clip;box-shadow:0 30px 70px var(--shadow-strong)}
+  .cover::before{border-radius:12px 12px 0 0}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .card{opacity:0;transform:none!important}
+  .sheet.open .card{opacity:1}
+  .scrim,.card,.toast{transition-property:opacity!important;transition-duration:.2s!important}
+  .toast.out{transform:translate(-50%,0)}
+  .caret{animation:none}
+}
+</style>
+
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="ink" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.15" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -3 2.3" result="m"/>
+      <feComposite in="d" in2="m" operator="in"/>
+    </filter>
+    <path id="ring" d="M37 100a63 63 0 1 1 126 0a63 63 0 1 1-126 0"/>
+  </defs>
+  <symbol id="i-doodh" viewBox="0 0 24 24"><path d="M6.5 3h11l-1.6 16.6a1.6 1.6 0 0 1-1.6 1.4H9.7a1.6 1.6 0 0 1-1.6-1.4z"/><path d="M7.1 9.6c1.7-.9 3.3-.4 4.9.3s3.3 1.1 5-.2"/></symbol>
+  <symbol id="i-sabzi" viewBox="0 0 24 24"><path d="M5 19.5C4.4 10.4 10 4.5 19.6 4.4c.3 9.6-5.6 15.3-14.6 15.1z"/><path d="M5 19.5 13.5 11"/></symbol>
+  <symbol id="i-kirana" viewBox="0 0 24 24"><path d="M5 8h14l-1.2 12.1a1 1 0 0 1-1 .9H7.2a1 1 0 0 1-1-.9z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/></symbol>
+  <symbol id="i-bijli" viewBox="0 0 24 24"><path d="M13.5 2.5 5.5 13.5h6l-1.5 8 8-11h-6z"/></symbol>
+  <symbol id="i-gas" viewBox="0 0 24 24"><path d="M10 3.5h4v3h-4z"/><rect x="6.5" y="6.5" width="11" height="14.5" rx="3.5"/><path d="M6.5 11.5h11"/></symbol>
+  <symbol id="i-petrol" viewBox="0 0 24 24"><path d="M5 21V5.2A2.2 2.2 0 0 1 7.2 3h5.6A2.2 2.2 0 0 1 15 5.2V21"/><path d="M3.5 21h13"/><path d="M7.5 7h5v4h-5z"/><path d="M15 10h1.5a1.5 1.5 0 0 1 1.5 1.5V16a1.5 1.5 0 0 0 3 0V8.5L18.5 6"/></symbol>
+  <symbol id="i-dawai" viewBox="0 0 24 24"><rect x="6" y="7.5" width="12" height="13.5" rx="2.2"/><path d="M8 3.5h8v4H8z"/><path d="M12 11v6.5M8.75 14.25h6.5"/></symbol>
+  <symbol id="i-recharge" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.4"/><path d="M11 18.5h2M10.5 5.5h3"/></symbol>
+  <symbol id="i-kiraya" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5.5h4V20"/></symbol>
+  <symbol id="i-fees" viewBox="0 0 24 24"><path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.8c3.2 2.3 7.8 2.3 11 0v-4.8M21.5 9.5v5"/></symbol>
+  <symbol id="i-bahar" viewBox="0 0 24 24"><path d="M3.5 12.5h17a8.5 8.5 0 0 1-17 0z"/><path d="M8 3.5c-1 1.4.9 2.3 0 3.9M12 3.5c-1 1.4.9 2.3 0 3.9M16 3.5c-1 1.4.9 2.3 0 3.9"/></symbol>
+  <symbol id="i-aur" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="7.8" cy="12" r="1.1" fill="currentColor"/><circle cx="12" cy="12" r="1.1" fill="currentColor"/><circle cx="16.2" cy="12" r="1.1" fill="currentColor"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M14.5 5.5 8 12l6.5 6.5"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M9.5 5.5 16 12l-6.5 6.5"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M9 5.5h10.5A1.5 1.5 0 0 1 21 7v10a1.5 1.5 0 0 1-1.5 1.5H9L3 12z"/><path d="M12 9.5l5 5M17 9.5l-5 5"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4.5 19.5h4l10-10a2.1 2.1 0 0 0-4-4l-10 10z"/><path d="M13.5 6.5l4 4"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M4.5 19.5l1.2-3.7A8 8 0 1 1 8.4 18.6z"/><path d="M9.3 8.7c.2-.5.5-.6.8-.6h.5l1 2.1-.7.9c.5 1 1.3 1.8 2.3 2.3l.9-.7 2.1 1v.5c0 .4-.2.7-.6.9-2.5 1-6.6-3-6.3-6.4z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="12" height="12" rx="2"/><path d="M15.5 8.5V5A1.5 1.5 0 0 0 14 3.5H5A1.5 1.5 0 0 0 3.5 5v9A1.5 1.5 0 0 0 5 15.5h3.5"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20.5c1.3-3.9 4.2-5.9 7.5-5.9s6.2 2 7.5 5.9"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+</svg>
+
+<div class="book" id="app">
+  <header class="cover">
+    <div class="wrap">
+      <h1 class="title" lang="hi">पापा का हिसाब</h1>
+      <p class="subtitle">Papa ka Hisaab · ghar ka bahi-khata</p>
+      <div class="tabs" role="tablist" aria-label="Bahi ke panne">
+        <button class="tab" type="button" role="tab" id="tabK" aria-controls="panelK" aria-selected="true">Kharcha</button>
+        <button class="tab" type="button" role="tab" id="tabU" aria-controls="panelU" aria-selected="false" tabindex="-1">Udhaar <span class="badge" id="uBadge" hidden></span></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="paper slipzone wrap" id="slipZone" hidden>
+    <aside class="slip" aria-label="Sample hisaab">
+      <p><b>Yeh sample hisaab hai</b>, sirf dikhane ke liye. Apni pehli entry likhte hi yeh apne aap hat jayega.</p>
+      <div><button class="btn-line" type="button" id="clearSample">Saaf karo, apna shuru karo</button></div>
+    </aside>
+  </div>
+
+  <section id="panelK" role="tabpanel" aria-labelledby="tabK">
+    <div class="paper leaf" id="leaf">
+      <div class="wrap">
+        <div class="mnav">
+          <button class="mbtn" type="button" id="mPrev" aria-label="Pichhla mahina"><svg class="ic" aria-hidden="true"><use href="#i-left"/></svg></button>
+          <h2 class="mlabel" id="mLabel"></h2>
+          <button class="mbtn" type="button" id="mNext" aria-label="Agla mahina"><svg class="ic" aria-hidden="true"><use href="#i-right"/></svg></button>
+        </div>
+
+        <div class="sum in">
+          <p class="sum-k" id="totK">Is mahine ka kul kharcha</p>
+          <p class="sum-v"><span class="dbl" id="tot">₹0</span></p>
+          <div class="mark" id="markK" hidden aria-hidden="true"><b>नमूना</b><i>SAMPLE</i></div>
+          <p class="ln"><span class="k" id="l2k">Aaj</span><span class="dots" aria-hidden="true"></span><b class="v" id="l2v">₹0</b></p>
+          <p class="ln"><span class="k">Sabse zyada</span><span class="dots" aria-hidden="true"></span><b class="v" id="l3v">-</b></p>
+        </div>
+
+        <div class="budget in" id="budget">
+          <div class="b-top">
+            <p class="b-k" id="bK">Budget</p>
+            <button class="btn-mini" type="button" id="bBtn">Budget badlo</button>
+          </div>
+          <p class="b-empty" id="bEmpty" hidden>Mahine ka budget rakh do, phir yahan dikhta rahega kitna bacha.</p>
+          <div class="b-bar" id="bBar" aria-hidden="true"><div class="b-fill" id="bFill"></div></div>
+          <p class="b-text" id="bText"></p>
+          <p class="b-warn" id="bWarn" hidden></p>
+        </div>
+
+        <div class="quick in">
+          <h3 class="hd">Roz wale, ek tap mein</h3>
+          <div class="tags" id="quick"></div>
+          <p class="hint" id="quickHint" hidden>Jo cheez do baar likhoge, woh yahan aa jayegi. Phir ek tap mein likh jayegi.</p>
+        </div>
+
+        <div class="regzone">
+          <div class="reg-top in"><h3 class="hd">Bahi</h3></div>
+          <div class="cols in" aria-hidden="true"><span>Vivran</span><span>Rakam</span></div>
+          <ol class="reg" id="reg" aria-label="Is mahine ki entries"></ol>
+          <p class="empty in" id="regEmpty" hidden></p>
+          <p class="hint in" id="regHint" hidden>Kisi bhi entry ko dabao: badal sakte ho, ya kaat sakte ho.</p>
+        </div>
+
+        <div class="where in" id="where">
+          <h3 class="hd">Paisa kahan gaya</h3>
+          <ul class="bars" id="bars"></ul>
+        </div>
+
+        <div class="share in" id="share">
+          <h3 class="hd">Ghar walon ko bhejo</h3>
+          <p class="share-p" id="shareP">Is mahine ka poora hisaab, ek message mein.</p>
+          <div class="share-btns">
+            <a class="btn-wa" id="wa" href="https://wa.me/" target="_blank" rel="noopener noreferrer"><svg class="ic" aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp pe bhejo</a>
+            <button class="btn-line" type="button" id="copy"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg>Copy karo</button>
+          </div>
+          <textarea class="share-ta" id="shareTa" readonly hidden aria-label="Bhejne wala hisaab"></textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="panelU" role="tabpanel" aria-labelledby="tabU" hidden>
+    <div class="paper">
+      <div class="wrap">
+        <div class="sum in">
+          <h2 class="ud-h">Udhaar ka khata</h2>
+          <div class="mark" id="markU" hidden aria-hidden="true"><b>नमूना</b><i>SAMPLE</i></div>
+          <div class="ud-tot">
+            <div class="ud-t lene"><p class="sum-k">Lene hain</p><p class="ud-v"><span class="dbl" id="lene">₹0</span></p><p class="ud-s">log aapko lautayenge</p></div>
+            <div class="ud-t dene"><p class="sum-k">Dene hain</p><p class="ud-v"><span class="dbl" id="dene">₹0</span></p><p class="ud-s">aapko lautane hain</p></div>
+          </div>
+        </div>
+        <div class="udzone">
+          <h3 class="hd in">Kiska kitna</h3>
+          <ul class="people" id="people"></ul>
+          <p class="empty in" id="udEmpty" hidden>Kisi ko paise diye, ya kisi se liye? Neeche "Udhaar likho" dabao. Naam ke saath yaad rahega.</p>
+          <details class="settled" id="settled" hidden>
+            <summary>Chukta ho gaye <span id="settledN"></span></summary>
+            <ul id="settledList"></ul>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="paper foot wrap">
+    <div class="in">
+      <p class="f1">Papa ne yeh app Claude se banwaya.</p>
+      <p><a href="https://thenispace.com/papa/starter-kit.pdf" target="_blank" rel="noopener">Apna app banana hai? Starter kit (PDF)</a></p>
+      <p><a href="https://thenispace.com" target="_blank" rel="noopener">thenispace.com</a></p>
+      <p>Aapka hisaab sirf isi phone mein rehta hai.</p>
+      <p class="warnline" id="storeNote" hidden>Dhyan do: yeh browser hisaab save nahi kar pa raha. Page band karte hi mit jayega.</p>
+      <p class="wink">Beta ko mat batana.</p>
+    </div>
+  </footer>
+</div>
+
+<div class="dock wrap" id="dock">
+  <button class="cta" type="button" id="addBtn"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg><span id="addLabel">Kharcha likho</span></button>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="scrim" data-close></div>
+  <div class="card" id="card" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="sTitle">
+    <div class="grab" aria-hidden="true"></div>
+    <div class="s-head">
+      <h2 id="sTitle">Kis cheez pe kharcha?</h2>
+      <button class="pick" type="button" id="pick" hidden><svg class="ic" aria-hidden="true"><use id="pickUse" href="#i-aur"/></svg><span class="pick-t" id="pickT"></span><span class="pick-c">badlo</span></button>
+      <button class="x" type="button" data-close aria-label="Band karo"><svg class="ic" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </div>
+
+    <div id="stCat"><div class="tiles" id="tiles"></div></div>
+
+    <div id="stWho" hidden>
+      <div class="seg" role="radiogroup" aria-label="Paisa kis taraf gaya">
+        <button type="button" role="radio" data-dir="gave" aria-checked="true"><b>Maine diye</b><small>paisa gaya</small></button>
+        <button type="button" role="radio" data-dir="took" aria-checked="false" tabindex="-1"><b>Maine liye</b><small>paisa aaya</small></button>
+      </div>
+      <label class="flabel" for="fWho">Kiske saath?</label>
+      <input class="field" id="fWho" maxlength="30" autocomplete="off" enterkeyhint="next" placeholder="Naam, jaise Sharma ji">
+      <div class="chips" id="whoChips"></div>
+      <p class="smsg" id="whoMsg" role="alert"></p>
+      <div class="who-go"><button class="cta" type="button" id="whoNext">Aage, rakam likho</button></div>
+    </div>
+
+    <div id="stAmt" hidden>
+      <div class="amt empty" id="amtBox"><span class="amt-r" aria-hidden="true">₹</span><span class="amt-tx" id="amtTx">0</span><span class="caret" aria-hidden="true"></span></div>
+      <p class="vh" id="amtLive" aria-live="polite"></p>
+      <div class="sugg" id="sugg"></div>
+      <div class="keys" id="keys"></div>
+      <div class="meta" id="meta">
+        <div class="when" role="group" aria-label="Tareekh">
+          <button class="when-b" type="button" data-ago="0">Aaj</button>
+          <button class="when-b" type="button" data-ago="1">Kal</button>
+          <input class="date-in" type="date" id="fDate" aria-label="Tareekh chuno">
+        </div>
+        <input class="note" id="fNote" maxlength="60" autocomplete="off" enterkeyhint="done" aria-label="Note, zaroori nahi">
+      </div>
+      <p class="smsg" id="sMsg" role="alert"></p>
+      <div class="acts" id="acts">
+        <button class="btn-del" type="button" id="delBtn" hidden>Kaat do</button>
+        <button class="cta" type="button" id="saveBtn">Likh do</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast out" id="toast" role="status" aria-live="polite" hidden><span id="toastMsg"></span><button class="undo" type="button" id="undo" hidden>Wapas lao</button></div>
+<div class="stamp-fly" id="stamp" aria-hidden="true" hidden></div>
+<p class="vh" id="live" aria-live="polite"></p>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ================= constants ================= */
+  const KEY = "papa-ka-hisaab-v2";
+  const OLD_KEY = "papa-ka-hisaab-v1";
+  const SAMPLE_BUDGET = 35000;
+  const MAX_DIGITS = 7;
+  const CATS = [
+    ["doodh", "Doodh", "jaise: subah ka packet"],
+    ["sabzi", "Sabzi", "jaise: mandi se"],
+    ["kirana", "Kirana", "jaise: atta, daal, tel"],
+    ["bijli", "Bijli", "jaise: is mahine ka bill"],
+    ["gas", "Gas", "jaise: cylinder"],
+    ["petrol", "Petrol", "jaise: scooter"],
+    ["dawai", "Dawai", "jaise: BP ki goli"],
+    ["recharge", "Recharge", "jaise: Mummy ka phone"],
+    ["kiraya", "Kiraya", "jaise: makaan ka kiraya"],
+    ["fees", "Fees", "jaise: tuition"],
+    ["bahar", "Bahar khana", "jaise: samose, chai"],
+    ["aur", "Aur kuch", "jaise: press wala"]
+  ].map(([id, name, hint]) => ({ id, name, hint }));
+  const CAT = Object.fromEntries(CATS.map(c => [c.id, c]));
+  const DAYS = ["Ravivaar", "Somvaar", "Mangalvaar", "Budhvaar", "Guruvaar", "Shukravaar", "Shanivaar"];
+  const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const MON = MONTHS.map(m => m.slice(0, 3));
+  const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  const SVGNS = "http://www.w3.org/2000/svg";
+
+  /* ================= small helpers ================= */
+  const $ = id => document.getElementById(id);
+  const INR = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });
+  const rs = n => "₹" + INR.format(Math.round(n));
+  const pad = n => String(n).padStart(2, "0");
+  const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; // local day, never UTC
+  const today = () => ymd(new Date());
+  const daysAgo = k => { const d = new Date(); d.setDate(d.getDate() - k); return ymd(d); };
+  const curMonth = () => today().slice(0, 7);
+  const monthOf = s => s.slice(0, 7);
+  const toDate = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d || 1); };
+  const shiftMonth = (ym, k) => { const d = toDate(ym); d.setMonth(d.getMonth() + k); return ymd(d).slice(0, 7); };
+  const monthName = ym => { const d = toDate(ym); return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`; };
+  const daysIn = ym => { const d = toDate(ym); return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(); };
+  const shortDate = s => { const d = toDate(s); return `${d.getDate()} ${MON[d.getMonth()]}`; };
+  const dayWord = s => (s === today() ? "Aaj" : s === daysAgo(1) ? "Kal" : DAYS[toDate(s).getDay()]);
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  const sum = list => list.reduce((s, x) => s + x.amt, 0);
+  const newestFirst = (a, b) => b.date.localeCompare(a.date) || b.t - a.t;
+  const reduced = () => { try { return matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; } };
+  const buzz = p => { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* no haptics on this phone */ } };
+  function el(tag, cls, text) {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function icon(name, cls) {
+    const s = document.createElementNS(SVGNS, "svg");
+    s.setAttribute("class", cls || "ic");
+    s.setAttribute("aria-hidden", "true");
+    const u = document.createElementNS(SVGNS, "use");
+    u.setAttribute("href", "#i-" + name);
+    s.appendChild(u);
+    return s;
+  }
+
+  /* ================= storage: localStorage only, every touch guarded ================= */
+  let storageOK = true;
+  function readKey(k) {
+    try { return localStorage.getItem(k); } catch (e) { storageOK = false; return null; }
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { storageOK = false; }
+    $("storeNote").hidden = storageOK;
+  }
+  const okAmt = a => typeof a === "number" && isFinite(a) && a >= 1 && a < 1e8;
+  function cleanEntry(e) {
+    if (!e || !DATE_RE.test(e.date) || !CAT[e.cat] || !okAmt(e.amt)) return null;
+    const x = { id: String(e.id || uid()), date: e.date, cat: e.cat, amt: Math.round(e.amt), note: String(e.note || "").slice(0, 60), t: Number(e.t) || 0 };
+    if (e.sample) x.sample = true;
+    return x;
+  }
+  function cleanUdhaar(u) {
+    const who = u ? String(u.who || "").trim().slice(0, 30) : "";
+    if (!who || !DATE_RE.test(u.date) || !okAmt(u.amt) || (u.dir !== "gave" && u.dir !== "took")) return null;
+    const x = { id: String(u.id || uid()), who, dir: u.dir, amt: Math.round(u.amt), note: String(u.note || "").slice(0, 60), date: u.date, t: Number(u.t) || 0 };
+    if (u.done) x.done = Number(u.done) || 1;
+    if (u.sample) x.sample = true;
+    return x;
+  }
+  function revive(v) {
+    return {
+      budget: okAmt(v.budget) ? Math.round(v.budget) : null,
+      entries: (Array.isArray(v.entries) ? v.entries : []).map(cleanEntry).filter(Boolean),
+      udhaar: (Array.isArray(v.udhaar) ? v.udhaar : []).map(cleanUdhaar).filter(Boolean)
+    };
+  }
+  function load() {
+    const raw = readKey(KEY);
+    if (raw) {
+      try { const v = JSON.parse(raw); if (v && typeof v === "object") return revive(v); } catch (e) { /* unreadable, start again */ }
+    }
+    const old = readKey(OLD_KEY); // bring over real entries from the first version of this app
+    if (old) {
+      try {
+        const v = JSON.parse(old);
+        const entries = (v && Array.isArray(v.entries) ? v.entries : []).filter(e => e && !e.sample);
+        if (entries.length) return revive({ entries });
+      } catch (e) { /* nothing worth keeping */ }
+    }
+    return null;
+  }
+
+  /* ================= the sample hisaab: this month, day 1 to today ================= */
+  function seedSample() {
+    const now = new Date(), D = now.getDate(), ym = ymd(now).slice(0, 7);
+    const at = d => `${ym}-${pad(d)}`;
+    let n = 0;
+    const add = (d, cat, amt, note) => {
+      if (d >= 1 && d <= D) state.entries.push({ id: uid(), date: at(d), cat, amt, note: note || "", t: ++n, sample: true });
+    };
+    for (let d = 1; d <= D; d++) add(d, "doodh", 66);
+    add(1, "kiraya", 12000, "Makaan ka kiraya");
+    add(1, "kirana", 2850, "Mahine ka saamaan");
+    [[2, 140, "Mandi se"], [4, 95], [6, 120, "Thele wale bhaiya"], [9, 160, "Mandi se"], [11, 85], [14, 130],
+      [17, 110, "Mandi se"], [20, 90], [23, 150], [26, 120], [29, 100]].forEach(([d, a, note]) => add(d, "sabzi", a, note));
+    add(3, "petrol", 500, "Scooter"); add(12, "petrol", 500, "Scooter"); add(22, "petrol", 500, "Scooter");
+    add(4, "fees", 3500, "Tuition");
+    add(5, "bijli", 2340, "Pichhle mahine ka bill");
+    add(6, "recharge", 349, "Mummy ka phone");
+    add(7, "dawai", 230, "BP ki goli"); add(19, "dawai", 180);
+    add(8, "gas", 903, "Cylinder");
+    add(9, "bahar", 480, "Samose aur jalebi"); add(16, "bahar", 260, "Chai pakode"); add(25, "bahar", 620, "Birthday dinner");
+    add(10, "kirana", 640, "Atta 10 kg"); add(18, "kirana", 420, "Tel, daal");
+    add(11, "aur", 150, "Press wala"); add(21, "aur", 200, "Mochi");
+    if (!state.entries.some(e => e.sample && e.date === at(D) && e.cat === "sabzi")) add(D, "sabzi", 80, "Aaj ki sabzi");
+    const ud = (back, who, dir, amt, note, done) => {
+      const u = { id: uid(), who, dir, amt, note, date: at(Math.max(1, D - back)), t: ++n, sample: true };
+      if (done) u.done = 1;
+      state.udhaar.push(u);
+    };
+    ud(3, "Beta", "gave", 1000, "Bola tha kal lauta dunga");
+    ud(6, "Sharma ji", "gave", 500, "Petrol ke liye");
+    ud(9, "Bansal Store", "took", 640, "Khaate mein likhwaya");
+    ud(12, "Mehta ji", "gave", 300, "Chai ki party", true);
+  }
+  function hasSample() { return state.entries.some(e => e.sample) || state.udhaar.some(u => u.sample); }
+  function dropSample() {
+    const had = hasSample();
+    state.entries = state.entries.filter(e => !e.sample);
+    state.udhaar = state.udhaar.filter(u => !u.sample);
+    return had;
+  }
+  function sampleIsStale() { // only sample left, and it was made in an earlier month
+    const s = state.entries.find(e => e.sample);
+    return !!s && monthOf(s.date) !== curMonth() && !state.entries.some(e => !e.sample) && !state.udhaar.some(u => !u.sample);
+  }
+
+  /* ================= state ================= */
+  let state = load();
+  if (!state) { state = { budget: null, entries: [], udhaar: [] }; seedSample(); }
+  else if (sampleIsStale()) { dropSample(); seedSample(); }
+  save(); // writes the cleaned (or carried-over) hisaab under the v2 key
+
+  let view = curMonth();   // month shown on the kharcha page
+  let tab = "k";           // "k" kharcha, "u" udhaar
+  let fresh = null;        // id written just now, drawn in wet ink once
+  const expanded = new Set();
+  const isFresh = id => { if (id && id === fresh) { fresh = null; return true; } return false; };
+
+  /* ================= derived numbers ================= */
+  function monthList(ym) { return state.entries.filter(e => monthOf(e.date) === ym).sort(newestFirst); }
+  function byCat(list) {
+    const m = {};
+    list.forEach(e => { m[e.cat] = (m[e.cat] || 0) + e.amt; });
+    return Object.entries(m).sort((a, b) => b[1] - a[1]);
+  }
+  function budgetNow() {
+    if (state.budget) return { amt: state.budget, sample: false };
+    return hasSample() ? { amt: SAMPLE_BUDGET, sample: true } : null;
+  }
+  function minMonth() {
+    return state.entries.reduce((m, e) => (monthOf(e.date) < m ? monthOf(e.date) : m), shiftMonth(curMonth(), -12));
+  }
+  function quickList() { // things written at least twice in 45 days, at their last amount
+    const since = daysAgo(45), seen = new Map();
+    state.entries.slice().sort(newestFirst).forEach(e => {
+      if (e.date < since) return;
+      const q = seen.get(e.cat);
+      if (q) q.n++; else seen.set(e.cat, { cat: e.cat, amt: e.amt, n: 1 });
+    });
+    return [...seen.values()].filter(q => q.n >= 2 && q.amt <= 5000).sort((a, b) => b.n - a.n).slice(0, 4);
+  }
+  function recentAmts(cat) {
+    const out = [];
+    state.entries.filter(e => e.cat === cat).sort(newestFirst).forEach(e => { if (out.length < 3 && !out.includes(e.amt)) out.push(e.amt); });
+    return out;
+  }
+  function people() {
+    const m = new Map();
+    state.udhaar.forEach(u => {
+      const key = u.who.toLowerCase();
+      let p = m.get(key);
+      if (!p) { p = { key, who: u.who, open: [], done: [], net: 0, last: "" }; m.set(key, p); }
+      if (u.done) p.done.push(u);
+      else { p.open.push(u); p.net += u.dir === "gave" ? u.amt : -u.amt; }
+      if (u.date > p.last) p.last = u.date;
+    });
+    m.forEach(p => { p.open.sort(newestFirst); p.done.sort(newestFirst); });
+    return [...m.values()];
+  }
+  function udTotals(ps) {
+    let lene = 0, dene = 0;
+    ps.forEach(p => { if (p.net > 0) lene += p.net; else dene -= p.net; });
+    return { lene, dene };
+  }
+
+  /* ================= numbers that roll to their new value ================= */
+  function setMoney(node, val, roll) {
+    const from = Number(node.dataset.v || 0);
+    node.dataset.v = String(val);
+    cancelAnimationFrame(node._raf || 0);
+    if (!roll || Math.round(from) === Math.round(val) || reduced()) { node.textContent = rs(val); return; }
+    const t0 = performance.now(), dur = 720;
+    const step = now => {
+      const p = Math.min(1, (now - t0) / dur), k = 1 - Math.pow(1 - p, 3);
+      node.textContent = rs(from + (val - from) * k);
+      if (p < 1) node._raf = requestAnimationFrame(step);
+    };
+    node._raf = requestAnimationFrame(step);
+  }
+
+  /* ================= render ================= */
+  const rowEls = new Map();   // entry id -> its row, for the strike-out
+  const lineEls = new Map();  // udhaar id -> its line
+  let shareText = "";
+
+  function renderAll(roll) { renderChrome(); renderKharcha(roll); renderUdhaar(roll); }
+
+  function renderChrome() {
+    $("slipZone").hidden = !hasSample();
+    const n = people().filter(p => p.open.length).length;
+    $("uBadge").hidden = !n;
+    $("uBadge").textContent = String(n);
+    $("addLabel").textContent = tab === "k" ? "Kharcha likho" : "Udhaar likho";
+  }
+
+  function renderKharcha(roll) {
+    const cm = curMonth(), isCur = view === cm, list = monthList(view), total = sum(list), ranked = byCat(list);
+    const [mName, yr] = monthName(view).split(" ");
+    const ml = $("mLabel");
+    ml.textContent = mName + " ";
+    ml.appendChild(el("span", null, yr));
+    $("mNext").disabled = view >= cm;
+    $("mPrev").disabled = view <= minMonth();
+    $("totK").textContent = isCur ? "Is mahine ka kul kharcha" : `${mName} ka kul kharcha`;
+    setMoney($("tot"), total, roll);
+    if (isCur) {
+      $("l2k").textContent = "Aaj";
+      setMoney($("l2v"), sum(state.entries.filter(e => e.date === today())), roll);
+    } else {
+      $("l2k").textContent = "Roz ka ausat";
+      setMoney($("l2v"), total / daysIn(view), false);
+    }
+    $("l3v").textContent = ranked.length ? `${CAT[ranked[0][0]].name} ${rs(ranked[0][1])}` : "Abhi kuch nahi";
+    $("markK").hidden = !list.some(e => e.sample);
+    renderBudget(total);
+    renderQuick();
+    renderRegister(list);
+    renderBars(ranked, total);
+    renderShare(list, total, ranked);
+  }
+
+  function renderBudget(total) {
+    const b = budgetNow(), box = $("budget"), k = $("bK"), w = $("bWarn");
+    box.classList.remove("near", "over");
+    $("bEmpty").hidden = !!b;
+    $("bBar").hidden = !b;
+    $("bText").hidden = !b;
+    w.hidden = true;
+    k.textContent = ""; k.appendChild(el("span", "lbl", "Mahine ka budget"));
+    $("bBtn").textContent = b ? "Budget badlo" : "Budget rakho";
+    if (!b) return;
+    k.appendChild(el("b", null, rs(b.amt)));
+    if (b.sample) k.appendChild(el("small", null, "sample"));
+    const pct = total / b.amt, left = b.amt - total, t = $("bText");
+    $("bFill").style.transform = `translateX(${(Math.min(100, pct * 100) - 100).toFixed(2)}%)`; // shaded up to what is spent
+    t.textContent = "";
+    if (left >= 0) t.append(`${rs(b.amt)} mein se `, el("b", null, rs(total)), " kharch, ", el("b", null, rs(left)), " bacha");
+    else t.append(`${rs(b.amt)} ke budget se `, el("b", null, rs(-left)), " zyada kharch ho gaya");
+    if (pct >= 1) { box.classList.add("over"); w.textContent = "Budget paar ho gaya. Ab sirf zaroori cheezein."; w.hidden = false; }
+    else if (pct >= 0.85) { box.classList.add("near"); w.textContent = `Budget ka ${Math.round(pct * 100)}% kharch ho gaya. Sambhal ke.`; w.hidden = false; }
+  }
+
+  function renderQuick() {
+    const box = $("quick"), list = quickList();
+    box.textContent = "";
+    list.forEach(q => {
+      const b = el("button", "tag");
+      b.type = "button";
+      b.append(icon(q.cat), el("span", null, CAT[q.cat].name), el("b", null, rs(q.amt)));
+      b.setAttribute("aria-label", `${CAT[q.cat].name} ${rs(q.amt)}, aaj ke hisaab mein likho`);
+      b.addEventListener("click", () => quickAdd(q, b));
+      box.appendChild(b);
+    });
+    $("quickHint").hidden = list.length > 0;
+  }
+
+  function renderRegister(list) {
+    const ol = $("reg"), empty = $("regEmpty");
+    ol.textContent = "";
+    rowEls.clear();
+    ol.setAttribute("aria-label", view === curMonth() ? "Is mahine ki entries" : `${monthName(view)} ki entries`);
+    empty.hidden = list.length > 0;
+    $("regHint").hidden = !list.length;
+    if (!list.length) {
+      empty.textContent = view === curMonth()
+        ? "Is mahine abhi kuch nahi likha. Neeche laal button dabao: Kharcha likho."
+        : `${monthName(view)} mein kuch nahi likha tha.`;
+    }
+    const days = [];
+    list.forEach(e => {
+      const last = days[days.length - 1];
+      if (last && last.date === e.date) last.rows.push(e); else days.push({ date: e.date, rows: [e] });
+    });
+    days.forEach(({ date, rows }) => {
+      const li = el("li", "day"), d = toDate(date), word = dayWord(date);
+      const m = el("span", "d-m", String(d.getDate()));
+      m.appendChild(el("small", null, MON[d.getMonth()]));
+      m.setAttribute("aria-hidden", "true");
+      const name = el("span", "d-name");
+      name.append(el("span", "vh", shortDate(date) + ", "), word);
+      if (word === "Aaj" || word === "Kal") name.appendChild(el("span", null, " · " + DAYS[d.getDay()]));
+      const head = el("div", "d-h");
+      head.append(name, el("b", "d-tot", rs(sum(rows))));
+      const ul = el("ul", "d-rows");
+      rows.forEach(e => {
+        const r = el("li", "row"), b = el("button", "rbtn sk");
+        b.type = "button";
+        const what = el("span", "r-what", CAT[e.cat].name);
+        if (e.note) what.appendChild(el("small", null, e.note));
+        b.append(icon(e.cat), what, el("span", "r-amt", rs(e.amt)), icon("edit", "ic r-ed"));
+        b.setAttribute("aria-label", `${CAT[e.cat].name} ${rs(e.amt)}${e.note ? ", " + e.note : ""}. Badalne ke liye dabao`);
+        if (isFresh(e.id)) b.classList.add("fresh");
+        b.addEventListener("click", () => openSheet("kharcha", { id: e.id }));
+        r.appendChild(b);
+        ul.appendChild(r);
+        rowEls.set(e.id, r);
+      });
+      li.append(m, head, ul);
+      ol.appendChild(li);
+    });
+  }
+
+  function renderBars(ranked, total) {
+    const ul = $("bars");
+    ul.textContent = "";
+    $("where").hidden = !ranked.length;
+    ranked.forEach(([c, v], i) => {
+      const pct = total ? (v / total) * 100 : 0;
+      const li = el("li", "bar" + (i === 0 ? " top" : ""));
+      const val = el("span", "bar-v", rs(v));
+      val.appendChild(el("small", null, pct < 1 ? "<1%" : Math.round(pct) + "%"));
+      const track = el("div", "bar-t"), fill = el("div", "bar-f");
+      track.setAttribute("aria-hidden", "true");
+      fill.style.width = pct.toFixed(2) + "%";
+      track.appendChild(fill);
+      li.append(icon(c), el("span", "bar-n", CAT[c].name), val, track);
+      ul.appendChild(li);
+    });
+  }
+
+  function renderShare(list, total, ranked) {
+    $("share").hidden = !list.length;
+    $("shareP").textContent = `${view === curMonth() ? "Is mahine" : MONTHS[toDate(view).getMonth()]} ka poora hisaab, ek message mein.`;
+    const L = [`*पापा का हिसाब · ${monthName(view)}*`, `Kul kharcha: *${rs(total)}*`];
+    const b = budgetNow();
+    if (b) {
+      const left = b.amt - total;
+      L.push(left >= 0 ? `Budget ${rs(b.amt)}, bacha ${rs(left)}` : `Budget ${rs(b.amt)}, ${rs(-left)} zyada kharch`);
+    }
+    L.push("");
+    ranked.forEach(([c, v]) => L.push(`${CAT[c].name}: ${rs(v)}`));
+    const { lene, dene } = udTotals(people());
+    if (lene || dene) L.push("", `Udhaar: lene hain ${rs(lene)}, dene hain ${rs(dene)}`);
+    if (hasSample()) L.push("", "(Yeh sample hisaab hai)");
+    L.push("", "_Papa ka Hisaab se bheja_");
+    shareText = L.join("\n");
+    $("wa").href = "https://wa.me/?text=" + encodeURIComponent(shareText);
+    const ta = $("shareTa");
+    if (!ta.hidden) ta.value = shareText;
+  }
+
+  function renderUdhaar(roll) {
+    const ps = people(), byLast = (a, b) => b.last.localeCompare(a.last);
+    const active = ps.filter(p => p.open.length).sort(byLast);
+    const settled = ps.filter(p => !p.open.length && p.done.length).sort(byLast);
+    const { lene, dene } = udTotals(ps);
+    setMoney($("lene"), lene, roll);
+    setMoney($("dene"), dene, roll);
+    $("markU").hidden = !state.udhaar.some(u => u.sample);
+    const ul = $("people");
+    ul.textContent = "";
+    lineEls.clear();
+    $("udEmpty").hidden = active.length > 0;
+    active.forEach((p, i) => ul.appendChild(personRow(p, i)));
+    $("settled").hidden = !settled.length;
+    $("settledN").textContent = settled.length ? `(${settled.length})` : "";
+    const sl = $("settledList");
+    sl.textContent = "";
+    settled.forEach(p => {
+      const li = el("li"), s = el("span", null, p.who);
+      s.appendChild(el("small", null, ` · ${p.done.length} ${p.done.length === 1 ? "entry" : "entries"}, aakhri ${shortDate(p.last)}`));
+      li.append(s, el("span", "chukta-mini", "चुकता"));
+      sl.appendChild(li);
+    });
+  }
+
+  function personRow(p, i) {
+    const li = el("li", "person"), isOpen = expanded.has(p.key);
+    const ini = el("span", "p-ini", p.who.charAt(0).toUpperCase());
+    ini.setAttribute("aria-hidden", "true");
+    const b = el("button", "pbtn");
+    b.type = "button";
+    b.setAttribute("aria-expanded", String(isOpen));
+    b.setAttribute("aria-controls", "pd" + i);
+    const name = el("span", "p-name", p.who);
+    const n = p.open.length;
+    name.appendChild(el("small", null, `${n} ${n === 1 ? "entry" : "entries"} · ${shortDate(p.open[n - 1].date)} se`));
+    const amt = el("span", "p-amt " + (p.net > 0 ? "lene" : p.net < 0 ? "dene" : "zero"), p.net ? rs(Math.abs(p.net)) : "Barabar");
+    if (p.net) amt.appendChild(el("small", null, p.net > 0 ? "lene hain" : "dene hain"));
+    b.append(name, amt);
+    const det = el("div", "p-det");
+    det.id = "pd" + i;
+    det.hidden = !isOpen;
+    p.open.forEach(u => {
+      const line = el("button", "uline sk");
+      line.type = "button";
+      const what = el("span", "u-t", u.dir === "gave" ? "Diye" : "Liye");
+      if (u.note) what.appendChild(el("small", null, " · " + u.note));
+      line.append(el("span", "u-d", shortDate(u.date)), what, el("b", u.dir, rs(u.amt)));
+      line.setAttribute("aria-label", `${shortDate(u.date)}, ${u.dir === "gave" ? "diye" : "liye"} ${rs(u.amt)}${u.note ? ", " + u.note : ""}. Badalne ke liye dabao`);
+      if (isFresh(u.id)) line.classList.add("fresh");
+      line.addEventListener("click", () => openSheet("udhaar", { id: u.id }));
+      det.appendChild(line);
+      lineEls.set(u.id, line);
+    });
+    const acts = el("div", "p-acts");
+    const more = el("button", "btn-line");
+    more.type = "button";
+    more.append(icon("plus"), "Aur likho");
+    more.addEventListener("click", () => openSheet("udhaar", { who: p.who }));
+    const done = el("button", "btn-chukta");
+    done.type = "button";
+    done.append(icon("check"), "Chukta karo");
+    done.setAttribute("aria-label", `${p.who} ka hisaab chukta karo`);
+    done.addEventListener("click", () => settle(p, b));
+    acts.append(more, done);
+    det.appendChild(acts);
+    b.addEventListener("click", () => {
+      const now = !expanded.has(p.key);
+      if (now) expanded.add(p.key); else expanded.delete(p.key);
+      b.setAttribute("aria-expanded", String(now));
+      det.hidden = !now;
+    });
+    li.append(ini, b, det);
+    return li;
+  }
+
+  // A re-render rebuilds the rows, so the button that had focus can vanish: put focus on its new copy, or on the red button.
+  function keepFocus(id) {
+    const a = document.activeElement;
+    if (a && a !== document.body && a.isConnected && a.offsetParent !== null && a !== $("undo")) return;
+    const r = id && (rowEls.get(id) || lineEls.get(id));
+    const b = r && (r.tagName === "BUTTON" ? r : r.querySelector("button"));
+    if (b && b.offsetParent !== null) b.focus({ preventScroll: true });
+    if (!b || document.activeElement !== b) $("addBtn").focus({ preventScroll: true }); // e.g. the page is mid-turn
+  }
+
+  /* ================= page turn: the visible part of the page flips over the top binding ================= */
+  let flipDone = null;
+  function snap(leaf, w) {
+    const c = leaf.cloneNode(true);
+    c.removeAttribute("id");
+    c.querySelectorAll("[id]").forEach(n => n.removeAttribute("id"));
+    c.classList.add("leaf-snap");
+    c.style.width = w + "px";
+    c.setAttribute("aria-hidden", "true");
+    c.inert = true;
+    return c;
+  }
+  function turnTo(ym) {
+    if (ym === view) return;
+    if (flipDone) flipDone();
+    const leaf = $("leaf"), dir = ym > view ? 1 : -1, vh = window.innerHeight;
+    const r1 = leaf.getBoundingClientRect(), top = Math.max(0, r1.top);
+    const motion = !reduced() && typeof leaf.animate === "function" && Math.min(r1.bottom, vh) - top > 140;
+    const before = motion ? snap(leaf, r1.width) : null;
+    view = ym;
+    renderKharcha(false);
+    $("live").textContent = monthName(view);
+    if (!motion) {
+      if (typeof leaf.animate === "function") leaf.animate([{ opacity: 0.4 }, { opacity: 1 }], { duration: 220, easing: "ease-out" });
+      return;
+    }
+    const r2 = leaf.getBoundingClientRect(), after = snap(leaf, r2.width);
+    const box = (node, r) => {
+      const b = el("div", "flip-box");
+      b.style.cssText = `left:${r.left}px;top:${top}px;width:${r.width}px;height:${Math.max(0, Math.min(r.bottom, vh) - top)}px`;
+      node.style.transform = `translateY(${r.top - top}px)`;
+      b.append(node, el("div", "flip-shade"));
+      return b;
+    };
+    const older = box(before, r1), newer = box(after, r2);
+    const under = dir > 0 ? newer : older, over = dir > 0 ? older : newer;
+    over.classList.add("over");
+    const stage = el("div", "flip-stage");
+    stage.setAttribute("aria-hidden", "true");
+    stage.style.perspectiveOrigin = `50% ${Math.round(top + (vh - top) * 0.3)}px`;
+    stage.append(under, over);
+    document.body.appendChild(stage);
+    leaf.style.visibility = "hidden";
+    const lift = [{ transform: "rotateX(0deg)", opacity: 1 }, { transform: "rotateX(62deg)", opacity: 1, offset: 0.7 }, { transform: "rotateX(90deg)", opacity: 0 }];
+    const drop = [{ transform: "rotateX(90deg)", opacity: 0 }, { transform: "rotateX(62deg)", opacity: 1, offset: 0.3 }, { transform: "rotateX(-1.5deg)", opacity: 1, offset: 0.86 }, { transform: "rotateX(0deg)", opacity: 1 }];
+    const opt = { duration: dir > 0 ? 520 : 580, easing: dir > 0 ? "cubic-bezier(.4,0,.6,1)" : "cubic-bezier(.45,0,.2,1)", fill: "forwards" };
+    const anims = [
+      over.animate(dir > 0 ? lift : drop, opt),
+      over.lastChild.animate(dir > 0 ? [{ opacity: 0 }, { opacity: 0.45 }] : [{ opacity: 0.45 }, { opacity: 0 }], opt),
+      under.lastChild.animate(dir > 0 ? [{ opacity: 0.35 }, { opacity: 0 }] : [{ opacity: 0 }, { opacity: 0.3 }], opt)
+    ];
+    const done = () => {
+      if (flipDone !== done) return;
+      flipDone = null;
+      anims.forEach(a => a.cancel());
+      stage.remove();
+      leaf.style.visibility = "";
+    };
+    flipDone = done;
+    anims[0].onfinish = done;
+    buzz(8);
+  }
+
+  /* ================= rubber stamp ================= */
+  function stampMarkup(main, sub, size) {
+    const d = new Date(), date = `${d.getDate()} ${MON[d.getMonth()].toUpperCase()} ${d.getFullYear()}`;
+    return `<svg viewBox="0 0 200 200"><g filter="url(#ink)">` +
+      `<circle cx="100" cy="100" r="93" fill="none" stroke="currentColor" stroke-width="6"/>` +
+      `<circle cx="100" cy="100" r="80" fill="none" stroke="currentColor" stroke-width="2"/>` +
+      `<circle cx="100" cy="100" r="54" fill="none" stroke="currentColor" stroke-width="2"/>` +
+      `<text class="st-ring" fill="currentColor"><textPath href="#ring" textLength="380" lengthAdjust="spacing">PAPA KA HISAAB • GHAR KA BAHI-KHATA •</textPath></text>` +
+      `<text class="st-date" x="100" y="70" text-anchor="middle" fill="currentColor">${date}</text>` +
+      `<text class="st-main" x="100" y="118" text-anchor="middle" fill="currentColor" style="font-size:${size}px">${main}</text>` +
+      `<text class="st-sub" x="100" y="141" text-anchor="middle" fill="currentColor">${sub}</text></g></svg>`;
+  }
+  // Slams a stamp onto rect. Inside the sheet it rides on the card; elsewhere it sits on the screen.
+  // Returns how long to hold before moving on.
+  function stamp(rect, main, sub, size, host) {
+    const s = $("stamp");
+    clearTimeout(s._t);
+    if (s._a) { s._a.cancel(); s._a = null; }
+    s.innerHTML = stampMarkup(main, sub, main.length > 4 ? 32 : 40);
+    s.style.width = s.style.height = size + "px";
+    let x = rect.left + rect.width / 2 - size / 2, y = rect.top + rect.height / 2 - size / 2;
+    if (host) { const hr = host.getBoundingClientRect(); x -= hr.left; y += host.scrollTop - hr.top; }
+    (host || document.body).appendChild(s);
+    s.style.left = Math.round(x) + "px";
+    s.style.top = Math.round(y) + "px";
+    s.hidden = false;
+    const rot = -4 - Math.random() * 9;
+    if (reduced() || typeof s.animate !== "function") {
+      s.style.opacity = "1";
+      s.style.transform = `rotate(${rot}deg)`;
+      s._t = setTimeout(() => { s.hidden = true; }, 700);
+      buzz(15);
+      return 320;
+    }
+    s.style.opacity = "";
+    s.style.transform = "";
+    s._a = s.animate([
+      { transform: `scale(1.9) rotate(${rot - 12}deg)`, opacity: 0, easing: "cubic-bezier(.55,0,.9,.45)" },
+      { transform: `scale(.93) rotate(${rot}deg)`, opacity: 1, offset: 0.28, easing: "cubic-bezier(.2,.8,.3,1)" },
+      { transform: `scale(1) rotate(${rot}deg)`, opacity: 1, offset: 0.37 },
+      { transform: `scale(1) rotate(${rot}deg)`, opacity: 1, offset: 0.68, easing: "ease-in" },
+      { transform: `scale(1.03) rotate(${rot}deg)`, opacity: 0 }
+    ], { duration: 920, fill: "both" });
+    s._a.onfinish = () => { s.hidden = true; s._a = null; };
+    s._t = setTimeout(() => buzz(16), 255);
+    return 620;
+  }
+  function thump(node) {
+    if (node && typeof node.animate === "function" && !reduced()) {
+      node.animate([{ transform: "none" }, { transform: "scale(.985)", offset: 0.5 }, { transform: "none" }], { duration: 170, delay: 255, easing: "ease-out" });
+    }
+  }
+  function strike(row, then) {
+    if (!row || !row.isConnected || reduced() || typeof row.animate !== "function") { then(); return; }
+    row.classList.add("struck");
+    buzz(10);
+    setTimeout(() => {
+      row.style.overflow = "hidden";
+      row.animate([{ height: row.offsetHeight + "px", opacity: 1 }, { height: "0px", opacity: 0 }],
+        { duration: 220, easing: "cubic-bezier(.23,1,.32,1)", fill: "forwards" }).onfinish = then;
+    }, 320);
+  }
+
+  /* ================= toast with undo ================= */
+  let toastTimer = 0, undoSnap = null;
+  function toast(msg, snapState) {
+    const t = $("toast");
+    undoSnap = snapState || null;
+    $("toastMsg").textContent = msg;
+    $("undo").hidden = !undoSnap;
+    t.hidden = false;
+    void t.offsetWidth;
+    t.classList.remove("out");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, undoSnap ? 6500 : 3400);
+  }
+  function hideToast() {
+    const t = $("toast");
+    if (document.hidden) { toastTimer = setTimeout(hideToast, 2000); return; } // wait until Papa is looking again
+    clearTimeout(toastTimer);
+    undoSnap = null;
+    t.classList.add("out");
+    setTimeout(() => { if (t.classList.contains("out")) t.hidden = true; }, 220);
+  }
+  $("undo").addEventListener("click", () => {
+    if (!undoSnap) return;
+    try { state = revive(JSON.parse(undoSnap)); } catch (e) { return; }
+    save();
+    hideToast();
+    renderAll(true);
+    keepFocus();
+    $("live").textContent = "Wapas aa gaya.";
+    buzz(8);
+  });
+
+  /* ================= the entry sheet ================= */
+  const sheet = $("sheet"), card = $("card");
+  const draft = { kind: "kharcha", id: null, cat: "doodh", who: "", dir: "gave", amt: "", step: "cat" };
+  let opener = null, busy = false, holdTimer = 0, closeTimer = 0;
+
+  CATS.forEach(c => {
+    const t = el("button", "tile");
+    t.type = "button";
+    t.dataset.cat = c.id;
+    t.append(icon(c.id), el("b", null, c.name), el("small", null, ""));
+    t.addEventListener("click", () => {
+      draft.cat = c.id; // a rakam already typed stays when Papa only fixes the category
+      showStep("amt");
+    });
+    $("tiles").appendChild(t);
+  });
+  ["1", "2", "3", "4", "5", "6", "7", "8", "9", "00", "0", "back"].forEach(k => {
+    const b = el("button", "key");
+    b.type = "button";
+    b.dataset.k = k;
+    if (k === "back") { b.appendChild(icon("back")); b.setAttribute("aria-label", "Ek ank mitao. Dabaye rakho to poori rakam mit jayegi"); }
+    else b.textContent = k;
+    $("keys").appendChild(b);
+  });
+
+  function openSheet(kind, opts = {}) {
+    if (busy) return;
+    let date = today(), note = "";
+    Object.assign(draft, { kind, id: opts.id || null, amt: "", who: "", dir: "gave" });
+    if (kind === "kharcha" && draft.id) {
+      const e = state.entries.find(x => x.id === draft.id);
+      if (!e) return;
+      Object.assign(draft, { cat: e.cat, amt: String(e.amt) });
+      date = e.date; note = e.note;
+    }
+    if (kind === "udhaar") {
+      if (draft.id) {
+        const u = state.udhaar.find(x => x.id === draft.id);
+        if (!u) return;
+        Object.assign(draft, { who: u.who, dir: u.dir, amt: String(u.amt) });
+        date = u.date; note = u.note;
+      } else if (opts.who) {
+        const last = state.udhaar.filter(u => !u.done && u.who === opts.who).sort(newestFirst)[0];
+        Object.assign(draft, { who: opts.who, dir: last ? last.dir : "gave" });
+      }
+    }
+    if (kind === "budget" && state.budget) draft.amt = String(state.budget);
+    opener = document.activeElement;
+    $("fDate").max = today();
+    $("fDate").value = date;
+    paintWhen();
+    $("fNote").value = note;
+    $("fWho").value = draft.who;
+    $("sMsg").textContent = "";
+    $("whoMsg").textContent = "";
+    const del = $("delBtn");
+    del.hidden = !(draft.id || (kind === "budget" && state.budget));
+    del.textContent = kind === "budget" ? "Budget hatao" : "Kaat do";
+    $("acts").classList.toggle("two", !del.hidden);
+    showStep(kind === "kharcha" ? (draft.id ? "amt" : "cat") : kind === "udhaar" ? (draft.id || draft.who ? "amt" : "who") : "amt");
+    clearTimeout(closeTimer);
+    sheet.hidden = false;
+    void card.offsetWidth; // paint the closed position first, then slide up
+    sheet.classList.add("open");
+    $("app").inert = true;
+    $("dock").inert = true;
+    document.documentElement.style.overflow = "hidden";
+    card.focus({ preventScroll: true });
+  }
+
+  function closeSheet() {
+    if (sheet.hidden) return;
+    sheet.classList.remove("open");
+    $("app").inert = false;
+    $("dock").inert = false;
+    document.documentElement.style.overflow = "";
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(() => { sheet.hidden = true; }, 260);
+    const back = opener && opener.isConnected ? opener : $("addBtn");
+    back.focus({ preventScroll: true });
+  }
+
+  function showStep(step) {
+    draft.step = step;
+    const k = draft.kind, pick = $("pick"), title = $("sTitle");
+    $("stCat").hidden = step !== "cat";
+    $("stWho").hidden = step !== "who";
+    $("stAmt").hidden = step !== "amt";
+    title.textContent = step === "cat" ? (draft.id ? "Kis cheez pe tha?" : "Kis cheez pe kharcha?")
+      : step === "who" ? "Kiske saath hisaab?"
+      : k === "budget" ? "Mahine ka budget" : draft.id ? "Entry badlo" : "Kitne rupaye?";
+    const showPick = step === "amt" && k !== "budget";
+    pick.hidden = !showPick;
+    title.classList.toggle("vh", showPick);
+    if (step === "cat") paintTiles();
+    if (step === "who") paintWho();
+    if (step === "amt") {
+      if (k === "kharcha") {
+        $("pickUse").setAttribute("href", "#i-" + draft.cat);
+        $("pickT").textContent = CAT[draft.cat].name;
+        $("fNote").placeholder = "Note (zaroori nahi), " + CAT[draft.cat].hint;
+      } else if (k === "udhaar") {
+        $("pickUse").setAttribute("href", "#i-user");
+        $("pickT").textContent = `${draft.who} · ${draft.dir === "gave" ? "Maine diye" : "Maine liye"}`;
+        $("fNote").placeholder = "Note (zaroori nahi), jaise: petrol ke liye";
+      }
+      pick.setAttribute("aria-label", `${$("pickT").textContent}. Badalne ke liye dabao`);
+      $("meta").hidden = k === "budget";
+      paintSugg();
+      paintAmt();
+    }
+    card.scrollTop = 0;
+    const a = document.activeElement; // the tile or chip just pressed is now hidden: keep focus inside the sheet
+    if (!sheet.hidden && (!a || !card.contains(a) || a.offsetParent === null)) card.focus({ preventScroll: true });
+  }
+
+  function paintTiles() {
+    $("tiles").querySelectorAll(".tile").forEach(t => {
+      const c = t.dataset.cat, last = recentAmts(c)[0];
+      t.lastChild.textContent = last ? rs(last) : "";
+      t.setAttribute("aria-label", CAT[c].name + (last ? `, pichhli baar ${rs(last)}` : ""));
+      if (draft.id) t.setAttribute("aria-pressed", String(c === draft.cat)); else t.removeAttribute("aria-pressed");
+    });
+  }
+  function paintWho() {
+    $("stWho").querySelectorAll("[data-dir]").forEach(b => {
+      const on = b.dataset.dir === draft.dir;
+      b.setAttribute("aria-checked", String(on));
+      b.tabIndex = on ? 0 : -1;
+    });
+    const box = $("whoChips");
+    box.textContent = "";
+    people().sort((a, b) => (b.open.length > 0) - (a.open.length > 0) || b.last.localeCompare(a.last)).slice(0, 8).forEach(p => {
+      const c = el("button", null, p.who);
+      c.type = "button";
+      c.addEventListener("click", () => { draft.who = p.who; $("fWho").value = p.who; showStep("amt"); });
+      box.appendChild(c);
+    });
+  }
+  function paintSugg() {
+    const box = $("sugg");
+    const list = draft.kind === "kharcha" ? recentAmts(draft.cat) : draft.kind === "udhaar" ? [100, 500, 1000, 2000] : [20000, 25000, 30000, 40000];
+    box.textContent = "";
+    list.forEach(a => {
+      const b = el("button", null, rs(a));
+      b.type = "button";
+      b.addEventListener("click", () => { draft.amt = String(a); paintAmt(); $("sMsg").textContent = ""; });
+      box.appendChild(b);
+    });
+    box.hidden = !list.length;
+  }
+  function paintAmt() {
+    const n = Number(draft.amt || 0), sv = $("saveBtn");
+    $("amtTx").textContent = n ? INR.format(n) : "0";
+    $("amtBox").classList.toggle("empty", !n);
+    $("amtLive").textContent = n ? rs(n) : "";
+    sv.textContent = draft.kind === "budget" ? (n ? `${rs(n)} budget rakho` : "Budget rakho")
+      : draft.id ? "Badal do" : n ? `${rs(n)} likh do` : "Likh do";
+  }
+  function paintWhen() {
+    const v = $("fDate").value;
+    document.querySelectorAll(".when-b").forEach(b => b.setAttribute("aria-pressed", String(v === daysAgo(Number(b.dataset.ago)))));
+  }
+  function nudge() {
+    const a = $("amtBox");
+    a.classList.remove("nudge");
+    void a.offsetWidth;
+    a.classList.add("nudge");
+    buzz(6);
+  }
+  function fail(msg) { $("sMsg").textContent = msg; nudge(); }
+  function press(k) {
+    const s = draft.amt;
+    if (k === "back") draft.amt = s.slice(0, -1);
+    else if (!s && (k === "0" || k === "00")) return nudge();
+    else if ((s + k).length > MAX_DIGITS) return nudge();
+    else draft.amt = s + k;
+    $("sMsg").textContent = "";
+    paintAmt();
+  }
+
+  function saveSheet() {
+    if (busy) return;
+    const kind = draft.kind, editing = !!draft.id, amt = Number(draft.amt || 0);
+    if (kind === "budget") {
+      if (!amt) return fail("Budget ki rakam likho.");
+      state.budget = amt;
+      save();
+      closeSheet();
+      renderAll(true);
+      toast(`Budget rakh diya: ${rs(amt)}`);
+      return;
+    }
+    if (!amt) return fail("Pehle rakam likho.");
+    const date = $("fDate").value || today();
+    if (!DATE_RE.test(date) || date > today()) return fail("Aage ki tareekh nahi chalegi. Aaj ya pehle ki chuno.");
+    const note = $("fNote").value.trim().replace(/\s+/g, " ").slice(0, 60);
+    let cleared = false, item;
+    if (kind === "kharcha") {
+      if (editing) {
+        item = state.entries.find(x => x.id === draft.id);
+        if (!item) return closeSheet();
+        Object.assign(item, { cat: draft.cat, amt, note, date });
+      } else {
+        cleared = dropSample();
+        item = { id: uid(), date, cat: draft.cat, amt, note, t: Date.now() };
+        state.entries.push(item);
+      }
+    } else {
+      if (editing) {
+        item = state.udhaar.find(x => x.id === draft.id);
+        if (!item) return closeSheet();
+        Object.assign(item, { who: draft.who, dir: draft.dir, amt, note, date });
+      } else {
+        cleared = dropSample();
+        item = { id: uid(), who: draft.who, dir: draft.dir, amt, note, date, t: Date.now() };
+        state.udhaar.push(item);
+      }
+      expanded.add(item.who.toLowerCase());
+    }
+    save();
+    fresh = item.id;
+    const label = kind === "kharcha" ? `${CAT[item.cat].name} ${rs(amt)}` : `${item.who}, ${rs(amt)} ${item.dir === "gave" ? "diye" : "liye"}`;
+    $("live").textContent = (editing ? "Badal diya: " : "Likh diya: ") + label;
+    busy = true;
+    $("saveBtn").disabled = true;
+    const box = $("amtBox");
+    const hold = stamp(box.getBoundingClientRect(), "दर्ज", editing ? "BADAL DIYA" : "LIKH DIYA", 150, card);
+    thump(box);
+    setTimeout(() => {
+      busy = false;
+      $("saveBtn").disabled = false;
+      closeSheet();
+      if (kind === "kharcha" && monthOf(item.date) !== view) { turnTo(monthOf(item.date)); renderChrome(); renderUdhaar(false); }
+      else renderAll(true);
+      keepFocus(item.id);
+      if (cleared) toast("Likh diya. Sample hisaab hata diya, ab sirf aapka hisaab hai.");
+    }, hold);
+  }
+
+  function deleteFromSheet() {
+    if (busy) return;
+    const snapState = JSON.stringify(state);
+    if (draft.kind === "budget") {
+      state.budget = null;
+      save();
+      closeSheet();
+      renderAll(false);
+      toast("Budget hata diya.", snapState);
+      return;
+    }
+    const isK = draft.kind === "kharcha", list = isK ? state.entries : state.udhaar;
+    const item = list.find(x => x.id === draft.id);
+    if (!item) { closeSheet(); return; }
+    if (isK) state.entries = state.entries.filter(x => x !== item); else state.udhaar = state.udhaar.filter(x => x !== item);
+    save();
+    closeSheet();
+    const row = isK ? rowEls.get(item.id) : lineEls.get(item.id);
+    setTimeout(() => strike(row, () => { renderAll(true); keepFocus(); }), 180);
+    toast(isK ? `Kaat diya: ${CAT[item.cat].name} ${rs(item.amt)}` : `Kaat diya: ${item.who} ${rs(item.amt)}`, snapState);
+  }
+
+  /* ================= one-tap add and settle ================= */
+  function quickAdd(q, node) {
+    const snapState = JSON.stringify(state), cleared = dropSample();
+    const e = { id: uid(), date: today(), cat: q.cat, amt: q.amt, note: "", t: Date.now() };
+    state.entries.push(e);
+    save();
+    fresh = e.id;
+    stamp(node.getBoundingClientRect(), "दर्ज", "LIKH DIYA", 116);
+    if (view !== curMonth()) turnTo(curMonth()); else renderKharcha(true);
+    if (cleared) renderUdhaar(false);
+    renderChrome();
+    keepFocus();
+    toast(cleared ? `Likh diya: ${CAT[q.cat].name} ${rs(q.amt)}. Sample hisaab hata diya.` : `Likh diya: ${CAT[q.cat].name} ${rs(q.amt)}`, snapState);
+  }
+  function settle(p, rowBtn) {
+    const snapState = JSON.stringify(state), ts = Date.now();
+    state.udhaar.forEach(u => { if (!u.done && u.who.toLowerCase() === p.key) u.done = ts; });
+    save();
+    expanded.delete(p.key);
+    stamp(rowBtn.getBoundingClientRect(), "चुकता", "CHUKTA", 132);
+    setTimeout(() => { renderAll(true); keepFocus(); }, reduced() ? 0 : 700);
+    toast(`${p.who} ka hisaab chukta ho gaya`, snapState);
+  }
+
+  /* ================= events ================= */
+  $("keys").addEventListener("click", e => { const b = e.target.closest(".key"); if (b) press(b.dataset.k); });
+  $("keys").addEventListener("pointerdown", e => {
+    if (!e.target.closest('.key[data-k="back"]')) return;
+    clearTimeout(holdTimer);
+    holdTimer = setTimeout(() => { draft.amt = ""; paintAmt(); buzz(12); }, 550);
+  });
+  ["pointerup", "pointerleave", "pointercancel"].forEach(t => $("keys").addEventListener(t, () => clearTimeout(holdTimer)));
+  $("saveBtn").addEventListener("click", saveSheet);
+  $("delBtn").addEventListener("click", deleteFromSheet);
+  $("pick").addEventListener("click", () => showStep(draft.kind === "kharcha" ? "cat" : "who"));
+  sheet.addEventListener("click", e => { if (e.target.closest("[data-close]") && !busy) closeSheet(); });
+  document.querySelectorAll(".when-b").forEach(b => b.addEventListener("click", () => {
+    $("fDate").value = daysAgo(Number(b.dataset.ago));
+    paintWhen();
+    $("sMsg").textContent = "";
+  }));
+  $("fDate").addEventListener("input", paintWhen);
+  $("fDate").addEventListener("change", paintWhen);
+  $("fNote").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); saveSheet(); } });
+  const seg = $("stWho").querySelector(".seg");
+  seg.addEventListener("click", e => { const b = e.target.closest("[data-dir]"); if (b) { draft.dir = b.dataset.dir; paintWho(); } });
+  seg.addEventListener("keydown", e => {
+    if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) return;
+    e.preventDefault();
+    draft.dir = draft.dir === "gave" ? "took" : "gave";
+    paintWho();
+    seg.querySelector(`[data-dir="${draft.dir}"]`).focus();
+  });
+  function whoNext() {
+    const v = $("fWho").value.trim().replace(/\s+/g, " ").slice(0, 30);
+    if (!v) { $("whoMsg").textContent = "Pehle naam likho."; $("fWho").focus(); return; }
+    $("whoMsg").textContent = "";
+    draft.who = v;
+    showStep("amt");
+  }
+  $("whoNext").addEventListener("click", whoNext);
+  $("fWho").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); whoNext(); } });
+
+  document.addEventListener("keydown", e => {
+    if (sheet.hidden || !sheet.classList.contains("open")) return;
+    if (e.key === "Escape") { e.preventDefault(); if (!busy) closeSheet(); return; }
+    if (e.key === "Tab") {
+      const f = [...card.querySelectorAll("button, input, a[href]")].filter(n => !n.disabled && n.tabIndex >= 0 && n.offsetParent !== null);
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1], at = document.activeElement;
+      if (e.shiftKey && (at === first || at === card)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && at === last) { e.preventDefault(); first.focus(); }
+      return;
+    }
+    const tag = e.target && e.target.tagName;
+    if (draft.step !== "amt" || tag === "INPUT" || tag === "TEXTAREA" || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (/^\d$/.test(e.key)) { e.preventDefault(); press(e.key); }
+    else if (e.key === "Backspace") { e.preventDefault(); press("back"); }
+    else if (e.key === "Enter" && tag !== "BUTTON" && tag !== "A") { e.preventDefault(); saveSheet(); }
+  });
+
+  function setTab(t, focus) {
+    tab = t;
+    const k = t === "k";
+    $("tabK").setAttribute("aria-selected", String(k));
+    $("tabU").setAttribute("aria-selected", String(!k));
+    $("tabK").tabIndex = k ? 0 : -1;
+    $("tabU").tabIndex = k ? -1 : 0;
+    $("panelK").hidden = !k;
+    $("panelU").hidden = k;
+    renderChrome();
+    if (focus) $(k ? "tabK" : "tabU").focus();
+  }
+  $("tabK").addEventListener("click", () => setTab("k"));
+  $("tabU").addEventListener("click", () => setTab("u"));
+  document.querySelector(".tabs").addEventListener("keydown", e => {
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); setTab(tab === "k" ? "u" : "k", true); }
+  });
+  $("addBtn").addEventListener("click", () => openSheet(tab === "k" ? "kharcha" : "udhaar"));
+  $("bBtn").addEventListener("click", () => openSheet("budget"));
+  $("mPrev").addEventListener("click", () => { if (view > minMonth()) turnTo(shiftMonth(view, -1)); });
+  $("mNext").addEventListener("click", () => { if (view < curMonth()) turnTo(shiftMonth(view, 1)); });
+  $("clearSample").addEventListener("click", () => {
+    const snapState = JSON.stringify(state);
+    dropSample();
+    save();
+    renderAll(false);
+    keepFocus();
+    toast("Sample hata diya. Ab sirf aapka hisaab.", snapState);
+  });
+  $("copy").addEventListener("click", () => {
+    const text = shareText;
+    const fallback = () => {
+      const ta = $("shareTa");
+      ta.value = text;
+      ta.hidden = false;
+      ta.focus();
+      ta.select();
+      try { ta.setSelectionRange(0, text.length); } catch (e) { /* older phones select on focus */ }
+      toast("Text select kar diya. Ab copy kar lo.");
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => { toast("Copy ho gaya. Ab WhatsApp mein chipka do."); buzz(10); }, fallback);
+      } else fallback();
+    } catch (e) { fallback(); }
+  });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && sheet.hidden) renderAll(false); });
+
+  /* ================= start ================= */
+  $("storeNote").hidden = storageOK;
+  renderAll(false);
+})();
+</script>
+
+</body>
+</html>
