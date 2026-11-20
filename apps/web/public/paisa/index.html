@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-0lrE9RSXHso41Nqc7+FjUEM8yJg1LCDmhEFEyAJg8zc=' blob:; worker-src 'self' blob:; connect-src 'self'; img-src 'self' data: blob:; font-src 'self'; style-src 'self' 'unsafe-inline'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Paisa Kahan Gaya? · NIS</title>
+  <meta name="description" content="Free tool: upload your PhonePe or bank statement and see where your salary went. Runs in your browser. Your statement never leaves your phone.">
+  <link rel="canonical" href="https://thenispace.com/paisa">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="The Nest of Innovative Space">
+  <meta property="og:title" content="Paisa Kahan Gaya? · Free tool">
+  <meta property="og:description" content="Add your PhonePe or bank statement and see where your salary went. Free. Your statement never leaves your phone.">
+  <meta property="og:url" content="https://thenispace.com/paisa">
+  <meta property="og:image" content="https://thenispace.com/paisa/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#0C0A14">
+  <link rel="icon" type="image/png" href="/paisa/assets/img/nis-icon.png">
+  <link rel="preload" href="/paisa/assets/fonts/Instrument-Serif.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/paisa/assets/fonts/Sora.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/paisa/css/paisa.css">
+  <script type="importmap">
+  { "integrity": { "/paisa/vendor/pdfjs-6.5.438/pdf.min.mjs": "sha384-8Nzt4NtLKsO5Ksqwrdc+JzLh0297H8590bi0lcBPKcMRxReio/DNZsRsiBMZydqe" } }
+  </script>
+  <script src="/paisa/vendor/gsap-3.15.0/gsap.min.js" integrity="sha384-XmJ9SoHtVOHoQUcKvFAzVXwdkKo1Ie3bhmSoIAkcdsHGaIrVJIkmozyq0FJeb/Ly" defer></script>
+  <script type="module" src="/paisa/js/app.js"></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i class="g1"></i><i class="g2"></i><i class="g3"></i></div>
+
+  <div class="wrap">
+    <header class="bar">
+      <a class="brand" href="https://thenispace.com" rel="noopener"><img src="/paisa/assets/img/nis-icon.png" alt="" width="26" height="26">NIS</a>
+      <span class="lockpill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>On-device</span>
+    </header>
+  </div>
+
+  <main>
+    <section class="intro" id="intro" aria-labelledby="title">
+      <div class="wrap wrap-in">
+        <h1 class="display" id="title"><span class="ln">Paisa Kahan</span><span class="ln"><em>Gaya?</em></span></h1>
+        <p class="lede" id="lede">Add your UPI or bank statement. See where your salary went, and what to cut.</p>
+        <p class="privacy" id="privacy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><span><b>Your statement never leaves your phone.</b> It is read right here in your browser. Nothing is uploaded or saved.</span></p>
+
+        <div class="actions" id="actions">
+          <label class="btn primary" id="pick" for="file">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 17v-6"/><path d="M9.5 13.5L12 11l2.5 2.5"/></svg>
+            Choose statement <small>PDF or CSV</small>
+            <span class="tap" aria-hidden="true"></span>
+          </label>
+          <input type="file" id="file" class="sr" accept=".pdf,.csv,application/pdf,text/csv,text/comma-separated-values,application/vnd.ms-excel,text/plain">
+          <button type="button" class="btn ghost" id="sample">Try a sample statement</button>
+        </div>
+
+        <div class="status" id="status" role="status" aria-live="polite" hidden></div>
+
+        <div class="helper" id="helper">
+          <h2>How to get your statement</h2>
+          <div class="tabs" role="tablist" aria-label="Statement source">
+            <button type="button" role="tab" aria-selected="true" aria-controls="how-pp" id="tab-pp">PhonePe</button>
+            <button type="button" role="tab" aria-selected="false" aria-controls="how-hdfc" id="tab-hdfc" tabindex="-1">HDFC Bank</button>
+            <button type="button" role="tab" aria-selected="false" aria-controls="how-other" id="tab-other" tabindex="-1">Other</button>
+          </div>
+          <div role="tabpanel" id="how-pp" aria-labelledby="tab-pp">
+            <ol class="steps">
+              <li><span>Open the PhonePe app and tap <b>History</b>.</span></li>
+              <li><span>Tap <b>Download Statement</b> at the top of the screen.</span></li>
+              <li><span>Pick the period (last 30, 90 or 365 days, or your own dates).</span></li>
+              <li><span>Tap <b>Proceed</b> and save the PDF. Then choose it here.</span></li>
+            </ol>
+            <p class="note">If the PDF asks for a password, it is usually your 10-digit PhonePe mobile number.</p>
+          </div>
+          <div role="tabpanel" id="how-hdfc" aria-labelledby="tab-hdfc" hidden>
+            <ol class="steps">
+              <li><span>Log in to HDFC Bank NetBanking or the mobile banking app.</span></li>
+              <li><span>Open your savings account and find <b>Account Statement</b>.</span></li>
+              <li><span>Choose the dates and download it as <b>PDF</b> (or Excel, then save as CSV).</span></li>
+              <li><span>Choose the file here.</span></li>
+            </ol>
+            <p class="note">Bank PDFs often have a password. Check the email or SMS from your bank for the format.</p>
+          </div>
+          <div role="tabpanel" id="how-other" aria-labelledby="tab-other" hidden>
+            <ol class="steps">
+              <li><span>Any bank: download your statement as <b>CSV</b> or <b>PDF</b> from net banking.</span></li>
+              <li><span>Paytm: Balance &amp; History, the three dots, then <b>Download UPI Statement</b>. Pick Excel and save it as CSV.</span></li>
+              <li><span>Google Pay: See transaction history, More, then <b>Get Statement</b> (PDF).</span></li>
+            </ol>
+            <p class="note">PhonePe and HDFC Bank PDFs are read best. Other bank PDFs work too, but may be less accurate. A CSV with Date and Amount columns always works.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dash" id="dash" aria-labelledby="dtitle" hidden>
+      <div class="wrap">
+        <div class="dhead" id="dhead">
+          <h2 id="dtitle" tabindex="-1">Yahan <em>gaya.</em></h2>
+          <div class="meta" id="dmeta"></div>
+        </div>
+        <div class="tiles" id="tiles"></div>
+        <div class="foot-actions" id="footActions">
+          <button type="button" class="btn primary" id="shareBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M3 15l5-5 4 4 3-3 6 6"/></svg>
+            Share my Paisa card
+          </button>
+          <button type="button" class="btn ghost" id="againBtn">Check another statement</button>
+        </div>
+        <details class="all" id="allTx">
+          <summary id="allSum">All transactions</summary>
+          <table class="txtable" id="txTable"></table>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot">Free tool by <a href="https://thenispace.com" rel="noopener">NIS</a> · AI • Tech • Productivity<br>No sign-up. No tracking. Your file stays on your device.</footer>
+
+  <dialog class="sheet" id="sheet" aria-labelledby="sheetTitle">
+    <div class="in">
+      <div class="top"><h3 id="sheetTitle">Your Paisa card</h3>
+        <button type="button" class="iconbtn" id="sheetClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <canvas id="card" width="1080" height="1350" aria-label="Preview of your Paisa card"></canvas>
+      <label class="switch">Show rupee amounts on the card<input type="checkbox" id="showAmt"></label>
+      <div class="two">
+        <button type="button" class="btn ghost" id="saveCard">Save image</button>
+        <button type="button" class="btn primary" id="shareCard">Share</button>
+      </div>
+      <p class="note" style="margin:0">The image is made on your phone. Amounts stay hidden unless you switch them on.</p>
+    </div>
+  </dialog>
+</body>
+</html>

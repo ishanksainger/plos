@@ -16,6 +16,7 @@ const nextConfig = {
       { source: '/tapri', destination: '/tapri/index.html' },
       { source: '/naksha', destination: '/naksha/index.html' },
       { source: '/papa', destination: '/papa/index.html' },
+      { source: '/paisa', destination: '/paisa/index.html' },
     ];
   },
 };
